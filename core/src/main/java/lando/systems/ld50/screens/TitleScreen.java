@@ -12,6 +12,13 @@ import com.kotcrab.vis.ui.VisUI;
 
 public class TitleScreen extends BaseScreen {
 
+    public TitleScreen() {
+        // NOTE: have to set the input processor here as well as transitionCompleted
+        //   so that it's set correctly in desktop mode where there's no transition
+        InputMultiplexer mux = new InputMultiplexer(uiStage, this);
+        Gdx.input.setInputProcessor(mux);
+    }
+
     @Override
     protected void initializeUI() {
         super.initializeUI();
