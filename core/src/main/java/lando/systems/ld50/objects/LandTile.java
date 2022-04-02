@@ -126,6 +126,50 @@ public class LandTile {
         vertices[verticesIndex++] = 1; // U
         vertices[verticesIndex++] = 1; // V
 
+        // Floor Upper Left Vert
+        vertices[verticesIndex++] = x;
+        vertices[verticesIndex++] = y;
+        vertices[verticesIndex++] = 0;
+        vertices[verticesIndex++] = 0; // r
+        vertices[verticesIndex++] = 0; // g
+        vertices[verticesIndex++] = 0; // b
+        vertices[verticesIndex++] = 1; // a
+        vertices[verticesIndex++] = 1; // U
+        vertices[verticesIndex++] = 1; // V
+
+        // Floor Upper Right Vert
+        vertices[verticesIndex++] = x + width;
+        vertices[verticesIndex++] = y;
+        vertices[verticesIndex++] = 0;
+        vertices[verticesIndex++] = 0; // r
+        vertices[verticesIndex++] = 0; // g
+        vertices[verticesIndex++] = 0; // b
+        vertices[verticesIndex++] = 1; // a
+        vertices[verticesIndex++] = 1; // U
+        vertices[verticesIndex++] = 1; // V
+
+        // Floor Lower Right Vert
+        vertices[verticesIndex++] = x + width;
+        vertices[verticesIndex++] = y + width;
+        vertices[verticesIndex++] = 0;
+        vertices[verticesIndex++] = 0; // r
+        vertices[verticesIndex++] = 0; // g
+        vertices[verticesIndex++] = 0; // b
+        vertices[verticesIndex++] = 1; // a
+        vertices[verticesIndex++] = 1; // U
+        vertices[verticesIndex++] = 1; // V
+
+        // Floor Lower Left Vert
+        vertices[verticesIndex++] = x;
+        vertices[verticesIndex++] = y + width;
+        vertices[verticesIndex++] = 0;
+        vertices[verticesIndex++] = 0; // r
+        vertices[verticesIndex++] = 0; // g
+        vertices[verticesIndex++] = 0; // b
+        vertices[verticesIndex++] = 1; // a
+        vertices[verticesIndex++] = 1; // U
+        vertices[verticesIndex++] = 1; // V
+
 
         indices[indicesIndex++] = 0;
         indices[indicesIndex++] = 1;
@@ -142,6 +186,38 @@ public class LandTile {
         indices[indicesIndex++] = 3;
         indices[indicesIndex++] = 0;
         indices[indicesIndex++] = 4;
+
+        indices[indicesIndex++] = 5;
+        indices[indicesIndex++] = 3;
+        indices[indicesIndex++] = 8;
+
+        indices[indicesIndex++] = 0;
+        indices[indicesIndex++] = 3;
+        indices[indicesIndex++] = 5;
+
+        indices[indicesIndex++] = 0;
+        indices[indicesIndex++] = 1;
+        indices[indicesIndex++] = 6;
+
+        indices[indicesIndex++] = 0;
+        indices[indicesIndex++] = 6;
+        indices[indicesIndex++] = 5;
+
+        indices[indicesIndex++] = 1;
+        indices[indicesIndex++] = 2;
+        indices[indicesIndex++] = 6;
+
+        indices[indicesIndex++] = 2;
+        indices[indicesIndex++] = 6;
+        indices[indicesIndex++] = 7;
+
+        indices[indicesIndex++] = 2;
+        indices[indicesIndex++] = 3;
+        indices[indicesIndex++] = 7;
+
+        indices[indicesIndex++] = 3;
+        indices[indicesIndex++] = 7;
+        indices[indicesIndex++] = 8;
 
 
         mesh.setVertices(vertices);
