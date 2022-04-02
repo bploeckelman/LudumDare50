@@ -6,11 +6,22 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.VisTable;
+import com.kotcrab.vis.ui.widget.VisTextButton;
 
 public class TitleScreen extends BaseScreen {
+    private Skin skin;
+    private VisTable rootTable;
+    private VisTextButton startGameButton;
+    private VisTextButton creditButton;
+
+    private final float BUTTON_WIDTH = 20f;
+    private final float BUTTON_PADDING = 10f;
 
     public TitleScreen() {
         // NOTE: have to set the input processor here as well as transitionCompleted
@@ -22,7 +33,31 @@ public class TitleScreen extends BaseScreen {
     @Override
     protected void initializeUI() {
         super.initializeUI();
-        Skin skin = VisUI.getSkin();
+        skin = VisUI.getSkin();
+
+        rootTable = new VisTable();
+        rootTable.setWidth(uiStage.getWidth());
+        rootTable.setPosition(0, uiStage.getHeight() / 3);
+        rootTable.align(Align.center | Align.top);
+        rootTable.pad(5f);
+
+        startGameButton = new VisTextButton("Start Game", "outfit-medium-40px");
+        startGameButton.setWidth(BUTTON_WIDTH);
+        startGameButton.addListener(new ChangeListener(){
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new GameScreen());
+            }
+        });
+
+        creditButton = new VisTextButton("Credits", "outfit-medium-40px");
+        creditButton.setWidth(BUTTON_WIDTH);
+
+        rootTable.add(startGameButton).padBottom(BUTTON_PADDING);
+        rootTable.row();
+        rootTable.add(creditButton).padBottom(BUTTON_PADDING);
+
+        uiStage.addActor(rootTable);
     }
 
     @Override
@@ -43,7 +78,6 @@ public class TitleScreen extends BaseScreen {
             assets.font.draw(batch, assets.layout, 0f, windowCamera.viewportHeight * (3f / 4f) + assets.layout.height / 2f);
         }
         batch.end();
-
         uiStage.draw();
     }
 
