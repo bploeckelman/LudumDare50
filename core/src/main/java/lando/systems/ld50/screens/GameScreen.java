@@ -222,46 +222,46 @@ public class GameScreen extends BaseScreen {
     protected void initializeUI() {
         super.initializeUI();
 
-        VisWindow window = new VisWindow("", true);
-        window.setFillParent(true);
-        window.setColor(1f, 1f, 1f, 0.4f);
-        window.align(Align.top);
+        VisWindow debugWindow = new VisWindow("", true);
+        debugWindow.setFillParent(true);
+        debugWindow.setColor(1f, 1f, 1f, 0.4f);
+        debugWindow.align(Align.top);
 
         VisLabel label;
 
         label = new VisLabel();
-        window.add(label).growX().row();
+        debugWindow.add(label).growX().row();
         DebugElements.fpsLabel = label;
 
         label = new VisLabel();
-        window.add(label).growX().row();
+        debugWindow.add(label).growX().row();
         DebugElements.javaHeapLabel = label;
 
         label = new VisLabel();
-        window.add(label).growX().row();
+        debugWindow.add(label).growX().row();
         DebugElements.nativeHeapLabel = label;
 
         label = new VisLabel();
-        window.add(label).growX().row();
+        debugWindow.add(label).growX().row();
         DebugElements.drawCallLabel = label;
 
         label = new VisLabel();
-        window.add(label).growX().row();
+        debugWindow.add(label).growX().row();
         DebugElements.simTimeLabel = label;
 
         label = new VisLabel();
-        window.add(label).growX().row();
+        debugWindow.add(label).growX().row();
         DebugElements.gamepadAxisLabel = label;
 
-        uiStage.addActor(window);
-
         Action hideDebugWindow = Actions.moveTo(0, -windowCamera.viewportHeight, 0f);
-        hideDebugWindow.setActor(window);
+        hideDebugWindow.setActor(debugWindow);
 
-        Action showDebugWindow = Actions.moveTo(0, 0);
-        showDebugWindow.setActor(window);
+        Action showDebugWindow = Actions.moveTo(0, windowCamera.viewportHeight / 2, 0f);
+        showDebugWindow.setActor(debugWindow);
 
-        window.addAction(hideDebugWindow);
+        debugWindow.addAction(hideDebugWindow);
+
+        uiStage.addActor(debugWindow);
     }
 
     private void updateDebugElements() {
