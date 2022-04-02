@@ -41,6 +41,9 @@ public class Assets implements Disposable {
     public TextureRegion pixelRegion;
     public ShaderProgram landscapeShader;
 
+    public Animation<TextureRegion> cat;
+    public Animation<TextureRegion> dog;
+
     public enum Patch {
         debug, panel, metal, glass,
         glass_green, glass_yellow, glass_dim, glass_active;
@@ -121,6 +124,9 @@ public class Assets implements Disposable {
         // get audio
 //        exampleMusic = mgr.get("audio/musics/example-music.ogg", Music.class);
 //        exampleSound = mgr.get("audio/sounds/example-sound.ogg", Sound.class);
+
+        cat = new Animation<>(0.1f, atlas.findRegions("pets/cat"), Animation.PlayMode.LOOP);
+        dog = new Animation<>(0.1f, atlas.findRegions("pets/dog"), Animation.PlayMode.LOOP);
 
         particles = new Particles();
         particles.circle  = atlas.findRegion("particles/circle");

@@ -52,6 +52,12 @@ public class TitleScreen extends BaseScreen {
 
         creditButton = new VisTextButton("Credits", "outfit-medium-40px");
         creditButton.setWidth(BUTTON_WIDTH);
+        creditButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new EndScreen());
+            }
+        });
 
         rootTable.add(startGameButton).padBottom(BUTTON_PADDING);
         rootTable.row();
