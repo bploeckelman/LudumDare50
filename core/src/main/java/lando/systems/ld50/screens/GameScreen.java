@@ -5,14 +5,22 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.UBJsonReader;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
@@ -33,6 +41,13 @@ public class GameScreen extends BaseScreen {
     private final CameraInputController cameraController;
     private final Landscape landscape;
 
+    private final Environment env;
+    private final ModelBatch modelBatch;
+    private final Model testModel;
+    private final Model coordsModel;
+    private final ModelInstance testInstance;
+    private final ModelInstance coords;
+
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
         camera.position.set(-2, 0, 10);
@@ -51,13 +66,34 @@ public class GameScreen extends BaseScreen {
 
         landscape = new Landscape();
 
+        modelBatch = new ModelBatch();
+
+        env = new Environment();
+        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+        env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+
+        G3dModelLoader loader = new G3dModelLoader(new UBJsonReader());
+        testModel = loader.loadModel(Gdx.files.internal("models/cliff_block_rock.g3db"));
+        testInstance = new ModelInstance(testModel);
+        testInstance.transform.translate(0, 1, 0);
+
+        ModelBuilder builder = new ModelBuilder();
+        coordsModel = builder.createXYZCoordinates(1f, 0.1f, 0.5f, 6, GL20.GL_TRIANGLES,
+                new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked);
+        coords = new ModelInstance(coordsModel);
+        coords.transform.setToTranslation(0, 0, 0);
+
         InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
     }
+    private final Vector3 scale = new Vector3();
 
     @Override
     public void dispose() {
         super.dispose();
+        testModel.dispose();
+        coordsModel.dispose();
+        modelBatch.dispose();
     }
 
     @Override
@@ -86,7 +122,7 @@ public class GameScreen extends BaseScreen {
 //                camera.position, camera.up, camera.direction,
 //                side.set(camera.up).crs(camera.direction)));
     }
-    private final Vector3 side = new Vector3();
+//    private final Vector3 side = new Vector3();
 
     @Override
     public void render(SpriteBatch batch) {
@@ -102,6 +138,14 @@ public class GameScreen extends BaseScreen {
             landscape.render(batch, camera);
         }
         batch.end();
+
+        // TODO - might need to make everything draw with the model batch
+        modelBatch.begin(camera);
+        {
+            modelBatch.render(coords, env);
+            modelBatch.render(testInstance, env);
+        }
+        modelBatch.end();
 
         // NOTE: always draw so the 'hide' transition is visible
         uiStage.draw();

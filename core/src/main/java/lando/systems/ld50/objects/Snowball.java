@@ -1,7 +1,12 @@
 package lando.systems.ld50.objects;
 
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.SphereShapeBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
@@ -13,6 +18,9 @@ public class Snowball {
     public float radius;
 
     private static Mesh mesh;
+
+    private static Model model;
+    private ModelInstance instance;
 
 
     public Snowball(float x, float y, float z, float radius) {
