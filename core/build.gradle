@@ -5,4 +5,5 @@ dependencies {
 	api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
 	api "com.badlogicgames.gdx:gdx:$gdxVersion"
 	api "space.earlygrey:shapedrawer:$shapeDrawerVersion"
+	implementation "com.kotcrab.vis:vis-ui:$visuiVersion:sources"
 }
