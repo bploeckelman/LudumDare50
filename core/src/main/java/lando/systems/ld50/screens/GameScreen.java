@@ -222,7 +222,12 @@ public class GameScreen extends BaseScreen {
     @Override
     protected void initializeUI() {
         super.initializeUI();
+        //TODO: remove before launch
+        initializeDebugUI();
 
+    }
+
+    private void initializeDebugUI() {
         VisWindow debugWindow = new VisWindow("", true);
         debugWindow.setFillParent(true);
         debugWindow.setColor(1f, 1f, 1f, 0.4f);
@@ -253,8 +258,7 @@ public class GameScreen extends BaseScreen {
         label = new VisLabel();
         debugWindow.add(label).growX().row();
         DebugElements.gamepadAxisLabel = label;
-        // TODO: set as false when debug is no longer required, or make this user controllable.
-        debugWindow.setVisible(true);
+
         uiStage.addActor(debugWindow);
     }
 
