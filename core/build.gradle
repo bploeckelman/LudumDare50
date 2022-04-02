@@ -5,5 +5,9 @@ dependencies {
 	api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
 	api "com.badlogicgames.gdx:gdx:$gdxVersion"
 	api "space.earlygrey:shapedrawer:$shapeDrawerVersion"
-	implementation "com.kotcrab.vis:vis-ui:$visuiVersion:sources"
+	api "space.earlygrey:simple-graphs:$simpleGraphsVersion"
+	api "com.github.tommyettinger:regexodus:$regexodusVersion"
+	api "org.mini2Dx:universal-tween-engine:$tweenEngineVersion"
+	implementation "com.kotcrab.vis:vis-ui:$visuiVersion"
+	implementation "com.github.raeleus.TenPatch:tenpatch:$tenpatchVersion"
 }
