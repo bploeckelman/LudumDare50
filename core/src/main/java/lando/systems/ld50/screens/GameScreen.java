@@ -118,6 +118,8 @@ public class GameScreen extends BaseScreen {
 
         landscape.update(dt);
 
+        updateDebugElements();
+
 //        Gdx.app.log(TAG, String.format("pos(%s) up(%s) forward(%s) side(%s)",
 //                camera.position, camera.up, camera.direction,
 //                side.set(camera.up).crs(camera.direction)));
@@ -148,7 +150,6 @@ public class GameScreen extends BaseScreen {
         modelBatch.end();
 
         // NOTE: always draw so the 'hide' transition is visible
-        updateDebugElements();
         uiStage.draw();
 
         batch.setProjectionMatrix(windowCamera.combined);
@@ -252,15 +253,8 @@ public class GameScreen extends BaseScreen {
         label = new VisLabel();
         debugWindow.add(label).growX().row();
         DebugElements.gamepadAxisLabel = label;
-
-        Action hideDebugWindow = Actions.moveTo(0, -windowCamera.viewportHeight, 0f);
-        hideDebugWindow.setActor(debugWindow);
-
-        Action showDebugWindow = Actions.moveTo(0, windowCamera.viewportHeight / 2, 0f);
-        showDebugWindow.setActor(debugWindow);
-
-        debugWindow.addAction(hideDebugWindow);
-
+        // TODO: set as false when debug is no longer required, or make this user controllable.
+        debugWindow.setVisible(true);
         uiStage.addActor(debugWindow);
     }
 
