@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
 import lando.systems.ld50.Config;
+import lando.systems.ld50.particles.Particles;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Assets implements Disposable {
@@ -25,6 +26,7 @@ public class Assets implements Disposable {
     public ShapeDrawer shapes;
     public GlyphLayout layout;
     public AssetManager mgr;
+    public Particles particles;
     public TextureAtlas atlas;
     public InputPrompts inputPrompts;
 
@@ -40,6 +42,14 @@ public class Assets implements Disposable {
         glass_green, glass_yellow, glass_dim, glass_active;
         public NinePatch ninePatch;
         public NinePatchDrawable drawable;
+    }
+
+    public static class Particles {
+        public TextureRegion circle;
+        public TextureRegion sparkle;
+        public TextureRegion smoke;
+        public TextureRegion ring;
+        public TextureRegion dollar;
     }
 
     public enum Transition {
@@ -104,6 +114,13 @@ public class Assets implements Disposable {
         // get audio
 //        exampleMusic = mgr.get("audio/musics/example-music.ogg", Music.class);
 //        exampleSound = mgr.get("audio/sounds/example-sound.ogg", Sound.class);
+
+        particles = new Particles();
+        particles.circle  = atlas.findRegion("particles/circle");
+        particles.ring    = atlas.findRegion("particles/ring");
+        particles.smoke   = atlas.findRegion("particles/smoke");
+        particles.sparkle = atlas.findRegion("particles/sparkle");
+        particles.dollar  = atlas.findRegion("particles/dollars");
 
         Patch.debug.ninePatch        = new NinePatch(atlas.findRegion("ninepatch/debug"), 2, 2, 2, 2);
         Patch.panel.ninePatch        = new NinePatch(atlas.findRegion("ninepatch/panel"), 15, 15, 15, 15);

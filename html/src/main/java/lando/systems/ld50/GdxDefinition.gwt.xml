@@ -5,9 +5,18 @@
 	<inherits name="com.badlogic.gdx.backends.gdx_backends_gwt" />
 	<inherits name="com.badlogic.gdx.controllers" />
 	<inherits name="com.badlogic.gdx.controllers.controllers-gwt" />
+
 	<inherits name="lando.systems.ld50.Main" />
-	<inherits name="space.earlygrey.shapedrawer" />
-    <inherits name='com.kotcrab.vis.vis-ui' />
+
+    <inherits name="regexodus" />
+    <inherits name="space.earlygrey.shapedrawer" />
+    <inherits name="com.kotcrab.vis.vis-ui" />
+    <inherits name="aurelienribon.tweenengine" />
+
+    <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld50.particles.Particle" />
+    <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld50.utils.typinglabel.TypingGlyph" />
+    <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld50.utils.typinglabel.effects" />
+
     <entry-point class="lando.systems.ld50.gwt.GwtLauncher" />
     <set-configuration-property name="gdx.assetpath" value="../assets" />
     <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
