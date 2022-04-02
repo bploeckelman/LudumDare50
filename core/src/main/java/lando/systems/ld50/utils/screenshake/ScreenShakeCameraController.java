@@ -1,12 +1,11 @@
 package lando.systems.ld50.utils.screenshake;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 
 public class ScreenShakeCameraController {
 
@@ -19,8 +18,8 @@ public class ScreenShakeCameraController {
     public float rotationSpeed = 2f;
 
 
-    private OrthographicCamera worldCamera;
-    private OrthographicCamera viewCamera;
+    private Camera worldCamera;
+    private Camera viewCamera;
     private SimplexNoise noise;
     private float trauma;
     private float accumTime;
@@ -28,11 +27,13 @@ public class ScreenShakeCameraController {
     private NinePatch outlineNinePatch;
     private Texture pixelTex;
 
-
-
-    public ScreenShakeCameraController(OrthographicCamera worldCamera){
+    public ScreenShakeCameraController(Camera worldCamera){
         this.worldCamera = worldCamera;
-        viewCamera = new OrthographicCamera(worldCamera.viewportWidth, worldCamera.viewportHeight);
+        if (worldCamera instanceof OrthographicCamera) {
+            viewCamera = new OrthographicCamera(worldCamera.viewportWidth, worldCamera.viewportHeight);
+        } else if (worldCamera instanceof PerspectiveCamera) {
+            viewCamera = new PerspectiveCamera(70f, worldCamera.viewportWidth, worldCamera.viewportHeight);
+        }
         noise = new SimplexNoise(16, .8f, 2);
         trauma = 0;
 //        pixelTex = new Texture("white-pixel.png");
@@ -60,20 +61,25 @@ public class ScreenShakeCameraController {
     public void update(float dt){
         accumTime += dt;
 
+        boolean isOrtho = (worldCamera instanceof OrthographicCamera);
+
         // reset view camera
         viewCamera.position.set(worldCamera.position);
         viewCamera.up.set(worldCamera.up);
-        viewCamera.zoom = worldCamera.zoom;
+        if (isOrtho) {
+            ((OrthographicCamera) viewCamera).zoom = ((OrthographicCamera) worldCamera).zoom;
+        }
 
         trauma = MathUtils.clamp(trauma, 0f, 1f);
         float shake = getShakeAmount();
-        float offsetX = maxXOffset * shake * worldCamera.zoom * (float)noise.getNoise(1, accumTime * xOffsetSpeed);
-        float offsetY = maxYOffset * shake * worldCamera.zoom * (float)noise.getNoise(20, accumTime * yOffsetSpeed);
+        float zoom = (isOrtho) ? ((OrthographicCamera) worldCamera).zoom : 1f;
+        float offsetX = maxXOffset * shake * zoom * (float)noise.getNoise(1, accumTime * xOffsetSpeed);
+        float offsetY = maxYOffset * shake * zoom * (float)noise.getNoise(20, accumTime * yOffsetSpeed);
         float angle = maxAngleDegrees * shake * (float)noise.getNoise(30, accumTime * rotationSpeed);
 
         viewCamera.position.add(offsetX, offsetY, 0);
-        viewCamera.rotate(angle);
-//        viewCamera.rotateAround(new Vector3(viewCamera.position), viewCamera.direction, angle);
+//        viewCamera.rotate(angle);
+        viewCamera.rotateAround(new Vector3(viewCamera.position), viewCamera.direction, angle);
         viewCamera.update();
 
         trauma = MathUtils.clamp(trauma - (dt/2f), 0f, 1f);
@@ -103,7 +109,7 @@ public class ScreenShakeCameraController {
         return viewCamera.combined;
     }
 
-    public OrthographicCamera getViewCamera() {
+    public Camera getViewCamera() {
         return viewCamera;
     }
 

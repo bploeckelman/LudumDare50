@@ -1,11 +1,13 @@
 package lando.systems.ld50.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -13,27 +15,37 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisWindow;
+import lando.systems.ld50.Config;
 import lando.systems.ld50.objects.Landscape;
+import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
 
-    private final Color background = Color.SKY.cpy();
-    private Landscape landscape;
-
     public static class Stats {
         // TODO - add stats vars
     }
 
+    private final Color background = Color.SKY.cpy();
+    private final PerspectiveCamera camera;
+    private final ScreenShakeCameraController shaker;
+    private final CameraInputController cameraController;
+    private final Landscape landscape;
+
     public GameScreen() {
-        worldCamera.far = 10000;
-        worldCamera.near = 0;
-//        worldCamera.up.set(0, 1, 1);
-        worldCamera.position.set(-20, 0, 50);
-        worldCamera.lookAt(4,40,0);
+        camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
+        camera.position.set(-1, 0, 1);
+        camera.lookAt(0, 0, 0);
+        camera.near = 0.1f;
+        camera.far = 1000f;
+
+        cameraController = new CameraInputController(camera);
+        shaker = new ScreenShakeCameraController(camera);
+
         landscape = new Landscape();
-        InputMultiplexer mux = new InputMultiplexer(this);
+
+        InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
     }
 
@@ -43,9 +55,25 @@ public class GameScreen extends BaseScreen {
     }
 
     @Override
+    public void transitionCompleted() {
+        super.transitionCompleted();
+        InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
+        Gdx.input.setInputProcessor(mux);
+    }
+
+    @Override
     public void update(float dt) {
         super.update(dt);
         boolean gameOver = isGameOver();
+
+        camera.update();
+        cameraController.update();
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            shaker.addDamage(0.5f);
+        }
+        shaker.update(dt);
+
         landscape.update(dt);
     }
 
@@ -53,11 +81,14 @@ public class GameScreen extends BaseScreen {
     public void render(SpriteBatch batch) {
         ScreenUtils.clear(background, true);
 
-        batch.setProjectionMatrix(worldCamera.combined);
+        // draw world
+        batch.setProjectionMatrix(shaker.getCombinedMatrix());
         batch.begin();
         {
-            landscape.render(batch, worldCamera);
-            // world
+            // TODO - shaker breaks camera controller rotation,
+            //  might not be important if we maintain control of the camera throughout
+//            landscape.render(batch, shaker.getViewCamera());
+            landscape.render(batch, camera);
         }
         batch.end();
 
