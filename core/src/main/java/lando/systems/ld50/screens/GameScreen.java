@@ -144,6 +144,7 @@ public class GameScreen extends BaseScreen {
         {
             modelBatch.render(coords, env);
             modelBatch.render(testInstance, env);
+            landscape.render(modelBatch, env);
         }
         modelBatch.end();
 

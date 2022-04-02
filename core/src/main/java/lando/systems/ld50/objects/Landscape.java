@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
@@ -40,6 +42,13 @@ public class Landscape {
         }
     }
 
+    public void render(ModelBatch batch, Environment env) {
+        // TODO add land tiles
+        for (Snowball ball : snowBalls) {
+            ball.render(batch, env);
+        }
+    }
+
     public void render(SpriteBatch batch, Camera camera) {
         batch.flush();
         batch.end();
@@ -53,13 +62,13 @@ public class Landscape {
             tile.render(landscapeShader);
         }
 
-        ballShader.bind();
-        ballShader.setUniformMatrix("u_projTrans", camera.combined);
-        for (Snowball ball : snowBalls){
-            ball.render(ballShader);
-        }
-
-        batch.setShader(null);
+//        ballShader.bind();
+//        ballShader.setUniformMatrix("u_projTrans", camera.combined);
+//        for (Snowball ball : snowBalls){
+//            ball.render(ballShader);
+//        }
+//
+//        batch.setShader(null);
 
         batch.begin();
         batch.flush();
