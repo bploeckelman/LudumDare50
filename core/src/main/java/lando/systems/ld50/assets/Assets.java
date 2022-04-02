@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ObjectMap;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.particles.Particles;
@@ -28,6 +29,8 @@ public class Assets implements Disposable {
     public AssetManager mgr;
     public Particles particles;
     public TextureAtlas atlas;
+
+    public I18NBundle strings;
     public InputPrompts inputPrompts;
 
     public BitmapFont font;
@@ -84,6 +87,8 @@ public class Assets implements Disposable {
             mgr.load("sprites/sprites.atlas", TextureAtlas.class);
             mgr.load("gui/uiskin.json", Skin.class);
 
+            mgr.load("i18n/strings", I18NBundle.class);
+
             mgr.load("fonts/outfit-medium-20px.fnt", BitmapFont.class);
             mgr.load("fonts/outfit-medium-40px.fnt", BitmapFont.class);
             mgr.load("fonts/outfit-medium-80px.fnt", BitmapFont.class);
@@ -104,6 +109,7 @@ public class Assets implements Disposable {
         if (initialized) return 1;
 
         atlas = mgr.get("sprites/sprites.atlas");
+        strings = mgr.get("i18n/strings", I18NBundle.class);
 
         inputPrompts = new InputPrompts(this);
 
