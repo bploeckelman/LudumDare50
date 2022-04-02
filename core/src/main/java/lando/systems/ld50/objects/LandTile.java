@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
+import lando.systems.ld50.Main;
+import lando.systems.ld50.utils.screenshake.SimplexNoise;
 
 public class LandTile {
     private static final int NUM_COMPONENTS_POSITION = 3;
@@ -40,10 +42,12 @@ public class LandTile {
         this.x = x * width;
         this.y = y * width;
 
-//        ULHeight = MathUtils.random(HEIGHT_RANGE);
-//        URHeight = MathUtils.random(HEIGHT_RANGE);
-        LLHeight = MathUtils.random(HEIGHT_RANGE);
-        LRHeight = MathUtils.random(HEIGHT_RANGE);
+        SimplexNoise noise = Main.game.assets.noise;
+
+        ULHeight = Math.abs((float)noise.getNoise(x, y)) * .4f;
+        URHeight = Math.abs((float)noise.getNoise(x+1, y)) * .4f;
+        LLHeight = Math.abs((float)noise.getNoise(x, y+1)) * .4f;
+        LRHeight = Math.abs((float)noise.getNoise(x+1, y+1)) * .4f;
 
         rebuildMesh();
     }
@@ -96,10 +100,10 @@ public class LandTile {
         // Lower RIGHT vert
         vertices[verticesIndex++] = x + width;
         vertices[verticesIndex++] = y + width;
-        vertices[verticesIndex++] = LLHeight;
-        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // r
-        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // g
-        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // b
+        vertices[verticesIndex++] = LRHeight;
+        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // r
+        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // g
+        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = 1; // U
         vertices[verticesIndex++] = 1; // V
@@ -107,10 +111,10 @@ public class LandTile {
         // Lower Left vert
         vertices[verticesIndex++] = x;
         vertices[verticesIndex++] = y + width;
-        vertices[verticesIndex++] = LRHeight;
-        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // r
-        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // g
-        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // b
+        vertices[verticesIndex++] = LLHeight;
+        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // r
+        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // g
+        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = 1; // U
         vertices[verticesIndex++] = 1; // V

@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ObjectMap;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.particles.Particles;
+import lando.systems.ld50.utils.screenshake.SimplexNoise;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Assets implements Disposable {
@@ -40,9 +41,11 @@ public class Assets implements Disposable {
     public Texture pixel;
     public TextureRegion pixelRegion;
     public ShaderProgram landscapeShader;
+    public ShaderProgram ballShader;
 
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
+    public SimplexNoise noise;
 
     public enum Patch {
         debug, panel, metal, glass,
@@ -112,6 +115,8 @@ public class Assets implements Disposable {
         if (!mgr.update()) return mgr.getProgress();
         if (initialized) return 1;
 
+        noise = new SimplexNoise(16, .8f, 12);
+
         atlas = mgr.get("sprites/sprites.atlas");
         strings = mgr.get("i18n/strings", I18NBundle.class);
 
@@ -173,7 +178,7 @@ public class Assets implements Disposable {
         }
 
         landscapeShader = loadShader("shaders/default3d.vert", "shaders/landscape.frag");
-
+        ballShader = loadShader("shaders/ball.vert", "shaders/ball.frag");
         initialized = true;
         return 1;
     }
