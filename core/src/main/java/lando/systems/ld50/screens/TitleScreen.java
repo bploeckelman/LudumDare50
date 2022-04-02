@@ -46,7 +46,10 @@ public class TitleScreen extends BaseScreen {
         startGameButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameScreen());
+                if (!exitingScreen) {
+                    game.setScreen(new GameScreen());
+                    exitingScreen = true;
+                }
             }
         });
 
@@ -55,8 +58,10 @@ public class TitleScreen extends BaseScreen {
         creditButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new EndScreen());
-            }
+                if (!exitingScreen) {
+                    game.setScreen(new EndScreen());
+                    exitingScreen = true;
+                }            }
         });
 
         rootTable.add(startGameButton).padBottom(BUTTON_PADDING);
@@ -93,10 +98,7 @@ public class TitleScreen extends BaseScreen {
 
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
-        if (!exitingScreen) {
-            game.setScreen(new GameScreen());
-            exitingScreen = true;
-        }
+
         return true;
     }
 
