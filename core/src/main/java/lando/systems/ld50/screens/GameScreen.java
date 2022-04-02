@@ -35,10 +35,16 @@ public class GameScreen extends BaseScreen {
 
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
-        camera.position.set(-1, 0, 1);
+        camera.position.set(-2, 0, 10);
         camera.lookAt(0, 0, 0);
         camera.near = 0.1f;
         camera.far = 1000f;
+
+        // orient manually for doug to see what he's doing
+        camera.position.set(4f,-2f,13f);
+        camera.up.set(-0.0007141829f,0.7193363f,0.6946612f);
+        camera.direction.set(0.00073949544f,0.6946616f,-0.71933526f);
+        camera.update();
 
         cameraController = new CameraInputController(camera);
         shaker = new ScreenShakeCameraController(camera);
@@ -75,7 +81,12 @@ public class GameScreen extends BaseScreen {
         shaker.update(dt);
 
         landscape.update(dt);
+
+//        Gdx.app.log(TAG, String.format("pos(%s) up(%s) forward(%s) side(%s)",
+//                camera.position, camera.up, camera.direction,
+//                side.set(camera.up).crs(camera.direction)));
     }
+    private final Vector3 side = new Vector3();
 
     @Override
     public void render(SpriteBatch batch) {
