@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
 uniform float u_time;
 uniform vec3 u_rotation;
 uniform sampler2D u_texture;
