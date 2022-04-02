@@ -40,8 +40,8 @@ public class LandTile {
         this.x = x * width;
         this.y = y * width;
 
-        ULHeight = MathUtils.random(20f);
-        URHeight = MathUtils.random(20f);
+//        ULHeight = MathUtils.random(20f);
+//        URHeight = MathUtils.random(20f);
         LLHeight = MathUtils.random(20f);
         LRHeight = MathUtils.random(20f);
 
