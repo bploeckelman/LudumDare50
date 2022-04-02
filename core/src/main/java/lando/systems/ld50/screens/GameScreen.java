@@ -148,6 +148,7 @@ public class GameScreen extends BaseScreen {
         modelBatch.end();
 
         // NOTE: always draw so the 'hide' transition is visible
+        updateDebugElements();
         uiStage.draw();
 
         batch.setProjectionMatrix(windowCamera.combined);
@@ -254,10 +255,20 @@ public class GameScreen extends BaseScreen {
 
         uiStage.addActor(window);
 
-        Action startHidden = Actions.moveTo(0, -windowCamera.viewportHeight, 0f);
-        startHidden.setActor(uiStage.getRoot());
+        Action hideDebugWindow = Actions.moveTo(0, -windowCamera.viewportHeight, 0f);
+        hideDebugWindow.setActor(window);
 
-        uiStage.addAction(startHidden);
+        Action showDebugWindow = Actions.moveTo(0, 0);
+        showDebugWindow.setActor(window);
+
+        window.addAction(hideDebugWindow);
+    }
+
+    private void updateDebugElements() {
+        DebugElements.fpsLabel.setText(Config.getFpsString());
+        DebugElements.javaHeapLabel.setText(Config.getJavaHeapString());
+        DebugElements.nativeHeapLabel.setText(Config.getNativeHeapString());
+        DebugElements.drawCallLabel.setText(Config.getDrawCallString(batch));
     }
 
 }
