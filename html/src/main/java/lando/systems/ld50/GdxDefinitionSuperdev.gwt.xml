@@ -4,6 +4,7 @@
     <inherits name="lando.systems.ld50.GdxDefinition" />
     <inherits name='com.kotcrab.vis.vis-ui' />
 
+    <inherits name="formic" />
     <inherits name="regexodus" />
     <inherits name="space.earlygrey.shapedrawer" />
     <inherits name="com.kotcrab.vis.vis-ui" />
