@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.screens.BaseScreen;
+import lando.systems.ld50.screens.LaunchScreen;
 import lando.systems.ld50.screens.TitleScreen;
 import lando.systems.ld50.utils.Time;
 import lando.systems.ld50.utils.accessors.*;
@@ -64,7 +65,11 @@ public class Main extends ApplicationAdapter {
 		Tween.registerAccessor(Vector3.class, new Vector3Accessor());
 		Tween.registerAccessor(OrthographicCamera.class, new CameraAccessor());
 
-		setScreen(new TitleScreen());
+		if (Gdx.app.getType() == Application.ApplicationType.WebGL) {
+			setScreen(new LaunchScreen());
+		} else {
+			setScreen(new TitleScreen());
+		}
 	}
 
 	@Override
