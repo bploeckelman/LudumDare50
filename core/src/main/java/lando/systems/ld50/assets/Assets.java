@@ -2,8 +2,6 @@ package lando.systems.ld50.assets;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -67,32 +65,6 @@ public class Assets implements Disposable {
         pixmap.dispose();
         pixelRegion = new TextureRegion(pixel);
 
-        // generate fonts
-        // TODO - create our own fonts
-//        {
-//            final int baseSize = 20;
-//
-//            var fontFile = Gdx.files.internal("fonts/outfit-medium.ttf");
-//            var generator = new FreeTypeFontGenerator(fontFile);
-//            var parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-//            parameter.size = baseSize;
-//            parameter.color = Color.WHITE;
-//            parameter.borderColor = Color.DARK_GRAY;
-//            parameter.shadowColor = Color.BLACK;
-//            parameter.borderWidth = 2;
-//            parameter.shadowOffsetX = 1;
-//            parameter.shadowOffsetY = 2;
-//            font = generator.generateFont(parameter);
-//
-//            parameter.size = baseSize / 2;
-//            smallFont = generator.generateFont(parameter);
-//
-//            parameter.size = 2 * baseSize;
-//            largeFont = generator.generateFont(parameter);
-//
-//            generator.dispose();
-//        }
-
         batch = new SpriteBatch();
         shapes = new ShapeDrawer(batch, pixelRegion);
         layout = new GlyphLayout();
@@ -102,7 +74,9 @@ public class Assets implements Disposable {
             mgr.load("sprites/sprites.atlas", TextureAtlas.class);
             mgr.load("gui/uiskin.json", Skin.class);
 
+            mgr.load("fonts/outfit-medium-20px.fnt", BitmapFont.class);
             mgr.load("fonts/outfit-medium-40px.fnt", BitmapFont.class);
+            mgr.load("fonts/outfit-medium-80px.fnt", BitmapFont.class);
 
             // audio TODO
 //            mgr.load("audio/musics/example-music.ogg", Music.class);
@@ -123,7 +97,9 @@ public class Assets implements Disposable {
 
         inputPrompts = new InputPrompts(this);
 
-        font = mgr.get("fonts/outfit-medium-40px.fnt");
+        smallFont = mgr.get("fonts/outfit-medium-20px.fnt");
+        font      = mgr.get("fonts/outfit-medium-40px.fnt");
+        largeFont = mgr.get("fonts/outfit-medium-80px.fnt");
 
         // get audio
 //        exampleMusic = mgr.get("audio/musics/example-music.ogg", Music.class);
@@ -176,8 +152,8 @@ public class Assets implements Disposable {
         batch.dispose();
         pixel.dispose();
         font.dispose();
-//        smallFont.dispose();
-//        largeFont.dispose();
+        smallFont.dispose();
+        largeFont.dispose();
         transitionShaders.values().forEach(ShaderProgram::dispose);
     }
 
