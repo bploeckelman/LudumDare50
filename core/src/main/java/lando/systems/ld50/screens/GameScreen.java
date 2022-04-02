@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -12,18 +13,26 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisWindow;
+import lando.systems.ld50.objects.Landscape;
 
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
 
     private final Color background = Color.SKY.cpy();
+    private Landscape landscape;
 
     public static class Stats {
         // TODO - add stats vars
     }
 
     public GameScreen() {
+        worldCamera.far = 10000;
+        worldCamera.near = 0;
+//        worldCamera.up.set(0, 1, 1);
+        worldCamera.position.set(-20, 0, 50);
+        worldCamera.lookAt(4,40,0);
+        landscape = new Landscape();
         InputMultiplexer mux = new InputMultiplexer(this);
         Gdx.input.setInputProcessor(mux);
     }
@@ -37,6 +46,7 @@ public class GameScreen extends BaseScreen {
     public void update(float dt) {
         super.update(dt);
         boolean gameOver = isGameOver();
+        landscape.update(dt);
     }
 
     @Override
@@ -46,6 +56,7 @@ public class GameScreen extends BaseScreen {
         batch.setProjectionMatrix(worldCamera.combined);
         batch.begin();
         {
+            landscape.render(batch, worldCamera);
             // world
         }
         batch.end();

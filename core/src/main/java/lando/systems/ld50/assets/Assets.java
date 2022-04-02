@@ -39,6 +39,7 @@ public class Assets implements Disposable {
 
     public Texture pixel;
     public TextureRegion pixelRegion;
+    public ShaderProgram landscapeShader;
 
     public enum Patch {
         debug, panel, metal, glass,
@@ -164,6 +165,8 @@ public class Assets implements Disposable {
             transitionShaders.put(Transition.starwars,   loadShader(defaultVertexPath, "shaders/transitions/starwars.frag"));
             transitionShaders.put(Transition.stereo,     loadShader(defaultVertexPath, "shaders/transitions/stereo.frag"));
         }
+
+        landscapeShader = loadShader("shaders/default3d.vert", "shaders/landscape.frag");
 
         initialized = true;
         return 1;
