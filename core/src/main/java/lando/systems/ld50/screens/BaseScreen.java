@@ -20,9 +20,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -44,12 +47,14 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
     public final Vector3 pointerPos;
     public Group settingsGroup;
     public VisWindow settingsWindow;
-    public VisImage settingsPane;
+    public VisImageButton closeSettingsButton;
     private Rectangle settingsPaneBoundsVisible;
     private Rectangle settingsPaneBoundsHidden;
-    public boolean isSettingShown = false;
+    public boolean isSettingShown;
     public MoveToAction hideSettingsPaneAction;
     public MoveToAction showSettingsPaneAction;
+    public MoveToAction showCloseSettingsButton;
+    public MoveToAction hideCloseSettingsButton;
 
 
     public boolean exitingScreen;
@@ -131,7 +136,20 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         Window.WindowStyle defaultWindowStyle = skin.get("default", Window.WindowStyle.class);
         Window.WindowStyle glassWindowStyle = new Window.WindowStyle(defaultWindowStyle);
         glassWindowStyle.background = Assets.Patch.glass.drawable;
+        glassWindowStyle.stageBackground = Assets.Patch.glass_dim.drawable;
+        glassWindowStyle.titleFont = assets.font;
+        glassWindowStyle.titleFontColor = Color.BLACK;
 
+        VisSlider.SliderStyle horizontalSliderStyle = skin.get("default-horizontal", VisSlider.SliderStyle.class);
+        VisSlider.SliderStyle customCatSliderStyle = new VisSlider.SliderStyle(horizontalSliderStyle);
+        customCatSliderStyle.knob = new TextureRegionDrawable(assets.cat.getKeyFrame(0));
+        customCatSliderStyle.knobDown = customCatSliderStyle.knob;
+        customCatSliderStyle.knobOver = customCatSliderStyle.knob;
+
+        VisSlider.SliderStyle customDogSliderStyle = new VisSlider.SliderStyle(horizontalSliderStyle);
+        customDogSliderStyle.knob = new TextureRegionDrawable(assets.dog.getKeyFrame(0));
+        customDogSliderStyle.knobDown = customDogSliderStyle.knob;
+        customDogSliderStyle.knobOver = customDogSliderStyle.knob;
 
         settingsPaneBoundsVisible = new Rectangle(windowCamera.viewportWidth/4, 0, windowCamera.viewportWidth/2, windowCamera.viewportHeight);
         settingsPaneBoundsHidden = new Rectangle(settingsPaneBoundsVisible);
@@ -148,28 +166,69 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         settingsWindow = new VisWindow("", glassWindowStyle);
         settingsWindow.setSize(bounds.width, bounds.height);
         settingsWindow.setPosition(bounds.x, bounds.y);
-        settingsWindow.setColor(Color.DARK_GRAY);
+        settingsWindow.setMovable(false);
+        settingsWindow.align(Align.top | Align.center);
+        settingsWindow.setModal(false);
+        settingsWindow.setKeepWithinStage(false);
+        //settingsWindow.setColor(settingsWindow.getColor().r, settingsWindow.getColor().g, settingsWindow.getColor().b, 1f);
+        //settingsWindow.setColor(Color.RED);
 
         VisLabel settingLabel = new VisLabel("Settings", "outfit-medium-40px");
-        settingsWindow.add(settingLabel).padBottom(40f);
+        settingsWindow.add(settingLabel).padBottom(40f).padTop(40f);
         settingsWindow.row();
-        settingsWindow.add(settingLabel).padBottom(40f);
+        VisLabel musicVolumeLabel = new VisLabel("Music Volume", "outfit-medium-20px");
+        settingsWindow.add(musicVolumeLabel).padBottom(10f);
+        settingsWindow.row();
+        VisSlider musicSlider = new VisSlider(0, 1f, .05f, false, customCatSliderStyle);
+        settingsWindow.add(musicSlider).padBottom(10f);
+        settingsWindow.row();
+        VisLabel soundVolumeLevel = new VisLabel("Sound Volume", "outfit-medium-20px");
+        settingsWindow.add(soundVolumeLevel).padBottom(10f);
+        settingsWindow.row();
+        VisSlider soundSlider = new VisSlider(0, 1f, .05f, false, customDogSliderStyle);
+        settingsWindow.add(soundSlider).padBottom(10f);
+        settingsWindow.row();
 
-//        settingsGroup = new Group();
-//        settingsGroup.addActor(settingsPane);
+        settingsGroup = new Group();
+        settingsGroup.addActor(settingsWindow);
+
+        closeSettingsButton = new VisImageButton("close");
+        closeSettingsButton.setWidth(50f);
+        closeSettingsButton.setHeight(50f);
+        closeSettingsButton.setPosition(bounds.x + bounds.width - closeSettingsButton.getWidth(), bounds.y + bounds.height - closeSettingsButton.getHeight());
+        closeSettingsButton.setClip(false);
+
+        hideCloseSettingsButton = new MoveToAction();
+        hideCloseSettingsButton.setPosition(settingsPaneBoundsHidden.x + settingsPaneBoundsHidden.width - closeSettingsButton.getWidth(), settingsPaneBoundsHidden.y + settingsPaneBoundsHidden.getHeight() - closeSettingsButton.getHeight());;
+        hideCloseSettingsButton.setDuration(.5f);
+        showCloseSettingsButton = new MoveToAction();
+        showCloseSettingsButton.setPosition(settingsPaneBoundsVisible.x + settingsPaneBoundsVisible.width - closeSettingsButton.getWidth(), settingsPaneBoundsVisible.y + settingsPaneBoundsVisible.getHeight() - closeSettingsButton.getHeight());
+        showCloseSettingsButton.setDuration(.5f);
+
+        closeSettingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                    settingsWindow.addAction(hideSettingsPaneAction);
+                    closeSettingsButton.addAction(hideCloseSettingsButton);
+                    isSettingShown = false;
+            }
+        });
+
+        //settingsGroup.addActor(closeSettingsButton);
+
 
         hideSettingsPaneAction = new MoveToAction();
         hideSettingsPaneAction.setPosition(settingsPaneBoundsHidden.x, settingsPaneBoundsHidden.y);
         hideSettingsPaneAction.setDuration(.5f);
-        //hideSettingsPaneAction.setActor(settingsGroup);
+        //hideSettingsPaneAction.setActor(settingsWindow);
 
         showSettingsPaneAction = new MoveToAction();
         showSettingsPaneAction.setPosition(settingsPaneBoundsVisible.x, settingsPaneBoundsVisible.y);
         showSettingsPaneAction.setDuration(.5f);
-        //showSettingsPaneAction.setActor(settingsGroup);
-
+        //showSettingsPaneAction.setActor(settingsWindow);
 
         uiStage.addActor(settingsWindow);
+        uiStage.addActor(closeSettingsButton);
     }
 
     public void transitionCompleted() {
