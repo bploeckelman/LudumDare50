@@ -75,12 +75,22 @@ public class GameScreen extends BaseScreen {
 //        camera.up.set(-0.12385227f,-0.36523294f,0.92262834f);
 //        camera.direction.set(-0.7864863f,-0.3523599f,-0.5072418f);
 
-        startPos = new Vector3(6f, 17f, 5f);
-        endPos   = new Vector3(6f, 100f, 5f);
-        startUp  = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
-        endUp    = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
-        startDir = new Vector3(-0.5555168f,-0.54720974f,-0.6260798f);
-        endDir   = new Vector3(-0.5555168f,-0.54720974f,-0.6260798f);
+//        startPos = new Vector3(6f, 17f, 5f);
+//        endPos   = new Vector3(6f, 100f, 5f);
+//        startUp  = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
+//        endUp    = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
+//        startDir = new Vector3(-0.5555168f,-0.54720974f,-0.6260798f);
+//        endDir   = new Vector3(-0.5555168f,-0.54720974f,-0.6260798f);
+
+        startPos = new Vector3(1f, 4f, 0f);
+        endPos   = new Vector3(1f, 4f, 100f);
+        startUp  = new Vector3(Vector3.Y.cpy());
+        endUp    = new Vector3(Vector3.Y.cpy());
+        startDir = new Vector3(0.50008386f,-0.656027f,-0.5652821f);
+        endDir   = new Vector3(0.50008386f,-0.656027f,-0.5652821f);
+
+//        up(0.0,1.0,0.0) dir(0.50008386,-0.656027,-0.5652821) side(-0.74897903,0.0,-0.6625936)
+//        up(0.0,1.0,0.0) dir(0.5216945,-0.55905175,-0.64443606) side(-0.77724004,0.0,-0.62920415)
 
         // old
 //        startUp = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
@@ -117,12 +127,12 @@ public class GameScreen extends BaseScreen {
         testInstance = new ModelInstance(testModel);
         testInstance.calculateBoundingBox(box);
         testInstance.transform
-                .setToRotation(1f, 0f, 0f, 90f)
+//                .setToRotation(1f, 0f, 0f, 90f)
                 .scale(
                         1f / (box.max.x - box.min.x),
                         1f / (box.max.y - box.min.y),
                         1f / (box.max.z - box.min.z))
-                .setTranslation(0.5f, 0.5f, 0f)
+                .setTranslation(0.5f, 0f, 0.5f)
         ;
 
         ModelBuilder builder = new ModelBuilder();
@@ -157,10 +167,6 @@ public class GameScreen extends BaseScreen {
 
         camera.update();
         cameraController.update();
-
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-//            shaker.addDamage(0.5f);
-//        }
         shaker.update(dt);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
@@ -171,6 +177,10 @@ public class GameScreen extends BaseScreen {
             }
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
+            dumpCameraVecsToLog();
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             shaker.addDamage(0.5f);
             landscape.startAvalanche();
@@ -179,12 +189,7 @@ public class GameScreen extends BaseScreen {
         landscape.update(dt);
 
         updateDebugElements();
-
-//        Gdx.app.log(TAG, Stringf.format("pos(%s) up(%s) forward(%s) side(%s)",
-//                camera.position, camera.up, camera.direction,
-//                side.set(camera.up).crs(camera.direction)));
     }
-//    private final Vector3 side = new Vector3(); // TEMP
 
     @Override
     public void render(SpriteBatch batch) {
@@ -278,14 +283,14 @@ public class GameScreen extends BaseScreen {
         public static VisLabel drawCallLabel;
         public static VisLabel simTimeLabel;
         public static VisLabel gamepadAxisLabel;
+        public static VisLabel cameraLabel;
     }
 
     @Override
     protected void initializeUI() {
         super.initializeUI();
-        //TODO: remove before launch
+        //TODO: remove before launch (or just keep hidden)
         initializeDebugUI();
-
     }
 
     private void initializeDebugUI() {
@@ -320,6 +325,10 @@ public class GameScreen extends BaseScreen {
         debugWindow.add(label).growX().row();
         DebugElements.gamepadAxisLabel = label;
 
+        label = new VisLabel();
+        debugWindow.add(label).growX().row();
+        DebugElements.cameraLabel = label;
+
         uiStage.addActor(debugWindow);
     }
 
@@ -328,6 +337,16 @@ public class GameScreen extends BaseScreen {
         DebugElements.javaHeapLabel.setText(Config.getJavaHeapString());
         DebugElements.nativeHeapLabel.setText(Config.getNativeHeapString());
         DebugElements.drawCallLabel.setText(Config.getDrawCallString(batch));
+        DebugElements.cameraLabel.setText(
+                Stringf.format("Camera: up%s dir%s side%s",
+                camera.up, camera.direction, side.set(camera.up).crs(camera.direction).nor()
+        ));
     }
+    private final Vector3 side = new Vector3();
+
+    private void dumpCameraVecsToLog() {
+        Gdx.app.log(TAG, Stringf.format("Camera: pos%s up%s dir%s side%s",
+                camera.position, camera.up, camera.direction,
+                side.set(camera.up).crs(camera.direction).nor())); }
 
 }
