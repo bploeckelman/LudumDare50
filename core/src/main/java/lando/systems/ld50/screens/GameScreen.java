@@ -75,6 +75,9 @@ public class GameScreen extends BaseScreen {
     private Vector3 startPos, endPos;
     private Vector3 startUp, endUp;
     private Vector3 startDir, endDir;
+    private int cameraPhase = 1;
+    private Vector3 camOriginalPos, camWaypoint, camZoomIn, camZoomDir;
+    private float cameraTransitionDT = 0;
 
     private Vector3 lightDir;
     public DirectionalLight light;
@@ -167,6 +170,10 @@ public class GameScreen extends BaseScreen {
             uiStage.addAction(transitionAction);
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && cameraPhase == 1) {
+            TransitionCamera();
+        }
+
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         worldCamera.unproject(touchPos);
         Vector2 tile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
@@ -201,7 +208,7 @@ public class GameScreen extends BaseScreen {
         }
 
         // keep the camera focused on the bulk of the avalanche wave
-        if (!cameraMovementPaused) {
+        if (!cameraMovementPaused && cameraPhase == 1) {
             float prevCameraMovementT = cameraMovementT;
             float currCameraMovementT = getAvalancheProgress();
             cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
@@ -209,11 +216,41 @@ public class GameScreen extends BaseScreen {
                     MathUtils.lerp(startPos.x, endPos.x, cameraMovementT),
                     MathUtils.lerp(startPos.y, endPos.y, cameraMovementT),
                     MathUtils.lerp(startPos.z, endPos.z, cameraMovementT));
+        } else if (cameraPhase == 2) {
+            cameraTransitionDT += dt;
+            double frac = cameraTransitionDT / 2.5;
+            if (frac >= 1) {
+                frac = 1;
+                cameraPhase = 3;
+            }
+            double tVal = frac < 0.5 ? 2 * frac * frac : 1 - ((-2 * frac + 2)*(-2*frac + 2)) / 2;//1-((1-frac)*(1-frac)*(1-frac));
+            t1.set(camOriginalPos);
+            t2.set(camWaypoint);
+            t3.set(camZoomIn);
+            t4.set(startDir);
+            t5.set(camZoomDir);
+            camera.position.set(
+                    t1.scl((float)((1-tVal)*(1-tVal)))
+                            .add(t2.scl((float)(2*tVal*(1-tVal))))
+                                    .add(t3.scl((float)(tVal*tVal))));
+            camera.direction.set(t4.scl((float)(1-frac)).add(t5.scl((float)frac)));
+            double hor = Math.sqrt(camera.direction.x * camera.direction.x + camera.direction.z * camera.direction.z);
+            camera.up.set((float) (-camera.direction.x * camera.direction.y / hor), (float) (hor), (float) (-camera.direction.z * camera.direction.y / hor));
+
+        } else if (cameraPhase == 3) {
+            float target = Math.max(10f, 100 * getAvalancheProgress() + 6f);
+            camera.position.z = MathUtils.lerp(camera.position.z, target, 2*dt);
         }
 
         updateDebugElements();
         updateProgressBarValue();
     }
+
+    Vector3 t1 = new Vector3();
+    Vector3 t2 = new Vector3();
+    Vector3 t3 = new Vector3();
+    Vector3 t4 = new Vector3();
+    Vector3 t5 = new Vector3();
 
     @Override
     public void render(SpriteBatch batch) {
@@ -272,8 +309,8 @@ public class GameScreen extends BaseScreen {
         camera.far = 1000f;
 
         // orient manually for the swank
-        startPos = new Vector3(2f, 4f, 10f);
-        endPos   = new Vector3(2f, 4f, 100f);
+        startPos = new Vector3(1f, 4f, 10f);
+        endPos   = new Vector3(1f, 4f, 10f + Landscape.TILE_WIDTH * Landscape.TILES_LONG);
         startUp  = new Vector3(Vector3.Y.cpy());
         endUp    = new Vector3(Vector3.Y.cpy());
         startDir = new Vector3(0.50008386f,-0.656027f,-0.5652821f);
@@ -283,6 +320,14 @@ public class GameScreen extends BaseScreen {
         camera.up.set(startUp);
         camera.direction.set(startDir);
         camera.update();
+    }
+
+    private void TransitionCamera() {
+        cameraPhase = 2;
+        camWaypoint = new Vector3(3f, 2f, camera.position.z + 5);
+        camZoomIn = new Vector3(4f, 1f, 10f);
+        camZoomDir = (new Vector3(0f, -0.27f, -1f)).nor();
+        camOriginalPos = camera.position;
     }
 
     private void loadModels() {
