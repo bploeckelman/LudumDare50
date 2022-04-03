@@ -248,18 +248,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
 
 //        audio.update(dt);
 
-        // toggle debug states
-        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-            boolean wasShown = Config.debug_general;
-            Config.debug_general = !Config.debug_general;
 
-            Actor rootActor = uiStage.getRoot();
-            Action transitionAction = (wasShown)
-                    ? Actions.moveTo(0, -windowCamera.viewportHeight, 0.1f, Interpolation.exp10In)
-                    : Actions.moveTo(0, 0, 0.2f, Interpolation.exp10Out);
-            transitionAction.setActor(rootActor);
-            uiStage.addAction(transitionAction);
-        }
     }
 
     public void resize(int width, int height) {}

@@ -23,15 +23,14 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.UBJsonReader;
-import com.kotcrab.vis.ui.widget.VisLabel;
-import com.kotcrab.vis.ui.widget.VisWindow;
+import com.kotcrab.vis.ui.widget.*;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
+import lando.systems.ld50.assets.InputPrompts;
 import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.AnimationDecal;
@@ -83,6 +82,8 @@ public class GameScreen extends BaseScreen {
     private float cameraMovementT = 0;
     private boolean cameraMovementPaused = false;
     private final Vector3 billboardCameraPos = new Vector3();
+    private VisWindow debugWindow;
+    private VisProgressBar progressBar;
 
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
@@ -148,6 +149,18 @@ public class GameScreen extends BaseScreen {
             shaker.addDamage(0.5f);
             landscape.startAvalanche();
         }
+        // toggle debug states
+        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
+            boolean wasShown = Config.debug_general;
+            Config.debug_general = !Config.debug_general;
+
+            Actor rootActor = debugWindow;
+            Action transitionAction = (wasShown)
+                    ? Actions.moveTo(0, -windowCamera.viewportHeight, 0.1f, Interpolation.exp10In)
+                    : Actions.moveTo(0, 0, 0.2f, Interpolation.exp10Out);
+            transitionAction.setActor(rootActor);
+            uiStage.addAction(transitionAction);
+        }
 
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         worldCamera.unproject(touchPos);
@@ -194,6 +207,7 @@ public class GameScreen extends BaseScreen {
         }
 
         updateDebugElements();
+        updateProgressBarValue();
     }
 
     @Override
@@ -428,15 +442,36 @@ public class GameScreen extends BaseScreen {
     @Override
     protected void initializeUI() {
         super.initializeUI();
+        initializeGameUI();
         //TODO: remove before launch (or just keep hidden)
         initializeDebugUI();
     }
 
+    private void initializeGameUI() {
+//        VisTable rootTable = new VisTable();
+//        rootTable.setWidth(windowCamera.viewportWidth);
+//        rootTable.setHeight(windowCamera.viewportHeight);
+
+        VisProgressBar.ProgressBarStyle horizontalProgressBarStyle = skin.get("default-horizontal", VisProgressBar.ProgressBarStyle.class);
+        VisProgressBar.ProgressBarStyle avalancheProgressBarStyle = new VisProgressBar.ProgressBarStyle(horizontalProgressBarStyle);
+        avalancheProgressBarStyle.knob = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.button_light_tv));
+        progressBar = new VisProgressBar(0f, 100f, 1f, false, avalancheProgressBarStyle);
+        progressBar.setPosition(windowCamera.viewportWidth / 4f, windowCamera.viewportHeight - 50f);
+        progressBar.setValue(0f);
+        progressBar.setWidth(windowCamera.viewportWidth / 2f);
+        progressBar.setHeight(50f);
+        uiStage.addActor(progressBar);
+    }
+
+    private void updateProgressBarValue() {
+        progressBar.setValue(camera.position.z);
+    }
+
     private void initializeDebugUI() {
-        VisWindow debugWindow = new VisWindow("", true);
+        debugWindow = new VisWindow("", true);
         debugWindow.setFillParent(true);
         debugWindow.setColor(1f, 1f, 1f, 0.4f);
-        debugWindow.align(Align.top);
+        debugWindow.setKeepWithinStage(false);
 
         VisLabel label;
 
@@ -470,10 +505,10 @@ public class GameScreen extends BaseScreen {
 
         uiStage.addActor(debugWindow);
 
-        Actor rootActor = uiStage.getRoot();
+        Actor rootActor = debugWindow;
         Action transitionAction = Actions.moveTo(0, -windowCamera.viewportHeight, 0.1f, Interpolation.exp10In);
         transitionAction.setActor(rootActor);
-        uiStage.addAction(transitionAction);
+        debugWindow.addAction(transitionAction);
     }
 
     private void updateDebugElements() {

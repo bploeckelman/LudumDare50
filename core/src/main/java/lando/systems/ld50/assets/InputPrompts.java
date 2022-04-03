@@ -54,6 +54,8 @@ public class InputPrompts {
         , button_dark_y(16, 1)
         , button_light_power(15, 20)
         , button_dark_power(15, 21)
+        , button_light_tv(11, 20)
+        , button_dark_tv(11, 21)
         // arrows
         , key_light_arrow_up(30, 4)
         , key_light_arrow_right(31, 4)
