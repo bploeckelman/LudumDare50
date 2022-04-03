@@ -514,6 +514,19 @@ public class GameScreen extends BaseScreen {
 
     private void initializeGameUI() {
         initializeAvalancheProgressBarUI();
+        //initializeControlUI();
+    }
+
+    private void initializeScoreUI() {
+        VisLabel scoreLabel = new VisLabel("Score: ");
+        VisLabel karmaPoint = new VisLabel("Karma: ");
+    }
+
+    private void initializeControlUI() {
+        VisWindow controlWindow = new VisWindow("", "default");
+        controlWindow.setPosition(0f, 0f);
+        controlWindow.setSize(camera.viewportWidth / 4, camera.viewportHeight / 4);
+        uiStage.addActor(controlWindow);
     }
 
     private void initializeAvalancheProgressBarUI() {
