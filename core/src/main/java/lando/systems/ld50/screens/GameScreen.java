@@ -35,6 +35,7 @@ import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
+import lando.systems.ld50.particles.PhysicsDecal;
 import lando.systems.ld50.utils.Time;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
@@ -67,7 +68,7 @@ public class GameScreen extends BaseScreen {
     private Array<ModelInstance> houseInstances;
     private Array<ModelInstance> creatureInstances;
     private Array<Decal> decals;
-    private Array<Decal> particleDecals;
+    private Array<Decal> freeParticleDecals;
 
     private Vector3 touchPos;
     private Vector3 startPos, endPos;
@@ -170,10 +171,16 @@ public class GameScreen extends BaseScreen {
             decal.lookAt(billboardCameraPos, camera.up);
             decalBatch.add(decal);
         }
-        for (Decal decal : particleDecals) {
+
+        /*for (Decal decal : particleDecals) {
             decal.setPosition(5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f));
             decal.lookAt(camera.position, camera.up);
             decalBatch.add(decal);
+        }*/
+        PhysicsDecal.updateAllDecalParticles(dt);
+        for (PhysicsDecal pd : PhysicsDecal.instances) {
+            pd.decal.lookAt(camera.position, camera.up);
+            decalBatch.add(pd.decal);
         }
 
         if (pickPixmap != null){
@@ -331,7 +338,7 @@ public class GameScreen extends BaseScreen {
 
     private void loadDecals() {
         decals = new Array<>();
-        particleDecals = new Array<>();
+        freeParticleDecals = new Array<>();
 
         Decal decal;
         float height = 0.25f;
@@ -356,12 +363,13 @@ public class GameScreen extends BaseScreen {
         decal.setScale(0.05f);
         decals.add(decal);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10000; i++) {
             decal = Decal.newDecal(assets.particles.smoke, true);
             decal.setColor(1f, 1f, 1f, 0.3f);
-            decal.setScale(0.025f);
-            particleDecals.add(decal);
+            decal.setScale(0.01f);
+            freeParticleDecals.add(decal);
         }
+        PhysicsDecal.freeDecals = freeParticleDecals;
     }
 
     private float getAvalancheProgress() {

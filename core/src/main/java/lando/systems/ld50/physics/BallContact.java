@@ -1,9 +1,11 @@
 package lando.systems.ld50.physics;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pool;
 import lando.systems.ld50.objects.LandTile;
 import lando.systems.ld50.objects.Snowball;
+import lando.systems.ld50.particles.PhysicsDecal;
 
 // TODO: POOL THIS!!!
 public class BallContact implements Comparable, Pool.Poolable
@@ -29,6 +31,11 @@ public class BallContact implements Comparable, Pool.Poolable
         resolveVelocity(dt);
         resolveInterpenetration(dt);
         tile.addSnow(ball);
+        for (int i = 0; i < 8; i++) {
+            PhysicsDecal.addDecalParticle(new Vector3(ball.position),
+                    (new Vector3(0.25f * MathUtils.sin(i * MathUtils.PI / 4), 0.2f, 0.25f * MathUtils.cos(i * MathUtils.PI / 4)))
+                            .scl(ball.radius * 3)/*.add(ball.velocity)*/, 0.25f, PhysicsDecal.phys.GravityHighDrag);
+        }
     }
 
     public float calculateSeparatingVelocity() {
@@ -42,7 +49,7 @@ public class BallContact implements Comparable, Pool.Poolable
             // no impulse required
             return;
         }
-        float newSeparatingVelocity = -separatingVelocity * .01f;
+        float newSeparatingVelocity = -separatingVelocity * 0.01f;
         float deltaVelocity = newSeparatingVelocity - separatingVelocity;
         impulseVelocity.set(contactNormal).scl(deltaVelocity);
         ball.velocity.add(impulseVelocity);
