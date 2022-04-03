@@ -1,14 +1,18 @@
 package lando.systems.ld50.objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.SphereShapeBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.utils.UBJsonReader;
 import lando.systems.ld50.Main;
 
 public class Snowball {
@@ -30,16 +34,34 @@ public class Snowball {
         this.radius = radius;
 
         if (model == null) {
-            ModelBuilder builder = new ModelBuilder();
-            int attribs = VertexAttributes.Usage.Position
-                        | VertexAttributes.Usage.ColorPacked
-                        | VertexAttributes.Usage.Normal;
-            model = builder.createSphere(1f, 1f, 1f, 10, 10,
-                    new Material(ColorAttribute.createDiffuse(Color.FIREBRICK)), attribs);
+//            ModelBuilder builder = new ModelBuilder();
+//            int attribs = VertexAttributes.Usage.Position
+//                        | VertexAttributes.Usage.ColorPacked
+//                        | VertexAttributes.Usage.Normal;
+//            model = builder.createSphere(1f, 1f, 1f, 10, 10,
+//                    new Material(ColorAttribute.createDiffuse(Color.FIREBRICK)), attribs);
+            G3dModelLoader loader = new G3dModelLoader(new UBJsonReader());
+            model = loader.loadModel(Gdx.files.internal("models/snowball-a.g3db"));
+
         }
+        BoundingBox box = new BoundingBox();
+//        instance = new ModelInstance(model);
+//        instance.transform.setToTranslation(position)
+//                .scale(radius, radius, radius);
         instance = new ModelInstance(model);
-        instance.transform.setToTranslation(position)
-                .scale(radius, radius, radius);
+        instance.calculateBoundingBox(box);
+        float extentX = (box.max.x - box.min.x);
+        float extentY = (box.max.y - box.min.y);
+        float extentZ = (box.max.z - box.min.z);
+        float maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        instance.transform
+                .setToTranslationAndScaling(
+                        position.x, position.y, position.z,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent)
+                .scale(radius, radius, radius)
+        ;
     }
 
     public void update(float dt){
