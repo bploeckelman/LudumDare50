@@ -1,5 +1,6 @@
 package lando.systems.ld50.screens;
 
+import aurelienribon.tweenengine.Tween;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -13,20 +14,20 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
+import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.Landscape;
+import lando.systems.ld50.utils.accessors.PerspectiveCameraAccessor;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
+import text.formic.Stringf;
 
 public class GameScreen extends BaseScreen {
 
@@ -39,7 +40,8 @@ public class GameScreen extends BaseScreen {
     private final Color background = Color.SKY.cpy();
     private final PerspectiveCamera camera;
     private final ScreenShakeCameraController shaker;
-    private final CameraInputController cameraController;
+//    private final CameraInputController cameraController;
+    private final SimpleCameraController cameraController;
     private final Landscape landscape;
 
     private final Environment env;
@@ -49,20 +51,55 @@ public class GameScreen extends BaseScreen {
     private final ModelInstance testInstance;
     private final ModelInstance coords;
 
+    private final Vector3 startPos, endPos;
+    private final Vector3 startUp, endUp;
+    private final Vector3 startDir, endDir;
+    private Tween cameraTween;
+
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
-        camera.position.set(-2, 0, 10);
-        camera.lookAt(0, 0, 0);
+//        camera.position.set(-2, 0, 10);
+//        camera.lookAt(0, 0, 0);
         camera.near = 0.1f;
         camera.far = 1000f;
 
-        // orient manually for doug to see what he's doing
-        camera.position.set(4f,-2f,13f);
-        camera.up.set(-0.0007141829f,0.7193363f,0.6946612f);
-        camera.direction.set(0.00073949544f,0.6946616f,-0.71933526f);
+        // orient manually for the swank
+
+        // upwards facing ramp directly in front:
+//        camera.position.set(4f,-2f,13f);
+//        camera.up.set(-0.0007141829f,0.7193363f,0.6946612f);
+//        camera.direction.set(0.00073949544f,0.6946616f,-0.71933526f);
+
+        // down-right facing ramp, correct-ish starting orientation
+//        camera.position.set(9f, 8.5f, 4f);
+//        camera.up.set(-0.12385227f,-0.36523294f,0.92262834f);
+//        camera.direction.set(-0.7864863f,-0.3523599f,-0.5072418f);
+
+        startPos = new Vector3(6f, 17f, 5f);
+        endPos   = new Vector3(6f, 100f, 5f);
+        startUp  = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
+        endUp    = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
+        startDir = new Vector3(-0.5555168f,-0.54720974f,-0.6260798f);
+        endDir   = new Vector3(-0.5555168f,-0.54720974f,-0.6260798f);
+
+        // old
+//        startUp = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
+//        endUp = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
+//        startDir = new Vector3(-0.7864863f,-0.3523599f,-0.5072418f);
+//        endDir = new Vector3(-0.7864863f,-0.3523599f,-0.5072418f);
+
+        camera.position.set(startPos);
+        camera.up.set(startUp);
+        camera.direction.set(startDir);
         camera.update();
 
-        cameraController = new CameraInputController(camera);
+        // TEMPORARY, probably (until we can get some nicer spline based travel)
+        cameraTween = Tween.to(camera, PerspectiveCameraAccessor.POS, 10f)
+                .target(endPos.x, endPos.y, endPos.z)
+                .repeatYoyo(-1, 1f)
+                .start(game.tween);
+
+        cameraController = new SimpleCameraController(camera);
         shaker = new ScreenShakeCameraController(camera);
 
         landscape = new Landscape();
@@ -120,21 +157,33 @@ public class GameScreen extends BaseScreen {
         camera.update();
         cameraController.update();
 
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+//            shaker.addDamage(0.5f);
+//        }
+        shaker.update(dt);
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            if (cameraTween.isPaused()) {
+                cameraTween.resume();
+            } else {
+                cameraTween.pause();
+            }
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             shaker.addDamage(0.5f);
             landscape.startAvalanche();
         }
-        shaker.update(dt);
 
         landscape.update(dt);
 
         updateDebugElements();
 
-//        Gdx.app.log(TAG, String.format("pos(%s) up(%s) forward(%s) side(%s)",
+//        Gdx.app.log(TAG, Stringf.format("pos(%s) up(%s) forward(%s) side(%s)",
 //                camera.position, camera.up, camera.direction,
 //                side.set(camera.up).crs(camera.direction)));
     }
-//    private final Vector3 side = new Vector3();
+//    private final Vector3 side = new Vector3(); // TEMP
 
     @Override
     public void render(SpriteBatch batch) {

@@ -6,10 +6,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 /**
  * Created by dsgraham on 8/23/15.
  */
-public class CameraAccessor implements TweenAccessor<OrthographicCamera> {
+public class OrthoCameraAccessor implements TweenAccessor<OrthographicCamera> {
 
     public static final int XYZ = 1;
-
 
     @Override
     public int getValues(OrthographicCamera target, int tweenType, float[] returnValues) {

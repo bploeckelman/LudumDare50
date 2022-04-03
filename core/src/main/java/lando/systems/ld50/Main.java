@@ -61,12 +61,14 @@ public class Main extends ApplicationAdapter {
 
 		tween = new TweenManager();
 		Tween.setWaypointsLimit(4);
+		// TODO might need to increase to 9 to support persp cam
 		Tween.setCombinedAttributesLimit(4);
 		Tween.registerAccessor(Color.class, new ColorAccessor());
 		Tween.registerAccessor(Rectangle.class, new RectangleAccessor());
 		Tween.registerAccessor(Vector2.class, new Vector2Accessor());
 		Tween.registerAccessor(Vector3.class, new Vector3Accessor());
-		Tween.registerAccessor(OrthographicCamera.class, new CameraAccessor());
+		Tween.registerAccessor(OrthographicCamera.class, new OrthoCameraAccessor());
+		Tween.registerAccessor(PerspectiveCamera.class, new PerspectiveCameraAccessor());
 
 		if (Gdx.app.getType() == Application.ApplicationType.WebGL) {
 			setScreen(new LaunchScreen());
