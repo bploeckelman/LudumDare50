@@ -77,6 +77,23 @@ public class PhysicsManager {
         contactPool.freeAll(ballContacts);
         ballContacts.clear();
 
+        //rubberbanding to keep balls together
+        float meanZ = 0;
+        float tol = 0.75f;
+        float pow = 1f;
+        for (Snowball b : landscape.snowBalls) {
+            meanZ += b.position.z;
+        }
+        meanZ /= landscape.snowBalls.size;
+        for (Snowball b : landscape.snowBalls) {
+            if (b.position.z > meanZ + tol) {
+                b.velocity.z -= pow * (b.position.z - meanZ - tol) * dt;
+            }
+            if (b.position.z < meanZ - tol * 1.5) {
+                b.velocity.z += pow * 0.8 * ((meanZ - tol * 1.5) - b.position.z) * dt;
+            }
+        }
+
     }
 
 
