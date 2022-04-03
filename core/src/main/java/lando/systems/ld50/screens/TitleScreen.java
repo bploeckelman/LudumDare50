@@ -16,10 +16,10 @@ import com.kotcrab.vis.ui.widget.VisTextButton;
 import lando.systems.ld50.audio.AudioManager;
 
 public class TitleScreen extends BaseScreen {
-    private Skin skin;
     private VisTable rootTable;
     private VisTextButton startGameButton;
     private VisTextButton creditButton;
+    private VisTextButton settingsButton;
 
     private final float BUTTON_WIDTH = 20f;
     private final float BUTTON_PADDING = 10f;
@@ -35,7 +35,6 @@ public class TitleScreen extends BaseScreen {
     @Override
     protected void initializeUI() {
         super.initializeUI();
-        skin = VisUI.getSkin();
 
         rootTable = new VisTable();
         rootTable.setWidth(uiStage.getWidth());
@@ -55,6 +54,10 @@ public class TitleScreen extends BaseScreen {
             }
         });
 
+        settingsButton = new VisTextButton("Settings", "outfit-medium-40px");
+        settingsButton.setFillParent(true);
+
+
         creditButton = new VisTextButton("Credits", "outfit-medium-40px");
         creditButton.setWidth(BUTTON_WIDTH);
         creditButton.addListener(new ChangeListener() {
@@ -73,6 +76,8 @@ public class TitleScreen extends BaseScreen {
         rootTable.add(creditButton).padBottom(BUTTON_PADDING);
 
         uiStage.addActor(rootTable);
+
+//        settingsGroup.setZIndex(settingsGroup.getZIndex()+1);
     }
 
     @Override

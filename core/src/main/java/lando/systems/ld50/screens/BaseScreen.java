@@ -13,10 +13,20 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.VisLabel;
+import com.kotcrab.vis.ui.widget.VisSlider;
+import com.kotcrab.vis.ui.widget.VisTable;
+import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
@@ -31,6 +41,8 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
     public final TweenManager tween;
     public final SpriteBatch batch;
     public final Vector3 pointerPos;
+    public Group settingsGroup;
+    public VisWindow settingsWindow;
 
     public boolean exitingScreen;
 //    public Particles particles;
@@ -39,6 +51,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
     public OrthographicCamera windowCamera;
 
     protected Stage uiStage;
+    protected Skin skin;
 
     public BaseScreen() {
         this.game = Main.game;
@@ -69,12 +82,39 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         // reset the stage in case it hasn't already been set to the current window camera orientation
         // NOTE - doesn't seem to be a way to directly set the stage camera as the window camera
         //  could go in the other direction, create the uiStage and set windowCam = stage.cam
+        skin = VisUI.getSkin();
         StretchViewport viewport = new StretchViewport(windowCamera.viewportWidth, windowCamera.viewportHeight);
         uiStage = new Stage(viewport, batch);
+        //initializeSettingsUI();
     }
 
     private void initializeSettingsUI() {
+        VisTable rootTable = new VisTable();
+        rootTable.setWidth(windowCamera.viewportWidth);
+        rootTable.setHeight(windowCamera.viewportHeight);
+        rootTable.align(Align.center);
+        settingsWindow = new VisWindow("", "noborder");
+        settingsWindow.align(Align.center | Align.top);
+        settingsWindow.setColor(0f, 0f, 0f, .9f);
+        settingsWindow.setWidth(windowCamera.viewportWidth / 2);
+        settingsWindow.setHeight(windowCamera.viewportHeight);
+        settingsWindow.padLeft(50f).padRight(50f);
+        VisLabel settingLabel = new VisLabel("Settings", "outfit-medium-40px");
+        settingsWindow.add(settingLabel).padBottom(40f);
+        settingsWindow.row();
+        VisLabel musicVolumeLabel = new VisLabel("Music Volume", "outfit-medium-20px");
+        Drawable temp = skin.getDrawable("default-horizontal");
 
+        settingsWindow.add(musicVolumeLabel).padBottom(10f);
+        settingsWindow.row();
+        VisSlider musicSlider = new VisSlider(0, 1f, .05f, false, "default-vertical");
+        //musicSlider.setColor(0f, 0f, 0f, 1f);
+        settingsWindow.add(musicSlider).width(windowCamera.viewportWidth / 2);
+        settingsGroup = new Group();
+        rootTable.add(settingsWindow).height(windowCamera.viewportHeight);
+        settingsGroup.addActor(rootTable);
+//        settingsGroup.addActor(settingsWindow);
+        uiStage.addActor(settingsGroup);
     }
 
     public void transitionCompleted() {
