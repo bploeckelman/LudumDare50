@@ -156,8 +156,8 @@ public class Landscape {
 
     public void getTilesAround(float x, float z, Array<LandTile> neighborTiles) {
         neighborTiles.clear();
-        for (int dx = ((int)x)-1; dx <= x+1; dx++){
-            for (int dy = ((int)z)-1; dy <= z+1; dy++){
+        for (int dx = ((int)x); dx <= x; dx++){
+            for (int dy = ((int)z); dy <= z; dy++){
                 if (dx >= 0 && dx < TILES_WIDE && dy >= 0 && dy < TILES_LONG){
                     neighborTiles.add(tiles[dx + TILES_WIDE * dy]);
                 }
