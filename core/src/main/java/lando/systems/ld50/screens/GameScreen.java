@@ -19,10 +19,14 @@ import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -33,6 +37,8 @@ import lando.systems.ld50.Config;
 import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.Landscape;
+import lando.systems.ld50.objects.Snowball;
+import lando.systems.ld50.utils.Calc;
 import lando.systems.ld50.utils.Time;
 import lando.systems.ld50.utils.accessors.PerspectiveCameraAccessor;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
@@ -75,7 +81,6 @@ public class GameScreen extends BaseScreen {
     private Vector3 startPos, endPos;
     private Vector3 startUp, endUp;
     private Vector3 startDir, endDir;
-    private Tween cameraTween;
 
     private Vector3 lightDir;
     public DirectionalLight light;
@@ -83,6 +88,8 @@ public class GameScreen extends BaseScreen {
     public FrameBuffer fb;
     public Texture fbTex;
     public Pixmap pickPixmap;
+
+    private float cameraMovementT = 0;
 
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
@@ -112,11 +119,8 @@ public class GameScreen extends BaseScreen {
         InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
 
-
-
         game.audio.playMusic(AudioManager.Musics.mainTheme);
         game.audio.musics.get(AudioManager.Musics.mainTheme).setVolume(0.3F);
-
     }
 
     @Override
@@ -143,20 +147,11 @@ public class GameScreen extends BaseScreen {
         super.update(dt);
         boolean gameOver = isGameOver();
 
-        camera.update();
-        cameraController.update();
-        shaker.update(dt);
-
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            if (cameraTween.isPaused()) {
-                cameraTween.resume();
-            } else {
-                cameraTween.pause();
-            }
+            dumpCameraVecsToLog();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-//            dumpCameraVecsToLog();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             Time.pause_for(0.2f);
         }
 
@@ -169,6 +164,10 @@ public class GameScreen extends BaseScreen {
         worldCamera.unproject(touchPos);
         Vector2 tile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
         landscape.setSelectedTile((int)tile.x, (int)tile.y);
+
+        camera.update();
+        cameraController.update();
+        shaker.update(dt);
 
         landscape.update(dt);
 
@@ -187,6 +186,15 @@ public class GameScreen extends BaseScreen {
         if (pickPixmap != null){
             pickPixmap.dispose();
         }
+
+        // keep the camera focused on the bulk of the avalanche wave
+        float prevCameraMovementT = cameraMovementT;
+        float currCameraMovementT = getAvalancheProgress();
+        cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
+        camera.position.set(
+                MathUtils.lerp(startPos.x, endPos.x, cameraMovementT),
+                MathUtils.lerp(startPos.y, endPos.y, cameraMovementT),
+                MathUtils.lerp(startPos.z, endPos.z, cameraMovementT));
 
         updateDebugElements();
     }
@@ -260,14 +268,6 @@ public class GameScreen extends BaseScreen {
         camera.up.set(startUp);
         camera.direction.set(startDir);
         camera.update();
-
-        // TEMPORARY, probably (until we can get some nicer spline based travel)
-        cameraTween = Tween.to(camera, PerspectiveCameraAccessor.POS, 12f)
-                .target(endPos.x, endPos.y, endPos.z)
-                .ease(Linear.INOUT)
-                .delay(3.5f)
-                .repeatYoyo(-1, 2f)
-                .start(game.tween);
     }
 
     private void loadModels() {
@@ -385,6 +385,19 @@ public class GameScreen extends BaseScreen {
         }
     }
 
+    private float getAvalancheProgress() {
+        float averageZ = 0f;
+        for (Snowball ball : landscape.snowBalls) {
+            averageZ += ball.position.z;
+        }
+        averageZ /= landscape.snowBalls.size;
+        float progress = averageZ / (Landscape.TILES_LONG * Landscape.TILE_WIDTH);
+        if (Float.isNaN(progress) || progress > 1f) {
+            progress = 1f;
+        }
+        return progress;
+    }
+
     // ------------------------------------------------------------------------
     // InputAdapter overrides
     // ------------------------------------------------------------------------
@@ -498,6 +511,11 @@ public class GameScreen extends BaseScreen {
         DebugElements.cameraLabel = label;
 
         uiStage.addActor(debugWindow);
+
+        Actor rootActor = uiStage.getRoot();
+        Action transitionAction = Actions.moveTo(0, -windowCamera.viewportHeight, 0.1f, Interpolation.exp10In);
+        transitionAction.setActor(rootActor);
+        uiStage.addAction(transitionAction);
     }
 
     private void updateDebugElements() {
@@ -505,13 +523,13 @@ public class GameScreen extends BaseScreen {
         DebugElements.javaHeapLabel.setText(Config.getJavaHeapString());
         DebugElements.nativeHeapLabel.setText(Config.getNativeHeapString());
         DebugElements.drawCallLabel.setText(Config.getDrawCallString(batch));
-        DebugElements.cameraLabel.setText(
-                Stringf.format("Camera: up%s dir%s side%s",
-                camera.up, camera.direction, side.set(camera.up).crs(camera.direction).nor()
-        ));
+//        DebugElements.cameraLabel.setText(
+//                Stringf.format("Camera: up%s dir%s side%s",
+//                camera.up, camera.direction, side.set(camera.up).crs(camera.direction).nor()
+//        ));
     }
-    private final Vector3 side = new Vector3();
 
+    private final Vector3 side = new Vector3();
     private void dumpCameraVecsToLog() {
         Gdx.app.log(TAG, Stringf.format("Camera: pos%s up%s dir%s side%s",
                 camera.position, camera.up, camera.direction,
