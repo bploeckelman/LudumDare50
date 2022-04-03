@@ -1,6 +1,7 @@
 package lando.systems.ld50.screens;
 
 import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.equations.Linear;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -40,106 +41,37 @@ public class GameScreen extends BaseScreen {
     private final Color background = Color.SKY.cpy();
     private final PerspectiveCamera camera;
     private final ScreenShakeCameraController shaker;
-//    private final CameraInputController cameraController;
     private final SimpleCameraController cameraController;
     private final Landscape landscape;
 
     private final Environment env;
     private final ModelBatch modelBatch;
-    private final Model testModel;
-    private final Model coordsModel;
-    private final ModelInstance testInstance;
-    private final ModelInstance coords;
 
-    private final Vector3 startPos, endPos;
-    private final Vector3 startUp, endUp;
-    private final Vector3 startDir, endDir;
+    private Model testModel;
+    private Model coordsModel;
+    private ModelInstance testInstance;
+    private ModelInstance coords;
+
+    private Vector3 startPos, endPos;
+    private Vector3 startUp, endUp;
+    private Vector3 startDir, endDir;
     private Tween cameraTween;
 
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
-//        camera.position.set(-2, 0, 10);
-//        camera.lookAt(0, 0, 0);
-        camera.near = 0.1f;
-        camera.far = 1000f;
-
-        // orient manually for the swank
-
-        // upwards facing ramp directly in front:
-//        camera.position.set(4f,-2f,13f);
-//        camera.up.set(-0.0007141829f,0.7193363f,0.6946612f);
-//        camera.direction.set(0.00073949544f,0.6946616f,-0.71933526f);
-
-        // down-right facing ramp, correct-ish starting orientation
-//        camera.position.set(9f, 8.5f, 4f);
-//        camera.up.set(-0.12385227f,-0.36523294f,0.92262834f);
-//        camera.direction.set(-0.7864863f,-0.3523599f,-0.5072418f);
-
-//        startPos = new Vector3(6f, 17f, 5f);
-//        endPos   = new Vector3(6f, 100f, 5f);
-//        startUp  = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
-//        endUp    = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
-//        startDir = new Vector3(-0.5555168f,-0.54720974f,-0.6260798f);
-//        endDir   = new Vector3(-0.5555168f,-0.54720974f,-0.6260798f);
-
-        startPos = new Vector3(1f, 4f, 0f);
-        endPos   = new Vector3(1f, 4f, 100f);
-        startUp  = new Vector3(Vector3.Y.cpy());
-        endUp    = new Vector3(Vector3.Y.cpy());
-        startDir = new Vector3(0.50008386f,-0.656027f,-0.5652821f);
-        endDir   = new Vector3(0.50008386f,-0.656027f,-0.5652821f);
-
-//        up(0.0,1.0,0.0) dir(0.50008386,-0.656027,-0.5652821) side(-0.74897903,0.0,-0.6625936)
-//        up(0.0,1.0,0.0) dir(0.5216945,-0.55905175,-0.64443606) side(-0.77724004,0.0,-0.62920415)
-
-        // old
-//        startUp = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
-//        endUp = new Vector3(-0.12385227f,-0.36523294f,0.92262834f);
-//        startDir = new Vector3(-0.7864863f,-0.3523599f,-0.5072418f);
-//        endDir = new Vector3(-0.7864863f,-0.3523599f,-0.5072418f);
-
-        camera.position.set(startPos);
-        camera.up.set(startUp);
-        camera.direction.set(startDir);
-        camera.update();
-
-        // TEMPORARY, probably (until we can get some nicer spline based travel)
-        cameraTween = Tween.to(camera, PerspectiveCameraAccessor.POS, 10f)
-                .target(endPos.x, endPos.y, endPos.z)
-                .repeatYoyo(-1, 1f)
-                .start(game.tween);
+        initializeCamera();
 
         cameraController = new SimpleCameraController(camera);
         shaker = new ScreenShakeCameraController(camera);
 
-        landscape = new Landscape();
-
         modelBatch = new ModelBatch();
-
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        BoundingBox box = new BoundingBox();
-        G3dModelLoader loader = new G3dModelLoader(new UBJsonReader());
-//        testModel = loader.loadModel(Gdx.files.internal("models/cliff_block_rock.g3db"));
-        testModel = loader.loadModel(Gdx.files.internal("models/house-2.g3db"));
-        testInstance = new ModelInstance(testModel);
-        testInstance.calculateBoundingBox(box);
-        testInstance.transform
-//                .setToRotation(1f, 0f, 0f, 90f)
-                .scale(
-                        1f / (box.max.x - box.min.x),
-                        1f / (box.max.y - box.min.y),
-                        1f / (box.max.z - box.min.z))
-                .setTranslation(0.5f, 0f, 0.5f)
-        ;
+        loadModels();
 
-        ModelBuilder builder = new ModelBuilder();
-        coordsModel = builder.createXYZCoordinates(1f, 0.1f, 0.5f, 6, GL20.GL_TRIANGLES,
-                new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked);
-        coords = new ModelInstance(coordsModel);
-        coords.transform.setToTranslation(0, 0, 0);
+        landscape = new Landscape();
 
         InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
@@ -228,6 +160,53 @@ public class GameScreen extends BaseScreen {
 
     public boolean isGameOver() {
         return false;
+    }
+
+    private void initializeCamera() {
+        camera.near = 0.1f;
+        camera.far = 1000f;
+
+        // orient manually for the swank
+        startPos = new Vector3(2f, 4f, 10f);
+        endPos   = new Vector3(2f, 4f, 100f);
+        startUp  = new Vector3(Vector3.Y.cpy());
+        endUp    = new Vector3(Vector3.Y.cpy());
+        startDir = new Vector3(0.50008386f,-0.656027f,-0.5652821f);
+        endDir   = new Vector3(0.50008386f,-0.656027f,-0.5652821f);
+
+        camera.position.set(startPos);
+        camera.up.set(startUp);
+        camera.direction.set(startDir);
+        camera.update();
+
+        // TEMPORARY, probably (until we can get some nicer spline based travel)
+        cameraTween = Tween.to(camera, PerspectiveCameraAccessor.POS, 12f)
+                .target(endPos.x, endPos.y, endPos.z)
+                .ease(Linear.INOUT)
+                .delay(3.5f)
+                .repeatYoyo(-1, 2f)
+                .start(game.tween);
+    }
+
+    private void loadModels() {
+        BoundingBox box = new BoundingBox();
+        G3dModelLoader loader = new G3dModelLoader(new UBJsonReader());
+        testModel = loader.loadModel(Gdx.files.internal("models/house-2.g3db"));
+        testInstance = new ModelInstance(testModel);
+        testInstance.calculateBoundingBox(box);
+        testInstance.transform
+                .scale(
+                        1f / (box.max.x - box.min.x),
+                        1f / (box.max.y - box.min.y),
+                        1f / (box.max.z - box.min.z))
+                .setTranslation(0.5f, 0f, 0.5f)
+        ;
+
+        ModelBuilder builder = new ModelBuilder();
+        coordsModel = builder.createXYZCoordinates(1f, 0.1f, 0.5f, 6, GL20.GL_TRIANGLES,
+                new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked);
+        coords = new ModelInstance(coordsModel);
+        coords.transform.setToTranslation(0, 0, 0);
     }
 
     // ------------------------------------------------------------------------
