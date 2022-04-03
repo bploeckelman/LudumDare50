@@ -414,12 +414,14 @@ public class GameScreen extends BaseScreen {
     private void loadDecals() {
         decals = new Array<>();
 
-        float height = 0.25f;
+        AnimationDecal babe = new AnimationDecal(assets, ImageInfo.Babe, landscape, 0, 7);
+        decals.add(babe);
+//        decals.add(new AnimationDecal(assets, ImageInfo.Dude, landscape, 0, 4));
+//        decals.add(new AnimationDecal(assets, ImageInfo.Deer, landscape, 0, 6));
+//        decals.add(new AnimationDecal(assets, ImageInfo.Plow, landscape, 4, -1));
 
-        decals.add(new AnimationDecal(assets, ImageInfo.Babe, 0, height, 8));
-        decals.add(new AnimationDecal(assets, ImageInfo.Dude, 4, height, 10));
-        decals.add(new AnimationDecal(assets, ImageInfo.Deer, 4, height, 6));
-        decals.add(new AnimationDecal(assets, ImageInfo.Plow, 4, 1, -1));
+        babe.moveToTile(3, 7);
+
     }
 
     private float getAvalancheProgress() {
