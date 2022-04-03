@@ -86,6 +86,8 @@ public class GameScreen extends BaseScreen {
     public Pixmap pickPixmap;
 
     private float cameraMovementT = 0;
+    private boolean cameraMovementPaused = false;
+    private final Vector3 billboardCameraPos = new Vector3();
 
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
@@ -145,6 +147,7 @@ public class GameScreen extends BaseScreen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             dumpCameraVecsToLog();
+            cameraMovementPaused = !cameraMovementPaused;
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
@@ -167,10 +170,9 @@ public class GameScreen extends BaseScreen {
 
         landscape.update(dt);
 
-        // TODO - billboarding needs adjustment since the camera is above
-        //   they end up leaning back to look up which isn't quite right
+        billboardCameraPos.set(camera.position).y = 0f;
         for (Decal decal : decals) {
-            decal.lookAt(camera.position, camera.up);
+            decal.lookAt(billboardCameraPos, camera.up);
             decalBatch.add(decal);
         }
         for (Decal decal : particleDecals) {
@@ -184,13 +186,15 @@ public class GameScreen extends BaseScreen {
         }
 
         // keep the camera focused on the bulk of the avalanche wave
-        float prevCameraMovementT = cameraMovementT;
-        float currCameraMovementT = getAvalancheProgress();
-        cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
-        camera.position.set(
-                MathUtils.lerp(startPos.x, endPos.x, cameraMovementT),
-                MathUtils.lerp(startPos.y, endPos.y, cameraMovementT),
-                MathUtils.lerp(startPos.z, endPos.z, cameraMovementT));
+        if (!cameraMovementPaused) {
+            float prevCameraMovementT = cameraMovementT;
+            float currCameraMovementT = getAvalancheProgress();
+            cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
+            camera.position.set(
+                    MathUtils.lerp(startPos.x, endPos.x, cameraMovementT),
+                    MathUtils.lerp(startPos.y, endPos.y, cameraMovementT),
+                    MathUtils.lerp(startPos.z, endPos.z, cameraMovementT));
+        }
 
         updateDebugElements();
     }
