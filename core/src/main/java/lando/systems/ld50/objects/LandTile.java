@@ -49,6 +49,9 @@ public class LandTile {
     private Mesh boxMesh;
     private float[] vertices;
     private short[] indices;
+    float[] boxverts = new float[9*4];
+    short[] boxIndices = new short[6];
+
     private int verticesIndex;
     private int indicesIndex;
     private int boxVerticesIndex;
@@ -165,7 +168,7 @@ public class LandTile {
 
     private void buildHighlightMesh() {
 
-        float[] boxverts = new float[9*4];
+
 
         boxVerticesIndex = 0;
 
@@ -209,7 +212,6 @@ public class LandTile {
         boxverts[boxVerticesIndex++] = 0; // U
         boxverts[boxVerticesIndex++] = 1f; // V
 
-        short[] boxIndices = new short[6];
         boxIndicesIndex = 0;
         boxIndices[boxIndicesIndex++] = 0;
         boxIndices[boxIndicesIndex++] = 1;
