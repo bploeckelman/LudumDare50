@@ -9,17 +9,16 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
-import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -56,17 +55,17 @@ public class GameScreen extends BaseScreen {
 
     private final Environment env;
     private final ModelBatch modelBatch;
+    private final DecalBatch decalBatch;
 
     private Model coordsModel;
     private ModelInstance coords;
-
-    private final DecalBatch decalBatch;
-    private Array<Decal> decals = new Array<Decal>();
 
     private Model houseModelA, houseModelB;
     private Model creatureModel;
     private Array<ModelInstance> houseInstances;
     private Array<ModelInstance> creatureInstances;
+    private Array<Decal> decals;
+    private Array<Decal> particleDecals;
 
     private Model animTestModel;
     private ModelInstance animTestInstance;
@@ -96,21 +95,14 @@ public class GameScreen extends BaseScreen {
 
         landscape = new Landscape(this);
 
-        modelBatch = new ModelBatch();
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         env.add(light = new DirectionalLight().set(0.8f, 0.8f, 0.8f, lightDir.x, lightDir.y, lightDir.z));
+        modelBatch = new ModelBatch();
+        decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
 
         loadModels();
-
-        decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
-        Decal decal;
-        for (int i = 0; i < 100; i++) {
-            decal = Decal.newDecal(assets.particles.smoke, true);
-            decal.setColor(1f, 1f, 1f, 0.3f);
-            decal.setScale(0.025f);
-            decals.add(decal);
-        }
+        loadDecals();
 
         touchPos = new Vector3();
 
@@ -180,6 +172,18 @@ public class GameScreen extends BaseScreen {
 
         landscape.update(dt);
 
+        // TODO - billboarding needs adjustment since the camera is above
+        //   they end up leaning back to look up which isn't quite right
+        for (Decal decal : decals) {
+            decal.lookAt(camera.position, camera.up);
+            decalBatch.add(decal);
+        }
+        for (Decal decal : particleDecals) {
+            decal.setPosition(5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f));
+            decal.lookAt(camera.position, camera.up);
+            decalBatch.add(decal);
+        }
+
         if (pickPixmap != null){
             pickPixmap.dispose();
         }
@@ -190,6 +194,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void render(SpriteBatch batch) {
         ScreenUtils.clear(background, true);
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
         // draw world
         batch.setProjectionMatrix(shaker.getCombinedMatrix());
@@ -213,11 +218,6 @@ public class GameScreen extends BaseScreen {
         }
         modelBatch.end();
 
-        for (int iter = 0; iter < decals.size; iter++) {
-            decals.get(iter).setPosition(5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f));
-            decals.get(iter).lookAt(camera.position, camera.up);
-            decalBatch.add(decals.get(iter));
-        }
         decalBatch.flush();
 
         // NOTE: always draw so the 'hide' transition is visible
@@ -230,17 +230,13 @@ public class GameScreen extends BaseScreen {
             batch.draw(fbTex, 0, 100, 100, -100);
         }
         batch.end();
-
-
     }
-
 
     public void renderFrameBuffers(SpriteBatch batch) {
         fb.begin();
         ScreenUtils.clear(Color.CLEAR, true);
         landscape.renderFBO(camera);
         pickPixmap =  Pixmap.createFromFrameBuffer(0, 0, fb.getWidth(), fb.getHeight());
-
         fb.end();
     }
 
@@ -352,6 +348,41 @@ public class GameScreen extends BaseScreen {
                 new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked);
         coords = new ModelInstance(coordsModel);
         coords.transform.setToTranslation(0, 0, 0);
+    }
+
+    private void loadDecals() {
+        decals = new Array<>();
+        particleDecals = new Array<>();
+
+        Decal decal;
+        float height = 0.25f;
+
+        decal = Decal.newDecal(assets.atlas.findRegion("characters/babe-a"), true);
+        decal.setPosition(4f, height, 8f);
+        decal.setScale(0.01f);
+        decals.add(decal);
+
+        decal = Decal.newDecal(assets.atlas.findRegion("characters/dude-a"), true);
+        decal.setPosition(4f, height, 10f);
+        decal.setScale(0.01f);
+        decals.add(decal);
+
+        decal = Decal.newDecal(assets.atlas.findRegion("characters/deer-a"), true);
+        decal.setPosition(4f, height, 6f);
+        decal.setScale(0.01f);
+        decals.add(decal);
+
+        decal = Decal.newDecal(assets.atlas.findRegion("characters/plow-a"), true);
+        decal.setPosition(4f, 1f, -5f);
+        decal.setScale(0.05f);
+        decals.add(decal);
+
+        for (int i = 0; i < 100; i++) {
+            decal = Decal.newDecal(assets.particles.smoke, true);
+            decal.setColor(1f, 1f, 1f, 0.3f);
+            decal.setScale(0.025f);
+            particleDecals.add(decal);
+        }
     }
 
     // ------------------------------------------------------------------------
