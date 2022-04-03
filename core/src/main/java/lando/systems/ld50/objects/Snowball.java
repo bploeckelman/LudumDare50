@@ -13,6 +13,7 @@ import lando.systems.ld50.Main;
 
 public class Snowball {
     public Vector3 position;
+    public Vector3 velocity;
     public float radius;
 
 //    private static Mesh mesh;
@@ -24,6 +25,7 @@ public class Snowball {
 
 
     public Snowball(float x, float y, float z, float radius) {
+        this.velocity = new Vector3();
         this.position = new Vector3(x, y, z);
         this.radius = radius;
 

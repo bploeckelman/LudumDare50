@@ -6,7 +6,10 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
+import lando.systems.ld50.physics.Triangle;
 import lando.systems.ld50.utils.screenshake.SimplexNoise;
 
 public class LandTile {
@@ -21,19 +24,24 @@ public class LandTile {
     private static final float HEIGHT_RANGE = 1f;
 
 
-    float ULHeight = 0;
-    float LLHeight = 0;
-    float URHeight = 0;
-    float LRHeight = 0;
+    public float ULHeight = 0;
+    public float LLHeight = 0;
+    public float URHeight = 0;
+    public float LRHeight = 0;
 
     private Mesh mesh;
     private float[] vertices;
     private short[] indices;
     private int verticesIndex;
     private int indicesIndex;
-    float x;
-    float y;
+    public float x;
+    public float y;
     float width;
+    Vector3 p1;
+    Vector3 p2;
+    Vector3 p3;
+    Vector3 p4;
+    Vector3 p5;
 
     public LandTile(int x, int y, float width) {
         this.vertices = new float[MAX_NUM_VERTICES * NUM_COMPONENTS_PER_VERTEX];
@@ -41,6 +49,11 @@ public class LandTile {
         this.width = width;
         this.x = x * width;
         this.y = y * width;
+        p1 = new Vector3();
+        p2 = new Vector3();
+        p3 = new Vector3();
+        p4 = new Vector3();
+        p5 = new Vector3();
 
         SimplexNoise noise = Main.game.assets.noise;
 
@@ -48,12 +61,16 @@ public class LandTile {
         URHeight = Math.abs((float)noise.getNoise(x+1, y)) * .4f;
         LLHeight = Math.abs((float)noise.getNoise(x, y+1)) * .4f;
         LRHeight = Math.abs((float)noise.getNoise(x+1, y+1)) * .4f;
-
+        update(0);
         rebuildMesh();
     }
 
     public void update(float dt){
-
+        p1.set(x, y, ULHeight);
+        p2.set(x+1, y, URHeight);
+        p3.set(x+1, y+1, LRHeight);
+        p4.set(x, y+1, LLHeight);
+        p5.set(x + .5f, y + .5f, (p1.z + p2.z + p3.z + p4.z)/4f);
     }
 
     public void render(ShaderProgram shader) {
@@ -76,9 +93,9 @@ public class LandTile {
 
 
         // Upper Left vert
-        vertices[verticesIndex++] = x;
-        vertices[verticesIndex++] = y;
-        vertices[verticesIndex++] = ULHeight;
+        vertices[verticesIndex++] = p1.x;
+        vertices[verticesIndex++] = p1.y;
+        vertices[verticesIndex++] = p1.z;
         vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // r
         vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // b
@@ -227,6 +244,16 @@ public class LandTile {
         mesh.setVertices(vertices);
         mesh.setIndices(indices);
 
+    }
+
+    Array<Triangle> triangles = new Array<>();
+    public Array<Triangle> getTriangles() {
+        triangles.clear();
+        triangles.add(new Triangle(p1, p2, p5));
+        triangles.add(new Triangle(p2, p3, p5));
+        triangles.add(new Triangle(p3, p4, p5));
+        triangles.add(new Triangle(p4, p1, p5));
+        return triangles;
     }
 
 }

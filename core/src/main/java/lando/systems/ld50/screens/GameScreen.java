@@ -122,6 +122,7 @@ public class GameScreen extends BaseScreen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             shaker.addDamage(0.5f);
+            landscape.startAvalanche();
         }
         shaker.update(dt);
 

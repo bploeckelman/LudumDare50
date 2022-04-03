@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
+import lando.systems.ld50.physics.PhysicsManager;
 
 public class Landscape {
 
@@ -19,10 +20,13 @@ public class Landscape {
     public LandTile[] tiles;
     public Array<Snowball> snowBalls;
 
+    private PhysicsManager physics;
+
     private final ShaderProgram landscapeShader;
     private final ShaderProgram ballShader;
 
     public Landscape() {
+        physics = new PhysicsManager(this);
         ballShader = Main.game.assets.ballShader;
         landscapeShader = Main.game.assets.landscapeShader;
         snowBalls = new Array<>();
@@ -37,8 +41,12 @@ public class Landscape {
     }
 
     public void update(float dt) {
+        physics.update(dt);
         for(LandTile tile : tiles) {
             tile.update(dt);
+        }
+        for (Snowball ball : snowBalls){
+            ball.update(dt);
         }
     }
 
@@ -76,9 +84,21 @@ public class Landscape {
 
 
     public void startAvalanche(){
-        snowBalls.clear();
+//        snowBalls.clear();
         for (int i = 0; i < TILES_WIDE*3; i++){
             snowBalls.add(new Snowball(i/3f, .5f, 1.5f, .3f));
+        }
+    }
+
+
+    public void getTilesAround(float x, float y, Array<LandTile> neighborTiles) {
+        neighborTiles.clear();
+        for (int dx = ((int)x)-1; dx <= x+1; dx++){
+            for (int dy = ((int)y)-1; dy <= y+1; dy++){
+                if (dx >= 0 && dx < TILES_WIDE && dy >= 0 && dy < TILES_LONG){
+                    neighborTiles.add(tiles[dx + TILES_WIDE * dy]);
+                }
+            }
         }
     }
 }
