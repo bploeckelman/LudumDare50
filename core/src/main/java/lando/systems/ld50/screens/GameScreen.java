@@ -453,10 +453,10 @@ public class GameScreen extends BaseScreen {
     }
 
     private void initializeGameUI() {
-//        VisTable rootTable = new VisTable();
-//        rootTable.setWidth(windowCamera.viewportWidth);
-//        rootTable.setHeight(windowCamera.viewportHeight);
+        initializeAvalancheProgressBarUI();
+    }
 
+    private void initializeAvalancheProgressBarUI() {
         VisProgressBar.ProgressBarStyle horizontalProgressBarStyle = skin.get("default-horizontal", VisProgressBar.ProgressBarStyle.class);
         VisProgressBar.ProgressBarStyle avalancheProgressBarStyle = new VisProgressBar.ProgressBarStyle(horizontalProgressBarStyle);
         avalancheProgressBarStyle.knob = new TextureRegionDrawable(assets.waveIcon);
@@ -478,8 +478,6 @@ public class GameScreen extends BaseScreen {
         cameraSlider.setWidth(windowCamera.viewportWidth / 2f);
         cameraSlider.setHeight(70f);
         uiStage.addActor(cameraSlider);
-
-
     }
 
     private void updateProgressBarValue() {
