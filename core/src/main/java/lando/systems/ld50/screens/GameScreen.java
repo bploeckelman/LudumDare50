@@ -2,6 +2,7 @@ package lando.systems.ld50.screens;
 
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.equations.Linear;
+import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -30,6 +31,7 @@ import com.badlogic.gdx.utils.UBJsonReader;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
+import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.utils.Time;
@@ -117,6 +119,12 @@ public class GameScreen extends BaseScreen {
 
         InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
+
+
+
+        game.audio.playMusic(AudioManager.Musics.mainTheme);
+        game.audio.musics.get(AudioManager.Musics.mainTheme).setVolume(0.3F);
+
     }
 
     @Override
