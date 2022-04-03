@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import lando.systems.ld50.objects.LandTile;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
@@ -13,6 +14,12 @@ public class PhysicsManager {
     // TODO make this the real down
     Vector3 gravity = new Vector3(0, -7f, .5f);
     Landscape landscape;
+    Pool<BallContact> contactPool = new Pool<BallContact>() {
+        @Override
+        protected BallContact newObject() {
+            return new BallContact();
+        }
+    };
     Array<BallContact> ballContacts;
 
     Array<LandTile> neighborTiles;
@@ -30,7 +37,6 @@ public class PhysicsManager {
 
     Vector3 newPos = new Vector3();
     private void solve(float dt){
-        ballContacts.clear();
         // Snowballs
         for (Snowball ball : landscape.snowBalls){
             ball.velocity.add(gravity.x * dt, gravity.y * dt, gravity.z * dt);
@@ -63,11 +69,14 @@ public class PhysicsManager {
 
         }
         int iteration = 0;
-        while (ballContacts.size > 0 && iteration++ < 100) {
+        while (ballContacts.size > 0 && iteration++ < 50) {
             ballContacts.sort();
             ballContacts.get(0).resolve(dt);
-            ballContacts.removeIndex(0);
+            contactPool.free(ballContacts.removeIndex(0));
         }
+        contactPool.freeAll(ballContacts);
+        ballContacts.clear();
+
     }
 
 
@@ -81,9 +90,10 @@ public class PhysicsManager {
             nearestPoint.sub(ball.position);
             float overlap = ball.radius - nearestPoint.len();
             if (overlap > 0) {
-                ballContacts.add(new BallContact(ball, t.getNormal(), overlap, tile));
+                ballContacts.add(contactPool.obtain().init(ball, t.getNormal(), overlap, tile));
             }
         }
+        tile.freeTriangles();
     }
 
     Vector3 ab = new Vector3();

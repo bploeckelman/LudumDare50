@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.physics.Triangle;
 import lando.systems.ld50.utils.screenshake.SimplexNoise;
@@ -23,6 +24,14 @@ public class LandTile {
     private static final int MAX_NUM_VERTICES = MAX_TRIANGLES * 3;
     private static final float HEIGHT_RANGE = 1f;
     private static final float MAX_SNOW = .1f;
+
+    private Pool<Triangle> trianglePool = new Pool<Triangle>() {
+        @Override
+        protected Triangle newObject() {
+            return new Triangle();
+        }
+    };
+
 
 
     public float ULHeight = 0;
@@ -42,6 +51,8 @@ public class LandTile {
     private short[] indices;
     private int verticesIndex;
     private int indicesIndex;
+    private int boxVerticesIndex;
+    private int boxIndicesIndex;
     public float x;
     public float z;
     float width;
@@ -70,6 +81,20 @@ public class LandTile {
         URHeight = Math.abs((float)noise.getNoise(x+1, z)) * terrainNoiseHeight;
         LLHeight = Math.abs((float)noise.getNoise(x, z+1)) * terrainNoiseHeight;
         LRHeight = Math.abs((float)noise.getNoise(x+1, z+1)) * terrainNoiseHeight;
+
+        mesh = new Mesh(false, MAX_NUM_VERTICES, MAX_INDICES,
+                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
+//                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
+                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
+        );
+        boxMesh = new Mesh(false, MAX_NUM_VERTICES, MAX_INDICES,
+                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
+//                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
+                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
+        );
+
         update(0);
         rebuildMesh();
 
@@ -87,7 +112,7 @@ public class LandTile {
     public void render(ShaderProgram shader) {
         shader.setUniformf("x", (int)x);
         shader.setUniformf("z", (int)z);
-        mesh.render(shader, GL20.GL_TRIANGLES);
+        mesh.render(shader, GL20.GL_TRIANGLES, 0, indicesIndex);
     }
 
     public void renderHighlight(Camera camera){
@@ -95,7 +120,7 @@ public class LandTile {
         shader.bind();
         shader.setUniformMatrix("u_projTrans", camera.combined);
 
-        boxMesh.render(shader, GL20.GL_TRIANGLES);
+        boxMesh.render(shader, GL20.GL_TRIANGLES, 0, boxIndicesIndex);
     }
 
     public float addSnow(Snowball ball){
@@ -139,69 +164,60 @@ public class LandTile {
 
 
     private void buildHighlightMesh() {
-        if (boxMesh != null){
-            boxMesh.dispose();
-        }
-
-        boxMesh = new Mesh(true, MAX_NUM_VERTICES, MAX_INDICES,
-                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
-//                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
-                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
-                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
-        );
 
         float[] boxverts = new float[9*4];
-        int vertIndex = 0;
 
-        boxverts[vertIndex++] = p1.x;
-        boxverts[vertIndex++] = p1.y+.05f;
-        boxverts[vertIndex++] = p1.z;
-        boxverts[vertIndex++] = .2f; // R
-        boxverts[vertIndex++] = .8f; // G
-        boxverts[vertIndex++] = 1f; // B
-        boxverts[vertIndex++] = 1; // A
-        boxverts[vertIndex++] = 0f; // U
-        boxverts[vertIndex++] = 0f; // V
+        boxVerticesIndex = 0;
 
-        boxverts[vertIndex++] = p2.x;
-        boxverts[vertIndex++] = p2.y + .05f;
-        boxverts[vertIndex++] = p2.z;
-        boxverts[vertIndex++] = .2f; // R
-        boxverts[vertIndex++] = .8f; // G
-        boxverts[vertIndex++] = 1f; // B
-        boxverts[vertIndex++] = 1; // A
-        boxverts[vertIndex++] = 1; // U
-        boxverts[vertIndex++] = 0; // V
+        boxverts[boxVerticesIndex++] = p1.x;
+        boxverts[boxVerticesIndex++] = p1.y+.05f;
+        boxverts[boxVerticesIndex++] = p1.z;
+        boxverts[boxVerticesIndex++] = .2f; // R
+        boxverts[boxVerticesIndex++] = .8f; // G
+        boxverts[boxVerticesIndex++] = 1f; // B
+        boxverts[boxVerticesIndex++] = 1; // A
+        boxverts[boxVerticesIndex++] = 0f; // U
+        boxverts[boxVerticesIndex++] = 0f; // V
 
-        boxverts[vertIndex++] = p3.x;
-        boxverts[vertIndex++] = p3.y + .05f;
-        boxverts[vertIndex++] = p3.z;
-        boxverts[vertIndex++] = .2f; // R
-        boxverts[vertIndex++] = .8f; // G
-        boxverts[vertIndex++] = 1f; // B
-        boxverts[vertIndex++] = 1; // A
-        boxverts[vertIndex++] = 1f; // U
-        boxverts[vertIndex++] = 1f; // V
+        boxverts[boxVerticesIndex++] = p2.x;
+        boxverts[boxVerticesIndex++] = p2.y + .05f;
+        boxverts[boxVerticesIndex++] = p2.z;
+        boxverts[boxVerticesIndex++] = .2f; // R
+        boxverts[boxVerticesIndex++] = .8f; // G
+        boxverts[boxVerticesIndex++] = 1f; // B
+        boxverts[boxVerticesIndex++] = 1; // A
+        boxverts[boxVerticesIndex++] = 1; // U
+        boxverts[boxVerticesIndex++] = 0; // V
 
-        boxverts[vertIndex++] = p4.x;
-        boxverts[vertIndex++] = p4.y + .05f;
-        boxverts[vertIndex++] = p4.z;
-        boxverts[vertIndex++] = .2f; // R
-        boxverts[vertIndex++] = .8f; // G
-        boxverts[vertIndex++] = 1f; // B
-        boxverts[vertIndex++] = 1; // A
-        boxverts[vertIndex++] = 0; // U
-        boxverts[vertIndex++] = 1f; // V
+        boxverts[boxVerticesIndex++] = p3.x;
+        boxverts[boxVerticesIndex++] = p3.y + .05f;
+        boxverts[boxVerticesIndex++] = p3.z;
+        boxverts[boxVerticesIndex++] = .2f; // R
+        boxverts[boxVerticesIndex++] = .8f; // G
+        boxverts[boxVerticesIndex++] = 1f; // B
+        boxverts[boxVerticesIndex++] = 1; // A
+        boxverts[boxVerticesIndex++] = 1f; // U
+        boxverts[boxVerticesIndex++] = 1f; // V
+
+        boxverts[boxVerticesIndex++] = p4.x;
+        boxverts[boxVerticesIndex++] = p4.y + .05f;
+        boxverts[boxVerticesIndex++] = p4.z;
+        boxverts[boxVerticesIndex++] = .2f; // R
+        boxverts[boxVerticesIndex++] = .8f; // G
+        boxverts[boxVerticesIndex++] = 1f; // B
+        boxverts[boxVerticesIndex++] = 1; // A
+        boxverts[boxVerticesIndex++] = 0; // U
+        boxverts[boxVerticesIndex++] = 1f; // V
 
         short[] boxIndices = new short[6];
-        int boxIndex = 0;
-        boxIndices[boxIndex++] = 0;
-        boxIndices[boxIndex++] = 1;
-        boxIndices[boxIndex++] = 2;
+        boxIndicesIndex = 0;
+        boxIndices[boxIndicesIndex++] = 0;
+        boxIndices[boxIndicesIndex++] = 1;
+        boxIndices[boxIndicesIndex++] = 2;
 
-        boxIndices[boxIndex++] = 2;
-        boxIndices[boxIndex++] = 3;
-        boxIndices[boxIndex++] = 0;
+        boxIndices[boxIndicesIndex++] = 2;
+        boxIndices[boxIndicesIndex++] = 3;
+        boxIndices[boxIndicesIndex++] = 0;
 
         boxMesh.setVertices(boxverts);
         boxMesh.setIndices(boxIndices);
@@ -210,15 +226,7 @@ public class LandTile {
 
 
     private void rebuildMesh(){
-        if (mesh != null){
-            mesh.dispose();
-        }
-        mesh = new Mesh(false, MAX_NUM_VERTICES, MAX_INDICES,
-                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
-//                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
-                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
-                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
-        );
+
         this.verticesIndex = 0;
         this.indicesIndex = 0;
 
@@ -381,11 +389,16 @@ public class LandTile {
     Array<Triangle> triangles = new Array<>();
     public Array<Triangle> getTriangles() {
         triangles.clear();
-        triangles.add(new Triangle(p1, p2, p5));
-        triangles.add(new Triangle(p2, p3, p5));
-        triangles.add(new Triangle(p3, p4, p5));
-        triangles.add(new Triangle(p4, p1, p5));
+        triangles.add(trianglePool.obtain().init(p1, p2, p5));
+        triangles.add(trianglePool.obtain().init(p2, p3, p5));
+        triangles.add(trianglePool.obtain().init(p3, p4, p5));
+        triangles.add(trianglePool.obtain().init(p4, p1, p5));
         return triangles;
+    }
+
+    public void freeTriangles() {
+        trianglePool.freeAll(triangles);
+        triangles.clear();
     }
 
 }

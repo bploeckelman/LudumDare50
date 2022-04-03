@@ -13,11 +13,16 @@ public class BallContact implements Comparable, Pool.Poolable
     public float penetrationDepth;
     public LandTile tile;
 
-    public BallContact(Snowball ball, Vector3 normal, float pen, LandTile tile){
+    public BallContact(){
+
+    }
+
+    public BallContact init(Snowball ball, Vector3 normal, float pen, LandTile tile) {
         this.tile = tile;
         this.ball = ball;
         this.contactNormal = normal;
         this.penetrationDepth = pen;
+        return this;
     }
 
     public void resolve(float dt){
