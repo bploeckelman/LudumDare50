@@ -1,8 +1,7 @@
 package lando.systems.ld50.objects;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -12,6 +11,8 @@ import lando.systems.ld50.Main;
 import lando.systems.ld50.physics.PhysicsManager;
 import lando.systems.ld50.screens.GameScreen;
 import com.badlogic.gdx.math.MathUtils;
+
+import static lando.systems.ld50.objects.LandTile.*;
 
 public class Landscape {
 
@@ -28,6 +29,9 @@ public class Landscape {
     private final ShaderProgram ballShader;
     GameScreen screen;
     LandTile highlightedTile;
+    Mesh landscapeMesh;
+    private float[] vertices;
+    private short[] indices;
 
     public Landscape(GameScreen screen) {
         this.screen = screen;
@@ -36,11 +40,21 @@ public class Landscape {
         landscapeShader = Main.game.assets.landscapeShader;
         snowBalls = new Array<>();
         tiles = new LandTile[TILES_WIDE * TILES_LONG];
+        vertices = new float[MAX_NUM_VERTICES * tiles.length];
+        indices = new short[MAX_INDICES * tiles.length];
+        landscapeMesh = new Mesh(false, MAX_NUM_VERTICES * tiles.length, MAX_INDICES * tiles.length,
+                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
+//                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
+                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
+        );
         for (int x = 0; x < TILES_WIDE; x++) {
             for (int y = 0; y < TILES_LONG; y++) {
-                tiles[x + TILES_WIDE * y] = new LandTile(x, y, TILE_WIDTH);
+                tiles[x + TILES_WIDE * y] = new LandTile(x, y, TILE_WIDTH, this);
             }
         }
+
+
 
         startAvalanche();
     }
@@ -73,9 +87,8 @@ public class Landscape {
 
         pickingShader.setUniformMatrix("u_projTrans", camera.combined);
 
-        for(LandTile tile : tiles) {
-            tile.render(pickingShader);
-        }
+        landscapeMesh.render(pickingShader, GL20.GL_TRIANGLES);
+
     }
 
     public void render(SpriteBatch batch, Camera camera) {
@@ -89,10 +102,11 @@ public class Landscape {
 
         Main.game.assets.noiseTex.bind(0);
         landscapeShader.setUniformMatrix("u_projTrans", camera.combined);
+        landscapeMesh.render(landscapeShader, GL20.GL_TRIANGLES, 0, indices.length);
 
-        for(LandTile tile : tiles) {
-            tile.render(landscapeShader);
-        }
+//        for(LandTile tile : tiles) {
+//            tile.render(landscapeShader);
+//        }
 
         if (highlightedTile != null){
             highlightedTile.renderHighlight(camera);
@@ -108,6 +122,19 @@ public class Landscape {
 
         batch.begin();
         batch.flush();
+    }
+
+    public void updateMesh(int x, int z, float[] verts, short[] indis) {
+        int startVertIndex = (x + z *TILES_WIDE) * MAX_NUM_VERTICES;
+        for (int i = 0; i < verts.length; i++) {
+            vertices[startVertIndex+i] = verts[i];
+        }
+        int startIndexIndex = (x + z *TILES_WIDE) * MAX_INDICES;
+        for (int i = 0; i < indis.length; i++) {
+            indices[startIndexIndex+i] = indis[i];
+        }
+        landscapeMesh.setVertices(vertices);
+        landscapeMesh.setIndices(indices);
     }
 
 

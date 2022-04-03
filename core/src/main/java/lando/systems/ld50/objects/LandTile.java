@@ -13,15 +13,17 @@ import lando.systems.ld50.Main;
 import lando.systems.ld50.physics.Triangle;
 import lando.systems.ld50.utils.screenshake.SimplexNoise;
 
+import static lando.systems.ld50.objects.Landscape.TILES_WIDE;
+
 public class LandTile {
-    private static final int NUM_COMPONENTS_POSITION = 3;
+    public static final int NUM_COMPONENTS_POSITION = 3;
     private static final int NUM_COMPONENTS_NORMAL = 3;
-    private static final int NUM_COMPONENTS_TEXTURE = 2;
-    private static final int NUM_COMPONENTS_COLOR = 4;
+    public static final int NUM_COMPONENTS_TEXTURE = 2;
+    public static final int NUM_COMPONENTS_COLOR = 4;
     private static final int NUM_COMPONENTS_PER_VERTEX = NUM_COMPONENTS_POSITION + NUM_COMPONENTS_TEXTURE + NUM_COMPONENTS_COLOR;
     private static final int MAX_TRIANGLES = 1000;
-    private static final int MAX_INDICES = 200;
-    private static final int MAX_NUM_VERTICES = MAX_TRIANGLES * 3;
+    public static final int MAX_INDICES = 12 * 3;
+    public static final int MAX_NUM_VERTICES = 9 * NUM_COMPONENTS_PER_VERTEX;
     private static final float HEIGHT_RANGE = 1f;
     private static final float MAX_SNOW = .1f;
 
@@ -45,13 +47,14 @@ public class LandTile {
     public float URSnowHeight = 0;
     public float LRSnowHeight = 0;
 
-    private Mesh mesh;
+//    private Mesh mesh;
     private Mesh boxMesh;
     private float[] vertices;
     private short[] indices;
     float[] boxverts = new float[9*4];
     short[] boxIndices = new short[6];
 
+    Landscape landscape;
     private int verticesIndex;
     private int indicesIndex;
     private int boxVerticesIndex;
@@ -65,8 +68,10 @@ public class LandTile {
     Vector3 p4;
     Vector3 p5;
 
-    public LandTile(int x, int z, float width) {
-        this.vertices = new float[MAX_NUM_VERTICES * NUM_COMPONENTS_PER_VERTEX];
+
+    public LandTile(int x, int z, float width, Landscape landscape) {
+        this.landscape = landscape;
+        this.vertices = new float[MAX_NUM_VERTICES];
         this.indices = new short[MAX_INDICES];
         this.width = width;
         this.x = x * width;
@@ -85,12 +90,12 @@ public class LandTile {
         LLHeight = Math.abs((float)noise.getNoise(x, z+1)) * terrainNoiseHeight;
         LRHeight = Math.abs((float)noise.getNoise(x+1, z+1)) * terrainNoiseHeight;
 
-        mesh = new Mesh(false, MAX_NUM_VERTICES, MAX_INDICES,
-                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
-//                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
-                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
-                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
-        );
+//        mesh = new Mesh(false, MAX_NUM_VERTICES, MAX_INDICES,
+//                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
+////                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
+//                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
+//                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
+//        );
         boxMesh = new Mesh(false, MAX_NUM_VERTICES, MAX_INDICES,
                 new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
 //                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
@@ -113,9 +118,9 @@ public class LandTile {
     }
 
     public void render(ShaderProgram shader) {
-        shader.setUniformf("x", (int)x);
-        shader.setUniformf("z", (int)z);
-        mesh.render(shader, GL20.GL_TRIANGLES, 0, indicesIndex);
+//        shader.setUniformf("x", (int)x);
+//        shader.setUniformf("z", (int)z);
+//        mesh.render(shader, GL20.GL_TRIANGLES, 0, indicesIndex);
     }
 
     public void renderHighlight(Camera camera){
@@ -238,8 +243,8 @@ public class LandTile {
         vertices[verticesIndex++] = p1.y;
         vertices[verticesIndex++] = p1.z;
         vertices[verticesIndex++] = ULSnowHeight / MAX_SNOW; // r
-        vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // g
-        vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = p1.x; // U
         vertices[verticesIndex++] = p1.z; // V
@@ -249,8 +254,8 @@ public class LandTile {
         vertices[verticesIndex++] = p2.y;
         vertices[verticesIndex++] = p2.z;
         vertices[verticesIndex++] = URSnowHeight / MAX_SNOW; // r
-        vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // g
-        vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = p2.x; // U
         vertices[verticesIndex++] = p2.z; // V
@@ -260,8 +265,8 @@ public class LandTile {
         vertices[verticesIndex++] = p3.y;
         vertices[verticesIndex++] = p3.z;
         vertices[verticesIndex++] = LRSnowHeight / MAX_SNOW; // r
-        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // g
-        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = p3.x; // U
         vertices[verticesIndex++] = p3.z; // V
@@ -271,8 +276,8 @@ public class LandTile {
         vertices[verticesIndex++] = p4.y;
         vertices[verticesIndex++] = p4.z;
         vertices[verticesIndex++] = LLSnowHeight / MAX_SNOW; // r
-        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // g
-        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = p4.x; // U
         vertices[verticesIndex++] = p4.z; // V
@@ -282,8 +287,8 @@ public class LandTile {
         vertices[verticesIndex++] = p5.y;
         vertices[verticesIndex++] = p5.z;
         vertices[verticesIndex++] = (ULSnowHeight + URSnowHeight + LLSnowHeight + LRSnowHeight) / 4f / MAX_SNOW; // r
-        vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // g
-        vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = p5.x; // U
         vertices[verticesIndex++] = p5.z; // V
@@ -293,8 +298,8 @@ public class LandTile {
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z;
         vertices[verticesIndex++] = -2; // r
-        vertices[verticesIndex++] = 0; // g
-        vertices[verticesIndex++] = 0; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = 1; // U
         vertices[verticesIndex++] = 1; // V
@@ -304,8 +309,8 @@ public class LandTile {
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z;
         vertices[verticesIndex++] = -2; // r
-        vertices[verticesIndex++] = 0; // g
-        vertices[verticesIndex++] = 0; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = 1; // U
         vertices[verticesIndex++] = 1; // V
@@ -315,8 +320,8 @@ public class LandTile {
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z + width;
         vertices[verticesIndex++] = -2; // r
-        vertices[verticesIndex++] = 0; // g
-        vertices[verticesIndex++] = 0; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = 1; // U
         vertices[verticesIndex++] = 1; // V
@@ -326,64 +331,66 @@ public class LandTile {
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z + width;
         vertices[verticesIndex++] = -2; // r
-        vertices[verticesIndex++] = 0; // g
-        vertices[verticesIndex++] = 0; // b
+        vertices[verticesIndex++] = x; // g
+        vertices[verticesIndex++] = z; // b
         vertices[verticesIndex++] = 1; // a
         vertices[verticesIndex++] = 1; // U
         vertices[verticesIndex++] = 1; // V
 
 
-        indices[indicesIndex++] = 0;
-        indices[indicesIndex++] = 1;
-        indices[indicesIndex++] = 4;
+        int indexStartIndex = (short)(x + z * TILES_WIDE) * 9;
+        indices[indicesIndex++] = (short) (indexStartIndex + 0);
+        indices[indicesIndex++] = (short) (indexStartIndex + 1);
+        indices[indicesIndex++] = (short) (indexStartIndex + 4);
 
-        indices[indicesIndex++] = 1;
-        indices[indicesIndex++] = 2;
-        indices[indicesIndex++] = 4;
+        indices[indicesIndex++] = (short) (indexStartIndex + 1);
+        indices[indicesIndex++] = (short) (indexStartIndex + 2);
+        indices[indicesIndex++] = (short) (indexStartIndex + 4);
 
-        indices[indicesIndex++] = 2;
-        indices[indicesIndex++] = 3;
-        indices[indicesIndex++] = 4;
+        indices[indicesIndex++] = (short) (indexStartIndex + 2);
+        indices[indicesIndex++] = (short) (indexStartIndex + 3);
+        indices[indicesIndex++] = (short) (indexStartIndex + 4);
 
-        indices[indicesIndex++] = 3;
-        indices[indicesIndex++] = 0;
-        indices[indicesIndex++] = 4;
+        indices[indicesIndex++] = (short) (indexStartIndex + 3);
+        indices[indicesIndex++] = (short) (indexStartIndex + 0);
+        indices[indicesIndex++] = (short) (indexStartIndex + 4);
 
-        indices[indicesIndex++] = 5;
-        indices[indicesIndex++] = 3;
-        indices[indicesIndex++] = 8;
+        indices[indicesIndex++] = (short) (indexStartIndex + 5);
+        indices[indicesIndex++] = (short) (indexStartIndex + 3);
+        indices[indicesIndex++] = (short) (indexStartIndex + 8);
 
-        indices[indicesIndex++] = 0;
-        indices[indicesIndex++] = 3;
-        indices[indicesIndex++] = 5;
+        indices[indicesIndex++] = (short) (indexStartIndex + 0);
+        indices[indicesIndex++] = (short) (indexStartIndex + 3);
+        indices[indicesIndex++] = (short) (indexStartIndex + 5);
 
-        indices[indicesIndex++] = 0;
-        indices[indicesIndex++] = 1;
-        indices[indicesIndex++] = 6;
+        indices[indicesIndex++] = (short) (indexStartIndex + 0);
+        indices[indicesIndex++] = (short) (indexStartIndex + 1);
+        indices[indicesIndex++] = (short) (indexStartIndex + 6);
 
-        indices[indicesIndex++] = 0;
-        indices[indicesIndex++] = 6;
-        indices[indicesIndex++] = 5;
+        indices[indicesIndex++] = (short) (indexStartIndex + 0);
+        indices[indicesIndex++] = (short) (indexStartIndex + 6);
+        indices[indicesIndex++] = (short) (indexStartIndex + 5);
 
-        indices[indicesIndex++] = 1;
-        indices[indicesIndex++] = 2;
-        indices[indicesIndex++] = 6;
+        indices[indicesIndex++] = (short) (indexStartIndex + 1);
+        indices[indicesIndex++] = (short) (indexStartIndex + 2);
+        indices[indicesIndex++] = (short) (indexStartIndex + 6);
 
-        indices[indicesIndex++] = 2;
-        indices[indicesIndex++] = 6;
-        indices[indicesIndex++] = 7;
+        indices[indicesIndex++] = (short) (indexStartIndex + 2);
+        indices[indicesIndex++] = (short) (indexStartIndex + 6);
+        indices[indicesIndex++] = (short) (indexStartIndex + 7);
 
-        indices[indicesIndex++] = 2;
-        indices[indicesIndex++] = 3;
-        indices[indicesIndex++] = 7;
+        indices[indicesIndex++] = (short) (indexStartIndex + 2);
+        indices[indicesIndex++] = (short) (indexStartIndex + 3);
+        indices[indicesIndex++] = (short) (indexStartIndex + 7);
 
-        indices[indicesIndex++] = 3;
-        indices[indicesIndex++] = 7;
-        indices[indicesIndex++] = 8;
+        indices[indicesIndex++] = (short) (indexStartIndex + 3);
+        indices[indicesIndex++] = (short) (indexStartIndex + 7);
+        indices[indicesIndex++] = (short) (indexStartIndex + 8);
 
+        landscape.updateMesh((int)x, (int)z, vertices, indices);
 
-        mesh.setVertices(vertices);
-        mesh.setIndices(indices);
+//        mesh.setVertices(vertices);
+//        mesh.setIndices(indices);
 
         buildHighlightMesh();
     }
