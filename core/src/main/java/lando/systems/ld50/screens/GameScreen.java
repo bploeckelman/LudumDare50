@@ -342,7 +342,7 @@ public class GameScreen extends BaseScreen {
 
         float height = 0.25f;
 
-        decals.add(new AnimationDecal(assets, ImageInfo.Babe, 4, height, 8));
+        decals.add(new AnimationDecal(assets, ImageInfo.Babe, 0, height, 8));
         decals.add(new AnimationDecal(assets, ImageInfo.Dude, 4, height, 10));
         decals.add(new AnimationDecal(assets, ImageInfo.Deer, 4, height, 6));
         decals.add(new AnimationDecal(assets, ImageInfo.Plow, 4, 1, -1));
