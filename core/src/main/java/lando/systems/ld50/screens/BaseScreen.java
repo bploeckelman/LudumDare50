@@ -7,26 +7,27 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.VisLabel;
-import com.kotcrab.vis.ui.widget.VisSlider;
-import com.kotcrab.vis.ui.widget.VisTable;
-import com.kotcrab.vis.ui.widget.VisWindow;
+import com.kotcrab.vis.ui.widget.*;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
@@ -43,6 +44,13 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
     public final Vector3 pointerPos;
     public Group settingsGroup;
     public VisWindow settingsWindow;
+    public VisImage settingsPane;
+    private Rectangle settingsPaneBoundsVisible;
+    private Rectangle settingsPaneBoundsHidden;
+    public boolean isSettingShown = false;
+    public MoveToAction hideSettingsPaneAction;
+    public MoveToAction showSettingsPaneAction;
+
 
     public boolean exitingScreen;
 //    public Particles particles;
@@ -85,10 +93,11 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         skin = VisUI.getSkin();
         StretchViewport viewport = new StretchViewport(windowCamera.viewportWidth, windowCamera.viewportHeight);
         uiStage = new Stage(viewport, batch);
-        //initializeSettingsUI();
+        initializeSettingsUI();
     }
 
-    private void initializeSettingsUI() {
+    //TODO: remove foloowing method
+    private void TBD_initializeSettingsUITable() {
         VisTable rootTable = new VisTable();
         rootTable.setWidth(windowCamera.viewportWidth);
         rootTable.setHeight(windowCamera.viewportHeight);
@@ -115,6 +124,52 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         settingsGroup.addActor(rootTable);
 //        settingsGroup.addActor(settingsWindow);
         uiStage.addActor(settingsGroup);
+    }
+
+    private void initializeSettingsUI() {
+
+        Window.WindowStyle defaultWindowStyle = skin.get("default", Window.WindowStyle.class);
+        Window.WindowStyle glassWindowStyle = new Window.WindowStyle(defaultWindowStyle);
+        glassWindowStyle.background = Assets.Patch.glass.drawable;
+
+
+        settingsPaneBoundsVisible = new Rectangle(windowCamera.viewportWidth/4, 0, windowCamera.viewportWidth/2, windowCamera.viewportHeight);
+        settingsPaneBoundsHidden = new Rectangle(settingsPaneBoundsVisible);
+        settingsPaneBoundsHidden.y -= settingsPaneBoundsVisible.height;
+
+        isSettingShown = false;
+        Rectangle bounds = isSettingShown ? settingsPaneBoundsVisible : settingsPaneBoundsHidden;
+
+//        settingsPane = new VisImage(Assets.Patch.glass_active.drawable);
+//        settingsPane.setSize(bounds.width, bounds.height);
+//        settingsPane.setPosition(bounds.x, bounds.y);
+//        settingsPane.setColor(Color.DARK_GRAY);
+
+        settingsWindow = new VisWindow("", glassWindowStyle);
+        settingsWindow.setSize(bounds.width, bounds.height);
+        settingsWindow.setPosition(bounds.x, bounds.y);
+        settingsWindow.setColor(Color.DARK_GRAY);
+
+        VisLabel settingLabel = new VisLabel("Settings", "outfit-medium-40px");
+        settingsWindow.add(settingLabel).padBottom(40f);
+        settingsWindow.row();
+        settingsWindow.add(settingLabel).padBottom(40f);
+
+//        settingsGroup = new Group();
+//        settingsGroup.addActor(settingsPane);
+
+        hideSettingsPaneAction = new MoveToAction();
+        hideSettingsPaneAction.setPosition(settingsPaneBoundsHidden.x, settingsPaneBoundsHidden.y);
+        hideSettingsPaneAction.setDuration(.5f);
+        //hideSettingsPaneAction.setActor(settingsGroup);
+
+        showSettingsPaneAction = new MoveToAction();
+        showSettingsPaneAction.setPosition(settingsPaneBoundsVisible.x, settingsPaneBoundsVisible.y);
+        showSettingsPaneAction.setDuration(.5f);
+        //showSettingsPaneAction.setActor(settingsGroup);
+
+
+        uiStage.addActor(settingsWindow);
     }
 
     public void transitionCompleted() {

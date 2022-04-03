@@ -55,7 +55,20 @@ public class TitleScreen extends BaseScreen {
         });
 
         settingsButton = new VisTextButton("Settings", "outfit-medium-40px");
-        settingsButton.setFillParent(true);
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (isSettingShown) {
+                    //settingsWindow.setZIndex(settingsWindow.getZIndex() + 1);
+                    settingsWindow.addAction(hideSettingsPaneAction);
+                    isSettingShown = false;
+                } else {
+                    //settingsWindow.setZIndex(settingsWindow.getZIndex() + 1);
+                    settingsWindow.addAction(showSettingsPaneAction);
+                    isSettingShown = true;
+                }
+            }
+        });
 
 
         creditButton = new VisTextButton("Credits", "outfit-medium-40px");
@@ -72,6 +85,8 @@ public class TitleScreen extends BaseScreen {
         });
 
         rootTable.add(startGameButton).padBottom(BUTTON_PADDING);
+        rootTable.row();
+        rootTable.add(settingsButton).padBottom(BUTTON_PADDING);
         rootTable.row();
         rootTable.add(creditButton).padBottom(BUTTON_PADDING);
 
