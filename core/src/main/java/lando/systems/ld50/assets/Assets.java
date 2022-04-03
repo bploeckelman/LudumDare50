@@ -50,6 +50,8 @@ public class Assets implements Disposable {
     public ShaderProgram pickingShader;
     public ShaderProgram highlightShader;
 
+    public TextureRegion waveIcon;
+
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
     public SimplexNoise noise;
@@ -169,6 +171,8 @@ public class Assets implements Disposable {
 
         cat = new Animation<>(0.1f, atlas.findRegions("pets/cat"), Animation.PlayMode.LOOP);
         dog = new Animation<>(0.1f, atlas.findRegions("pets/dog"), Animation.PlayMode.LOOP);
+
+        waveIcon = atlas.findRegion("icons/wave");
 
         // initialize particle images
         particles = new Particles();

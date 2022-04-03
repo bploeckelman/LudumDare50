@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
@@ -40,6 +41,8 @@ import lando.systems.ld50.particles.PhysicsDecal;
 import lando.systems.ld50.utils.Time;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
+
+import static com.badlogic.gdx.graphics.Color.FOREST;
 
 
 public class GameScreen extends BaseScreen {
@@ -454,8 +457,10 @@ public class GameScreen extends BaseScreen {
 
         VisProgressBar.ProgressBarStyle horizontalProgressBarStyle = skin.get("default-horizontal", VisProgressBar.ProgressBarStyle.class);
         VisProgressBar.ProgressBarStyle avalancheProgressBarStyle = new VisProgressBar.ProgressBarStyle(horizontalProgressBarStyle);
-        avalancheProgressBarStyle.knob = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.button_light_tv));
-        progressBar = new VisProgressBar(0f, 100f, 1f, false, avalancheProgressBarStyle);
+        avalancheProgressBarStyle.knob = new TextureRegionDrawable(assets.waveIcon);
+        avalancheProgressBarStyle.background = new TextureRegionDrawable(getColoredTextureRegion(Color.FOREST));
+        avalancheProgressBarStyle.knobBefore = new TextureRegionDrawable(getColoredTextureRegion(Color.LIGHT_GRAY));
+        progressBar = new VisProgressBar(0f, 1f, 0.01f, false, avalancheProgressBarStyle);
         progressBar.setPosition(windowCamera.viewportWidth / 4f, windowCamera.viewportHeight - 50f);
         progressBar.setValue(0f);
         progressBar.setWidth(windowCamera.viewportWidth / 2f);
@@ -464,7 +469,16 @@ public class GameScreen extends BaseScreen {
     }
 
     private void updateProgressBarValue() {
-        progressBar.setValue(camera.position.z);
+        progressBar.setValue(getAvalancheProgress());
+    }
+
+    private TextureRegion getColoredTextureRegion(Color color) {
+        Pixmap pixMap = new Pixmap(100, 20, Pixmap.Format.RGBA8888);
+        pixMap.setColor(color);
+        pixMap.fill();
+        TextureRegion textureRegion = new TextureRegion(new Texture(pixMap));
+        pixMap.dispose();
+        return textureRegion;
     }
 
     private void initializeDebugUI() {
