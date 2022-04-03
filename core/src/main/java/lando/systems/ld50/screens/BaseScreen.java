@@ -13,10 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -24,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -151,7 +149,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         VisLabel musicVolumeLabel = new VisLabel("Music Volume", "outfit-medium-20px");
         settingsWindow.add(musicVolumeLabel).padBottom(10f);
         settingsWindow.row();
-        VisSlider musicSlider = new VisSlider(0f, 1f, .1f, false, customCatSliderStyle);
+        VisSlider musicSlider = new VisSlider(0f, 1f, .01f, false, customCatSliderStyle);
         musicSlider.setValue(audio.musicVolume.floatValue());
         musicSlider.addListener(new ChangeListener() {
             @Override
@@ -164,12 +162,17 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         VisLabel soundVolumeLevel = new VisLabel("Sound Volume", "outfit-medium-20px");
         settingsWindow.add(soundVolumeLevel).padBottom(10f);
         settingsWindow.row();
-        VisSlider soundSlider = new VisSlider(0f, 1f, .1f, false, customDogSliderStyle);
+        VisSlider soundSlider = new VisSlider(0f, 1f, .01f, false, customDogSliderStyle);
         soundSlider.setValue(audio.soundVolume.floatValue());
-        soundSlider.addListener(new ChangeListener() {
+        soundSlider.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 audio.setSoundVolume(soundSlider.getValue());
+                audio.playSound(AudioManager.Sounds.chaching);
             }
         });
         settingsWindow.add(soundSlider).padBottom(10f).width(settingsWindow.getWidth() - 100f);
