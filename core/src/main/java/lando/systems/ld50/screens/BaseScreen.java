@@ -236,9 +236,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         // keep close settings button on top of settings window at all times
         closeSettingsButton.setZIndex(closeSettingsButton.getZIndex() + 3);
 
-//        audio.update(dt);
-
-
+        audio.update(dt);
     }
 
     public void resize(int width, int height) {}
