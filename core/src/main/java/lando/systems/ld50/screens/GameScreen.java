@@ -31,8 +31,10 @@ import com.badlogic.gdx.utils.UBJsonReader;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
+import lando.systems.ld50.assets.ImageInfo;
 import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.SimpleCameraController;
+import lando.systems.ld50.objects.AnimationDecal;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
 import lando.systems.ld50.particles.PhysicsDecal;
@@ -67,7 +69,7 @@ public class GameScreen extends BaseScreen {
     private Model creatureModel;
     private Array<ModelInstance> houseInstances;
     private Array<ModelInstance> creatureInstances;
-    private Array<Decal> decals;
+    private Array<AnimationDecal> decals;
     private Array<Decal> freeParticleDecals;
 
     private Vector3 touchPos;
@@ -167,9 +169,10 @@ public class GameScreen extends BaseScreen {
         landscape.update(dt);
 
         billboardCameraPos.set(camera.position).y = 0f;
-        for (Decal decal : decals) {
-            decal.lookAt(billboardCameraPos, camera.up);
-            decalBatch.add(decal);
+        for (AnimationDecal decal : decals) {
+            //decal.lookAt(billboardCameraPos, camera.up);
+            decal.update(dt);
+            decalBatch.add(decal.get());
         }
 
         /*for (Decal decal : particleDecals) {
@@ -340,29 +343,14 @@ public class GameScreen extends BaseScreen {
         decals = new Array<>();
         freeParticleDecals = new Array<>();
 
-        Decal decal;
         float height = 0.25f;
 
-        decal = Decal.newDecal(assets.atlas.findRegion("characters/babe-a"), true);
-        decal.setPosition(4f, height, 8f);
-        decal.setScale(0.01f);
-        decals.add(decal);
+        decals.add(new AnimationDecal(assets, ImageInfo.Babe, 4, height, 8));
+        decals.add(new AnimationDecal(assets, ImageInfo.Dude, 4, height, 10));
+        decals.add(new AnimationDecal(assets, ImageInfo.Deer, 4, height, 6));
+        decals.add(new AnimationDecal(assets, ImageInfo.Plow, 4, 1, -1));
 
-        decal = Decal.newDecal(assets.atlas.findRegion("characters/dude-a"), true);
-        decal.setPosition(4f, height, 10f);
-        decal.setScale(0.01f);
-        decals.add(decal);
-
-        decal = Decal.newDecal(assets.atlas.findRegion("characters/deer-a"), true);
-        decal.setPosition(4f, height, 6f);
-        decal.setScale(0.01f);
-        decals.add(decal);
-
-        decal = Decal.newDecal(assets.atlas.findRegion("characters/plow-a"), true);
-        decal.setPosition(4f, 1f, -5f);
-        decal.setScale(0.05f);
-        decals.add(decal);
-
+        Decal decal;
         for (int i = 0; i < 10000; i++) {
             decal = Decal.newDecal(assets.particles.smoke, true);
             decal.setColor(1f, 1f, 1f, 0.3f);
