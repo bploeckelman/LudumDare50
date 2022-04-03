@@ -32,9 +32,9 @@ public class BallContact implements Comparable, Pool.Poolable
         resolveInterpenetration(dt);
         tile.addSnow(ball);
         for (int i = 0; i < 8; i++) {
-            PhysicsDecal.addDecalParticle(new Vector3(ball.position),
+            PhysicsDecal.addDecalParticle(new Vector3(ball.position.x, ball.position.y - ball.radius, ball.position.z),
                     (new Vector3(0.25f * MathUtils.sin(i * MathUtils.PI / 4), 0.2f, 0.25f * MathUtils.cos(i * MathUtils.PI / 4)))
-                            .scl(ball.radius * 3)/*.add(ball.velocity)*/, 0.25f, PhysicsDecal.phys.GravityHighDrag);
+                            .scl(ball.radius * 3)/*.add(ball.velocity)*/, 0.4f, PhysicsDecal.phys.GravityHighDrag);
         }
     }
 

@@ -51,6 +51,9 @@ public class PhysicsDecal {
                 }
                 this.velocity.y -= 3 * dt;
                 this.velocity.scl(0.75f, 1, 0.75f);
+                if (this.position.y < -0.1) {
+                    this.ttl = -1;
+                }
                 break;
             case NoPhysics:
                 break;
