@@ -12,21 +12,22 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
-import lando.systems.ld50.Main;
 import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.Landscape;
+import lando.systems.ld50.utils.Time;
 import lando.systems.ld50.utils.accessors.PerspectiveCameraAccessor;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
@@ -48,10 +49,17 @@ public class GameScreen extends BaseScreen {
     private final Environment env;
     private final ModelBatch modelBatch;
 
-    private Model testModel;
     private Model coordsModel;
-    private ModelInstance testInstance;
     private ModelInstance coords;
+
+    private Model houseModelA, houseModelB;
+    private Model creatureModel;
+    private Array<ModelInstance> houseInstances;
+    private Array<ModelInstance> creatureInstances;
+
+    private Model animTestModel;
+    private ModelInstance animTestInstance;
+    private AnimationController animTestController;
 
     private Vector3 touchPos;
     private Vector3 startPos, endPos;
@@ -84,17 +92,22 @@ public class GameScreen extends BaseScreen {
 
         loadModels();
 
-        InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
-        Gdx.input.setInputProcessor(mux);
+        touchPos = new Vector3();
+
         fb =  new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         fbTex = fb.getColorBufferTexture();
-        touchPos = new Vector3();
+
+        InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
+        Gdx.input.setInputProcessor(mux);
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        testModel.dispose();
+        houseModelA.dispose();
+        houseModelB.dispose();
+        animTestModel.dispose();
+        creatureModel.dispose();
         coordsModel.dispose();
         modelBatch.dispose();
     }
@@ -124,7 +137,8 @@ public class GameScreen extends BaseScreen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-            dumpCameraVecsToLog();
+//            dumpCameraVecsToLog();
+            Time.pause_for(0.2f);
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
@@ -164,8 +178,10 @@ public class GameScreen extends BaseScreen {
         // TODO - might need to make everything draw with the model batch
         modelBatch.begin(camera);
         {
-            modelBatch.render(testInstance, env);
             modelBatch.render(coords, env);
+            modelBatch.render(houseInstances, env);
+            modelBatch.render(creatureInstances, env);
+            modelBatch.render(animTestInstance, env);
             landscape.render(modelBatch, env);
         }
         modelBatch.end();
@@ -223,17 +239,76 @@ public class GameScreen extends BaseScreen {
     }
 
     private void loadModels() {
-        BoundingBox box = new BoundingBox();
         G3dModelLoader loader = new G3dModelLoader(new UBJsonReader());
-        testModel = loader.loadModel(Gdx.files.internal("models/house-2.g3db"));
-        testInstance = new ModelInstance(testModel);
-        testInstance.calculateBoundingBox(box);
-        testInstance.transform
-                .scale(
-                        1f / (box.max.x - box.min.x),
-                        1f / (box.max.y - box.min.y),
-                        1f / (box.max.z - box.min.z))
-                .setTranslation(0.5f, 0f, 0.5f)
+        BoundingBox box = new BoundingBox();
+
+        float extentX, extentY, extentZ, maxExtent;
+
+        houseModelA = loader.loadModel(Gdx.files.internal("models/house-a.g3db"));
+        houseModelB = loader.loadModel(Gdx.files.internal("models/house-b.g3db"));
+
+        ModelInstance instanceA = new ModelInstance(houseModelA);
+        instanceA.calculateBoundingBox(box);
+        extentX = (box.max.x - box.min.x);
+        extentY = (box.max.y - box.min.y);
+        extentZ = (box.max.z - box.min.z);
+        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        instanceA.transform
+                .setToTranslationAndScaling(
+                        0.5f, 0f, 0.5f,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent)
+        ;
+
+        ModelInstance instanceB = new ModelInstance(houseModelB);
+        instanceB.calculateBoundingBox(box);
+        extentX = (box.max.x - box.min.x);
+        extentY = (box.max.y - box.min.y);
+        extentZ = (box.max.z - box.min.z);
+        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        instanceB.transform
+                .setToTranslationAndScaling(
+                        1.5f, 0f, 0.5f,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent)
+        ;
+
+        houseInstances = new Array<>();
+        houseInstances.addAll(instanceA, instanceB);
+
+        creatureModel = loader.loadModel(Gdx.files.internal("models/yeti_00.g3db"));
+        ModelInstance creatureInstance = new ModelInstance(creatureModel);
+        creatureInstance.calculateBoundingBox(box);
+        extentX = (box.max.x - box.min.x);
+        extentY = (box.max.y - box.min.y);
+        extentZ = (box.max.z - box.min.z);
+        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        creatureInstance.transform
+                .setToTranslationAndScaling(
+                        4f, 0f, 3f,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent)
+        ;
+
+        creatureInstances = new Array<>();
+        creatureInstances.add(creatureInstance);
+
+        animTestModel = loader.loadModel(Gdx.files.internal("models/Shambler.g3db"));
+        animTestInstance = new ModelInstance(animTestModel);
+        animTestInstance.calculateBoundingBox(box);
+        extentX = (box.max.x - box.min.x);
+        extentY = (box.max.y - box.min.y);
+        extentZ = (box.max.z - box.min.z);
+        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        animTestInstance.transform
+                .setToTranslationAndScaling(
+                        6f, 0.25f, 5f,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent)
         ;
 
         ModelBuilder builder = new ModelBuilder();
