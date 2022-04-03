@@ -75,7 +75,6 @@ public class GameScreen extends BaseScreen {
     private Vector3 startUp, endUp;
     private Vector3 startDir, endDir;
     private int cameraPhase = 1;
-    private Vector3 camOriginalPos, camWaypoint, camZoomIn, camZoomDir;
     private float cameraTransitionDT = 0;
 
     private Vector3 lightDir;
@@ -179,6 +178,10 @@ public class GameScreen extends BaseScreen {
             TransitionCamera();
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && cameraPhase == 3) {
+            UntransitionCamera();
+        }
+
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         worldCamera.unproject(touchPos);
         Vector2 tile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
@@ -216,19 +219,20 @@ public class GameScreen extends BaseScreen {
                     MathUtils.lerp(startPos.x, endPos.x, cameraMovementT),
                     MathUtils.lerp(startPos.y, endPos.y, cameraMovementT),
                     MathUtils.lerp(startPos.z, endPos.z, cameraMovementT));
-        } else if (cameraPhase == 2) {
+        } else if (cameraPhase % 2 == 0) {
             cameraTransitionDT += dt;
             double frac = cameraTransitionDT / 2.5;
             if (frac >= 1) {
                 frac = 1;
-                cameraPhase = 3;
+                cameraPhase++;
+                cameraTransitionDT = 0;
             }
             double tVal = frac < 0.5 ? 2 * frac * frac : 1 - ((-2 * frac + 2)*(-2*frac + 2)) / 2;//1-((1-frac)*(1-frac)*(1-frac));
-            t1.set(camOriginalPos);
-            t2.set(camWaypoint);
-            t3.set(camZoomIn);
-            t4.set(startDir);
-            t5.set(camZoomDir);
+            t1.set(camStartPos);
+            t2.set(camMidPos);
+            t3.set(camEndPos);
+            t4.set(camStartDir);
+            t5.set(camEndDir);
             camera.position.set(
                     t1.scl((float)((1-tVal)*(1-tVal)))
                             .add(t2.scl((float)(2*tVal*(1-tVal))))
@@ -347,12 +351,30 @@ public class GameScreen extends BaseScreen {
         camera.update();
     }
 
+    Vector3 camStartPos = new Vector3();
+    Vector3 camMidPos = new Vector3();
+    Vector3 camEndPos = new Vector3();
+    Vector3 camStartDir = new Vector3();
+    Vector3 camEndDir = new Vector3();
+
     private void TransitionCamera() {
         cameraPhase = 2;
-        camWaypoint = new Vector3(3f, 2f, camera.position.z + 5);
-        camZoomIn = new Vector3(4f, 1f, 10f);
-        camZoomDir = (new Vector3(0f, -0.27f, -1f)).nor();
-        camOriginalPos = camera.position;
+        camStartPos.set(camera.position);
+        camMidPos.set(3f, 2f, camera.position.z + 5);
+        camEndPos.set(4f, 1f, 10f);
+        camStartDir.set(camera.direction);
+        camEndDir.set(0f, -0.27f, -1f);
+        camEndDir.nor();
+    }
+
+    private void UntransitionCamera() {
+        cameraPhase = 0;
+        camStartPos.set(camera.position);
+        camMidPos.set(1f, 3f, camera.position.z + 5);
+        camEndPos.set(1f, 4f, 10f);
+        camStartDir.set(camera.direction);
+        camEndDir.set(startDir);
+        camEndDir.nor();
     }
 
     private void loadModels() {
