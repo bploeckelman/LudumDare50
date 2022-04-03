@@ -41,7 +41,7 @@ public class PhysicsDecal {
     }
 
     public void update(float dt) {
-        this.position.add(this.velocity);
+        this.position.add(this.velocity.x * dt, this.velocity.y * dt, this.velocity.z * dt);
         this.ttl -= dt;
         this.decal.setPosition(this.position);
         switch ( pathing ) {
@@ -49,7 +49,7 @@ public class PhysicsDecal {
                 if (this.velocity.y > 0) {
                     this.velocity.y *= 0.5;
                 }
-                this.velocity.y -= 3 * dt;
+                this.velocity.y -= 1 * dt;
                 this.velocity.scl(0.75f, 1, 0.75f);
                 if (this.position.y < -0.1) {
                     this.ttl = -1;
@@ -58,6 +58,7 @@ public class PhysicsDecal {
             case NoPhysics:
                 break;
         }
+        this.decal.setColor(1f, 1f, 1f, ttl/1f);
 
     }
 

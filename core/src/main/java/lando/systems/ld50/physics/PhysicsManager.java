@@ -93,7 +93,7 @@ public class PhysicsManager {
                 ballContacts.add(contactPool.obtain().init(ball, t.getNormal(), overlap, tile));
             }
         }
-        tile.freeTriangles();
+//        tile.freeTriangles();
     }
 
     Vector3 ab = new Vector3();

@@ -9,11 +9,13 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.SphereShapeBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.UBJsonReader;
 import lando.systems.ld50.Main;
+import lando.systems.ld50.particles.PhysicsDecal;
 
 public class Snowball {
     public Vector3 position;
@@ -67,6 +69,12 @@ public class Snowball {
     public void update(float dt){
         instance.transform.setToTranslation(position)
                 .scale(radius, radius, radius);
+
+        for (int i = 0; i < 8; i++) {
+            PhysicsDecal.addDecalParticle(new Vector3(position.x + MathUtils.random(-radius, radius), position.y + MathUtils.random(-radius, radius), position.z + .5f),
+                    (new Vector3(2.5f * MathUtils.sin(i * MathUtils.PI / 4), 0.2f, 2.5f * MathUtils.cos(i * MathUtils.PI / 4)))
+                            .scl(radius * MathUtils.random(2f, 4f))/*.add(ball.velocity)*/, 1.25f, PhysicsDecal.phys.GravityHighDrag);
+        }
     }
 
     public void render(ModelBatch batch, Environment env) {

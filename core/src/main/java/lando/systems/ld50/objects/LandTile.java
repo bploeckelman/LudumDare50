@@ -390,11 +390,12 @@ public class LandTile {
 
     Array<Triangle> triangles = new Array<>();
     public Array<Triangle> getTriangles() {
-        triangles.clear();
-        triangles.add(trianglePool.obtain().init(p1, p2, p5));
-        triangles.add(trianglePool.obtain().init(p2, p3, p5));
-        triangles.add(trianglePool.obtain().init(p3, p4, p5));
-        triangles.add(trianglePool.obtain().init(p4, p1, p5));
+        if (triangles.size == 0) {
+            triangles.add(trianglePool.obtain().init(p1, p2, p5));
+            triangles.add(trianglePool.obtain().init(p2, p3, p5));
+            triangles.add(trianglePool.obtain().init(p3, p4, p5));
+            triangles.add(trianglePool.obtain().init(p4, p1, p5));
+        }
         return triangles;
     }
 
