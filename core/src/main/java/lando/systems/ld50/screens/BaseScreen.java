@@ -101,36 +101,6 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         initializeSettingsUI();
     }
 
-    //TODO: remove foloowing method
-    private void TBD_initializeSettingsUITable() {
-        VisTable rootTable = new VisTable();
-        rootTable.setWidth(windowCamera.viewportWidth);
-        rootTable.setHeight(windowCamera.viewportHeight);
-        rootTable.align(Align.center);
-        settingsWindow = new VisWindow("", "noborder");
-        settingsWindow.align(Align.center | Align.top);
-        settingsWindow.setColor(0f, 0f, 0f, .9f);
-        settingsWindow.setWidth(windowCamera.viewportWidth / 2);
-        settingsWindow.setHeight(windowCamera.viewportHeight);
-        settingsWindow.padLeft(50f).padRight(50f);
-        VisLabel settingLabel = new VisLabel("Settings", "outfit-medium-40px");
-        settingsWindow.add(settingLabel).padBottom(40f);
-        settingsWindow.row();
-        VisLabel musicVolumeLabel = new VisLabel("Music Volume", "outfit-medium-20px");
-        Drawable temp = skin.getDrawable("default-horizontal");
-
-        settingsWindow.add(musicVolumeLabel).padBottom(10f);
-        settingsWindow.row();
-        VisSlider musicSlider = new VisSlider(0, 1f, .05f, false, "default-vertical");
-        //musicSlider.setColor(0f, 0f, 0f, 1f);
-        settingsWindow.add(musicSlider).width(windowCamera.viewportWidth / 2);
-        settingsGroup = new Group();
-        rootTable.add(settingsWindow).height(windowCamera.viewportHeight);
-        settingsGroup.addActor(rootTable);
-//        settingsGroup.addActor(settingsWindow);
-        uiStage.addActor(settingsGroup);
-    }
-
     private void initializeSettingsUI() {
 
         Window.WindowStyle defaultWindowStyle = skin.get("default", Window.WindowStyle.class);
