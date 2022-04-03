@@ -112,7 +112,8 @@ public class GameScreen extends BaseScreen {
 
         BoundingBox box = new BoundingBox();
         G3dModelLoader loader = new G3dModelLoader(new UBJsonReader());
-        testModel = loader.loadModel(Gdx.files.internal("models/cliff_block_rock.g3db"));
+//        testModel = loader.loadModel(Gdx.files.internal("models/cliff_block_rock.g3db"));
+        testModel = loader.loadModel(Gdx.files.internal("models/house-2.g3db"));
         testInstance = new ModelInstance(testModel);
         testInstance.calculateBoundingBox(box);
         testInstance.transform
