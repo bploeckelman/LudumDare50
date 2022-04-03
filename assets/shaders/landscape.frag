@@ -23,6 +23,8 @@ void main() {
                     noise3.b * .2 +
                     noise2.b * .25 +
                     noise2.g * .05);
-    gl_FragColor = vec4(vec3(noise) * vec3(.2, 1., .2), 1.);
-//    gl_FragColor = vec4(v_texCoords, 1., 1.);
+    vec3 grassColor = noise * mix( vec3(.3, .4, .05), vec3(.2, 1., .2), noise);
+    vec3 snowColor = ((noise/2.)+.5) * vec3(1., 1., 1.);
+    gl_FragColor = vec4(mix(grassColor, snowColor, v_color.r), 1.);
+//    gl_FragColor = vec4(v_color.r, 1., 1., 1.);
 }

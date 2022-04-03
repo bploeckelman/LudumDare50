@@ -2,6 +2,7 @@ package lando.systems.ld50.physics;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pool;
+import lando.systems.ld50.objects.LandTile;
 import lando.systems.ld50.objects.Snowball;
 
 // TODO: POOL THIS!!!
@@ -10,8 +11,10 @@ public class BallContact implements Comparable, Pool.Poolable
     public Snowball ball;
     public Vector3 contactNormal;
     public float penetrationDepth;
+    public LandTile tile;
 
-    public BallContact(Snowball ball, Vector3 normal, float pen){
+    public BallContact(Snowball ball, Vector3 normal, float pen, LandTile tile){
+        this.tile = tile;
         this.ball = ball;
         this.contactNormal = normal;
         this.penetrationDepth = pen;
@@ -20,6 +23,7 @@ public class BallContact implements Comparable, Pool.Poolable
     public void resolve(float dt){
         resolveVelocity(dt);
         resolveInterpenetration(dt);
+        tile.addSnow(ball);
     }
 
     public float calculateSeparatingVelocity() {

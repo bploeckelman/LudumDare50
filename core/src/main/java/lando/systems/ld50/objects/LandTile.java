@@ -22,6 +22,7 @@ public class LandTile {
     private static final int MAX_INDICES = 200;
     private static final int MAX_NUM_VERTICES = MAX_TRIANGLES * 3;
     private static final float HEIGHT_RANGE = 1f;
+    private static final float MAX_SNOW = .1f;
 
 
     public float ULHeight = 0;
@@ -71,6 +72,7 @@ public class LandTile {
         LRHeight = Math.abs((float)noise.getNoise(x+1, z+1)) * terrainNoiseHeight;
         update(0);
         rebuildMesh();
+
     }
 
     public void update(float dt){
@@ -79,6 +81,7 @@ public class LandTile {
         p3.set(x+1, LRHeight + LRSnowHeight, z+1);
         p4.set(x, LLHeight + LLSnowHeight, z+1);
         p5.set(x + .5f, (p1.y + p2.y + p3.y + p4.y)/4f, z + .5f);
+
     }
 
     public void render(ShaderProgram shader) {
@@ -93,6 +96,29 @@ public class LandTile {
         shader.setUniformMatrix("u_projTrans", camera.combined);
 
         boxMesh.render(shader, GL20.GL_TRIANGLES);
+    }
+
+    public float addSnow(Snowball ball){
+        float speed = ball.velocity.len();
+        float dx = ball.position.x % 1f;
+        float dz = ball.position.z % 1f;
+
+        float ULSnowHeightDelta = Math.min(MAX_SNOW - ULSnowHeight, .001f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f - dz)));
+        float URSnowHeightDelta = Math.min(MAX_SNOW - URSnowHeight, .001f * speed * (Math.max(0, dx) + Math.max(0, 1f - dz)));
+        float LLSnowHeightDelta = Math.min(MAX_SNOW - LLSnowHeight, .001f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f)));
+        float LRSnowHeightDelta = Math.min(MAX_SNOW - LRSnowHeight, .001f * speed * (Math.max(0, dx) + Math.max(0, 1f)));
+
+
+        float maxLost = Math.max(ULSnowHeightDelta, URSnowHeightDelta);
+        maxLost = Math.max(maxLost, Math.max(LLSnowHeightDelta, LRSnowHeightDelta));
+        ULSnowHeight += ULSnowHeightDelta;
+        URSnowHeight += URSnowHeightDelta;
+        LLSnowHeight += LLSnowHeightDelta;
+        LRSnowHeight += LRSnowHeightDelta;
+        ball.radius -= maxLost * .2f;
+        update(0);
+        rebuildMesh();
+        return maxLost;
     }
 
     public void flattenTo(float newHeight) {
@@ -195,7 +221,7 @@ public class LandTile {
         vertices[verticesIndex++] = p1.x;
         vertices[verticesIndex++] = p1.y;
         vertices[verticesIndex++] = p1.z;
-        vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // r
+        vertices[verticesIndex++] = ULSnowHeight / MAX_SNOW; // r
         vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
@@ -206,7 +232,7 @@ public class LandTile {
         vertices[verticesIndex++] = p2.x;
         vertices[verticesIndex++] = p2.y;
         vertices[verticesIndex++] = p2.z;
-        vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // r
+        vertices[verticesIndex++] = URSnowHeight / MAX_SNOW; // r
         vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
@@ -217,7 +243,7 @@ public class LandTile {
         vertices[verticesIndex++] = p3.x;
         vertices[verticesIndex++] = p3.y;
         vertices[verticesIndex++] = p3.z;
-        vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // r
+        vertices[verticesIndex++] = LRSnowHeight / MAX_SNOW; // r
         vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
@@ -228,7 +254,7 @@ public class LandTile {
         vertices[verticesIndex++] = p4.x;
         vertices[verticesIndex++] = p4.y;
         vertices[verticesIndex++] = p4.z;
-        vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // r
+        vertices[verticesIndex++] = LLSnowHeight / MAX_SNOW; // r
         vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
@@ -239,7 +265,7 @@ public class LandTile {
         vertices[verticesIndex++] = p5.x;
         vertices[verticesIndex++] = p5.y;
         vertices[verticesIndex++] = p5.z;
-        vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // r
+        vertices[verticesIndex++] = (ULSnowHeight + URSnowHeight + LLSnowHeight + LRSnowHeight) / 4f / MAX_SNOW; // r
         vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
@@ -250,7 +276,7 @@ public class LandTile {
         vertices[verticesIndex++] = x;
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z;
-        vertices[verticesIndex++] = 0; // r
+        vertices[verticesIndex++] = -2; // r
         vertices[verticesIndex++] = 0; // g
         vertices[verticesIndex++] = 0; // b
         vertices[verticesIndex++] = 1; // a
@@ -261,7 +287,7 @@ public class LandTile {
         vertices[verticesIndex++] = x + width;
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z;
-        vertices[verticesIndex++] = 0; // r
+        vertices[verticesIndex++] = -2; // r
         vertices[verticesIndex++] = 0; // g
         vertices[verticesIndex++] = 0; // b
         vertices[verticesIndex++] = 1; // a
@@ -272,7 +298,7 @@ public class LandTile {
         vertices[verticesIndex++] = x + width;
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z + width;
-        vertices[verticesIndex++] = 0; // r
+        vertices[verticesIndex++] = -2; // r
         vertices[verticesIndex++] = 0; // g
         vertices[verticesIndex++] = 0; // b
         vertices[verticesIndex++] = 1; // a
@@ -283,7 +309,7 @@ public class LandTile {
         vertices[verticesIndex++] = x;
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z + width;
-        vertices[verticesIndex++] = 0; // r
+        vertices[verticesIndex++] = -2; // r
         vertices[verticesIndex++] = 0; // g
         vertices[verticesIndex++] = 0; // b
         vertices[verticesIndex++] = 1; // a

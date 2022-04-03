@@ -11,7 +11,7 @@ import lando.systems.ld50.objects.Snowball;
 public class PhysicsManager {
 
     // TODO make this the real down
-    Vector3 gravity = new Vector3(0, -5f, 1f);
+    Vector3 gravity = new Vector3(0, -7f, .5f);
     Landscape landscape;
     Array<BallContact> ballContacts;
 
@@ -34,23 +34,33 @@ public class PhysicsManager {
         // Snowballs
         for (Snowball ball : landscape.snowBalls){
             ball.velocity.add(gravity.x * dt, gravity.y * dt, gravity.z * dt);
+            ball.velocity.clamp(0, 5);
             ball.position.add(ball.velocity.x * dt, ball.velocity.y * dt, ball.velocity.z * dt);
 //            newPos.set(ball.position);
 //            newPos.add(ball.velocity);
 
             // Test if ball falls off side and correct
             float totWidth = Landscape.TILE_WIDTH * Landscape.TILES_WIDE;
+            float totalLength = Landscape.TILE_WIDTH * Landscape.TILES_LONG;
             if (ball.position.x - ball.radius < 0 || ball.position.x + ball.radius > totWidth) {
-                ball.velocity.scl(-0.5f, 1, 1);
+                ball.velocity.scl(-1f, 1, 1);
                 ball.position.x = Math.max(ball.radius, Math.min(totWidth - ball.radius, ball.position.x));
                 //ball.position.add(ball.velocity.x * 0.1f, 0, 0);
             }
 
+            // Keep from falling through floor
+            if (ball.position.x > 0 && ball.position.z >0 && ball.position.x < totWidth && ball.position.z < totalLength && ball.position.y - ball.radius < 0){
+                ball.position.y = ball.radius;
+            }
+
             // Test if ball goes through floor
+
             landscape.getTilesAround(ball.position.x, ball.position.z, neighborTiles);
             for (LandTile tile : neighborTiles){
                 testBallTile(ball, tile);
             }
+
+
         }
         int iteration = 0;
         while (ballContacts.size > 0 && iteration++ < 100) {
@@ -71,7 +81,7 @@ public class PhysicsManager {
             nearestPoint.sub(ball.position);
             float overlap = ball.radius - nearestPoint.len();
             if (overlap > 0) {
-                ballContacts.add(new BallContact(ball, t.getNormal(), overlap));
+                ballContacts.add(new BallContact(ball, t.getNormal(), overlap, tile));
             }
         }
     }

@@ -54,7 +54,7 @@ public class Landscape {
             Snowball ball = snowBalls.get(i);
             ball.update(dt);
 
-            if (ball.position.y < -3){
+            if (ball.position.y < -3 || ball.radius < .1f){
                 snowBalls.removeIndex(i);
             }
         }
