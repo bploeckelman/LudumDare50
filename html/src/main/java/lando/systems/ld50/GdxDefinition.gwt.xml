@@ -15,6 +15,7 @@
     <inherits name="aurelienribon.tweenengine" />
 
     <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld50.particles.Particle" />
+    <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld50.particles.PhysicsDecal" />
     <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld50.utils.typinglabel.TypingGlyph" />
     <extend-configuration-property name="gdx.reflect.include" value="lando.systems.ld50.utils.typinglabel.effects" />
 

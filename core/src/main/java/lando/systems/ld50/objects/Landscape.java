@@ -2,15 +2,14 @@ package lando.systems.ld50.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.physics.PhysicsManager;
 import lando.systems.ld50.screens.GameScreen;
-import com.badlogic.gdx.math.MathUtils;
 
 import static lando.systems.ld50.objects.LandTile.*;
 
@@ -91,9 +90,7 @@ public class Landscape {
 
     }
 
-    public void render(SpriteBatch batch, Camera camera) {
-        batch.flush();
-        batch.end();
+    public void render(Camera camera) {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
@@ -108,21 +105,9 @@ public class Landscape {
         landscapeShader.setUniformMatrix("u_projTrans", camera.combined);
         landscapeMesh.render(landscapeShader, GL20.GL_TRIANGLES, 0, indices.length);
 
-
         if (highlightedTile != null){
             highlightedTile.renderHighlight(camera);
         }
-
-//        ballShader.bind();
-//        ballShader.setUniformMatrix("u_projTrans", camera.combined);
-//        for (Snowball ball : snowBalls){
-//            ball.render(ballShader);
-//        }
-//
-//        batch.setShader(null);
-
-        batch.begin();
-        batch.flush();
     }
 
     public void updateMesh(int x, int z, float[] verts, short[] indis) {

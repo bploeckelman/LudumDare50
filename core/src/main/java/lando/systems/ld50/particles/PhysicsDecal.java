@@ -1,73 +1,105 @@
 package lando.systems.ld50.particles;
+
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.Pools;
 
-public class PhysicsDecal {
+public class PhysicsDecal implements Pool.Poolable {
+
     public static Array<PhysicsDecal> instances = new Array<>();
-    public static Array<Decal> freeDecals;
 
-    public Decal decal;
-    private Vector3 velocity;
-    private Vector3 position;
-    private float ttl;
-    private phys pathing;
+    public static Pool<PhysicsDecal> pool = Pools.get(PhysicsDecal.class, 2000);
 
-    public static void addDecalParticle(Vector3 pos, Vector3 vel, float life, phys type) {
-        if (freeDecals.size > 0) {
-            instances.add(new PhysicsDecal(freeDecals.get(0), pos, vel, life, type));
-            freeDecals.removeIndex(0);
+    public static TextureRegion decalTempRegion = new TextureRegion();
+    public static Pool<Decal> decalPool = new Pool<Decal>(2000) {
+        @Override
+        protected Decal newObject() {
+            return Decal.newDecal(decalTempRegion, true);
         }
-    }
+    };
 
-    public PhysicsDecal(Decal d, Vector3 pos, Vector3 vel, float life, phys type) {
-        this.decal = d;
-        this.position = pos;
-        this.velocity = vel;
-        this.ttl = life;
-        this.pathing = type;
+    public enum Phys { GravityHighDrag, NoPhysics }
+
+    public Decal decal = null;
+
+    private final Vector3 velocity = new Vector3();
+    private final Vector3 position = new Vector3();
+    private Phys pathing = Phys.NoPhysics;
+    private float ttl = 0f;
+
+    public static void addDecalParticle(TextureRegion texture,
+                                        float posX, float posY, float posZ,
+                                        float velX, float velY, float velZ,
+                                        float life, Phys type) {
+        Decal decal = decalPool.obtain();
+        decal.setTextureRegion(texture);
+        decal.setColor(1f, 1f, 1f, 0.5f);
+        decal.setWidth(texture.getRegionWidth());
+        decal.setHeight(texture.getRegionHeight());
+        decal.setScale(0.01f);
+
+        PhysicsDecal instance = pool.obtain();
+        instance.init(decal, posX, posY, posZ, velX, velY, velZ, life, type);
+        instances.add(instance);
     }
 
     public static void updateAllDecalParticles(float dt) {
-        for (int i = 0; i < instances.size;){
-            instances.get(i).update(dt);
-            if (instances.get(i).ttl <= 0) {
-                freeDecals.add(instances.get(i).decal);
+        for (int i = instances.size - 1; i >= 0; i--) {
+            PhysicsDecal particle = instances.get(i);
+            particle.update(dt);
+
+            if (particle.ttl <= 0) {
+                decalPool.free(particle.decal);
+                pool.free(particle);
                 instances.removeIndex(i);
-            } else {
-                i++;
             }
         }
     }
 
+    public void init(Decal decal,
+                     float posX, float posY, float posZ,
+                     float velX, float velY, float velZ,
+                     float life,
+                     Phys type) {
+        this.decal = decal;
+        this.position.set(posX, posY, posZ);
+        this.velocity.set(velX, velY, velZ);
+        this.ttl = life;
+        this.pathing = type;
+    }
+
+    @Override
+    public void reset() {
+        position.setZero();
+        velocity.setZero();
+        pathing = Phys.NoPhysics;
+        ttl = 0;
+    }
+
     public void update(float dt) {
-        this.position.add(this.velocity.x * dt, this.velocity.y * dt, this.velocity.z * dt);
-        this.ttl -= dt;
-        this.decal.setPosition(this.position);
-        switch ( pathing ) {
+        ttl -= dt;
+        position.add(velocity.x * dt, velocity.y * dt, velocity.z * dt);
+        decal.setColor(1f, 1f, 1f, ttl);
+        decal.setPosition(position);
+        switch (pathing) {
             case GravityHighDrag:
-                if (this.velocity.y > 0) {
-                    this.velocity.y *= 0.5;
+                if (velocity.y > 0) {
+                    velocity.y *= 0.5;
                 }
-                this.velocity.y -= 1 * dt;
-                this.velocity.scl(0.75f, 1, 0.75f);
-                if (this.position.y < -0.1) {
-                    this.ttl = -1;
+                velocity.y -= 1 * dt;
+                velocity.scl(0.75f, 1, 0.75f);
+                if (position.y < -0.1) {
+                    ttl = -1;
                 }
                 break;
             case NoPhysics:
                 break;
         }
-        this.decal.setColor(1f, 1f, 1f, ttl/1f);
-
     }
 
-    public void render() {
-
-    }
-
-
-
-    public enum phys { GravityHighDrag, NoPhysics }
+    public void render() {}
 
 }

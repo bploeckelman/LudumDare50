@@ -7,14 +7,13 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
@@ -24,11 +23,13 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.kotcrab.vis.ui.widget.*;
+import com.kotcrab.vis.ui.widget.VisLabel;
+import com.kotcrab.vis.ui.widget.VisProgressBar;
+import com.kotcrab.vis.ui.widget.VisSlider;
+import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
@@ -44,12 +45,10 @@ import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
-import static com.badlogic.gdx.graphics.Color.FOREST;
-
-
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
+
     private static final int PICKMAP_SCALE = 16;
 
     public static class Stats {
@@ -70,7 +69,6 @@ public class GameScreen extends BaseScreen {
     private Array<ModelInstance> houseInstances;
     private Array<ModelInstance> creatureInstances;
     private Array<AnimationDecal> decals;
-    private Array<Decal> freeParticleDecals;
 
     private Vector3 touchPos;
     private Vector3 startPos, endPos;
@@ -111,7 +109,7 @@ public class GameScreen extends BaseScreen {
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientColor));
         env.add(light = new DirectionalLight().set(0.8f, 0.8f, 0.8f, lightDir.x, lightDir.y, lightDir.z));
         modelBatch = new ModelBatch();
-        decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
+        decalBatch = new DecalBatch(5000, new CameraGroupStrategy(camera));
 
         loadModels();
         loadDecals();
@@ -199,15 +197,10 @@ public class GameScreen extends BaseScreen {
             decalBatch.add(decal.get());
         }
 
-        /*for (Decal decal : particleDecals) {
-            decal.setPosition(5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f));
-            decal.lookAt(camera.position, camera.up);
-            decalBatch.add(decal);
-        }*/
         PhysicsDecal.updateAllDecalParticles(dt);
-        for (PhysicsDecal pd : PhysicsDecal.instances) {
-            pd.decal.lookAt(camera.position, camera.up);
-            decalBatch.add(pd.decal);
+        for (PhysicsDecal decal : PhysicsDecal.instances) {
+            decal.decal.lookAt(camera.position, camera.up);
+            decalBatch.add(decal.decal);
         }
 
         if (pickPixmap != null){
@@ -265,15 +258,16 @@ public class GameScreen extends BaseScreen {
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
         // draw world
-        batch.setProjectionMatrix(shaker.getCombinedMatrix());
-        batch.begin();
-        {
-            // TODO - shaker breaks camera controller rotation,
-            //  might not be important if we maintain control of the camera throughout
-//            landscape.render(batch, shaker.getViewCamera());
-            landscape.render(batch, camera);
-        }
-        batch.end();
+//        batch.setProjectionMatrix(shaker.getCombinedMatrix());
+//        batch.begin();
+//        {
+//            // draw normal (non-decal) sprites in the world
+//            // NOTE - probably not worth using in our case
+//        }
+//        batch.end();
+
+        // draw world
+        landscape.render(camera);
 
         // TODO - might need to make everything draw with the model batch
         modelBatch.begin(camera);
@@ -290,13 +284,14 @@ public class GameScreen extends BaseScreen {
         // NOTE: always draw so the 'hide' transition is visible
         uiStage.draw();
 
-        batch.setProjectionMatrix(windowCamera.combined);
-        batch.begin();
-        {
-            // TODO -
+        // draw non Scene2D ui stuff (if there is any)
+//        batch.setProjectionMatrix(windowCamera.combined);
+//        batch.begin();
+//        {
+//            // TODO -
 //            batch.draw(PickMapFBOTex, 0, 100, 100, -100);
-        }
-        batch.end();
+//        }
+//        batch.end();
     }
 
     public void renderFrameBuffers(SpriteBatch batch) {
@@ -418,7 +413,6 @@ public class GameScreen extends BaseScreen {
 
     private void loadDecals() {
         decals = new Array<>();
-        freeParticleDecals = new Array<>();
 
         float height = 0.25f;
 
@@ -426,15 +420,6 @@ public class GameScreen extends BaseScreen {
         decals.add(new AnimationDecal(assets, ImageInfo.Dude, 4, height, 10));
         decals.add(new AnimationDecal(assets, ImageInfo.Deer, 4, height, 6));
         decals.add(new AnimationDecal(assets, ImageInfo.Plow, 4, 1, -1));
-
-        Decal decal;
-        for (int i = 0; i < 10000; i++) {
-            decal = Decal.newDecal(assets.particles.smoke, true);
-            decal.setColor(1f, 1f, 1f, 0.3f);
-            decal.setScale(0.01f);
-            freeParticleDecals.add(decal);
-        }
-        PhysicsDecal.freeDecals = freeParticleDecals;
     }
 
     private float getAvalancheProgress() {

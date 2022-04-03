@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -18,13 +18,14 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ObjectMap;
 import lando.systems.ld50.Config;
-import lando.systems.ld50.particles.Particles;
 import lando.systems.ld50.utils.screenshake.SimplexNoise;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Assets implements Disposable {
 
     public enum Load { ASYNC, SYNC }
+
+    public static TextureRegion pixelTexRegion;
 
     public boolean initialized;
 
@@ -64,7 +65,7 @@ public class Assets implements Disposable {
     public Sound chachingSound;
 
     public enum Models {
-        coords, boulder_a, house_a, house_b, snowball_a, snowball_b, yeti;
+        coords, boulder_a, house_a, house_b, snowball_a, snowball_b, yeti, sphere;
         public Model model;
     }
 
@@ -105,6 +106,9 @@ public class Assets implements Disposable {
         }
         pixmap.dispose();
         pixelRegion = new TextureRegion(pixel);
+
+        // set a static for
+        Assets.pixelTexRegion = new TextureRegion(pixel);
 
         batch = new SpriteBatch();
         shapes = new ShapeDrawer(batch, pixelRegion);
@@ -189,10 +193,14 @@ public class Assets implements Disposable {
         Models.snowball_a.model = mgr.get("models/snowball-a.g3db", Model.class);
         Models.snowball_b.model = mgr.get("models/snowball-b.g3db", Model.class);
         Models.yeti.model       = mgr.get("models/yeti_00.g3db", Model.class);
-        // NOTE: coords is a special snowflake, not loaded via AssetsManager so must be disposed manually
+
+        // NOTE: these are special snowflakes, not loaded via AssetsManager so must be disposed manually
         ModelBuilder builder = new ModelBuilder();
         Models.coords.model = builder.createXYZCoordinates(1f, 0.1f, 0.5f, 4, GL20.GL_TRIANGLES,
                 new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal);
+        Models.sphere.model = builder.createSphere(1f, 1f, 1f, 5, 5,
+                new Material(ColorAttribute.createDiffuse(Color.WHITE)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal);
 
         // initialize patch values
         Patch.debug.ninePatch        = new NinePatch(atlas.findRegion("ninepatch/debug"), 2, 2, 2, 2);
@@ -250,6 +258,7 @@ public class Assets implements Disposable {
         smallFont.dispose();
         largeFont.dispose();
         Models.coords.model.dispose();
+        Models.sphere.model.dispose();
         transitionShaders.values().forEach(ShaderProgram::dispose);
     }
 
