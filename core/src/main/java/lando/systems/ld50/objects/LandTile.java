@@ -29,6 +29,12 @@ public class LandTile {
     public float URHeight = 0;
     public float LRHeight = 0;
 
+
+    public float ULSnowHeight = 0;
+    public float LLSnowHeight = 0;
+    public float URSnowHeight = 0;
+    public float LRSnowHeight = 0;
+
     private Mesh mesh;
     private Mesh boxMesh;
     private float[] vertices;
@@ -65,14 +71,13 @@ public class LandTile {
         LRHeight = Math.abs((float)noise.getNoise(x+1, z+1)) * terrainNoiseHeight;
         update(0);
         rebuildMesh();
-        buildHighlightMesh();
     }
 
     public void update(float dt){
-        p1.set(x, ULHeight, z);
-        p2.set(x+1, URHeight, z);
-        p3.set(x+1, LRHeight, z+1);
-        p4.set(x, LLHeight, z+1);
+        p1.set(x, ULHeight + ULSnowHeight, z);
+        p2.set(x+1, URHeight + URSnowHeight, z);
+        p3.set(x+1, LRHeight + LRSnowHeight, z+1);
+        p4.set(x, LLHeight + LLSnowHeight, z+1);
         p5.set(x + .5f, (p1.y + p2.y + p3.y + p4.y)/4f, z + .5f);
     }
 
@@ -88,6 +93,16 @@ public class LandTile {
         shader.setUniformMatrix("u_projTrans", camera.combined);
 
         boxMesh.render(shader, GL20.GL_TRIANGLES);
+    }
+
+    public void flattenTo(float newHeight) {
+        ULHeight = URHeight = LLHeight = LRHeight = newHeight;
+        update(0);
+        rebuildMesh();
+    }
+
+    public float getAverageHeight() {
+        return (ULHeight + URHeight + LLHeight + LRHeight) / 4f;
     }
 
 
@@ -328,6 +343,7 @@ public class LandTile {
         mesh.setVertices(vertices);
         mesh.setIndices(indices);
 
+        buildHighlightMesh();
     }
 
     Array<Triangle> triangles = new Array<>();
