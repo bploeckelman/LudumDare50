@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -87,6 +88,7 @@ public class GameScreen extends BaseScreen {
     private final Vector3 billboardCameraPos = new Vector3();
     private VisWindow debugWindow;
     private VisProgressBar progressBar;
+    private VisSlider cameraSlider;
 
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
@@ -464,12 +466,25 @@ public class GameScreen extends BaseScreen {
         progressBar.setPosition(windowCamera.viewportWidth / 4f, windowCamera.viewportHeight - 50f);
         progressBar.setValue(0f);
         progressBar.setWidth(windowCamera.viewportWidth / 2f);
-        progressBar.setHeight(50f);
+        progressBar.setHeight(70f);
         uiStage.addActor(progressBar);
+
+        VisSlider.SliderStyle horizontalSliderStyle = skin.get("default-horizontal", VisSlider.SliderStyle.class);
+        VisSlider.SliderStyle cameraSliderStyle = new VisSlider.SliderStyle(horizontalSliderStyle);
+        cameraSliderStyle.knob = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.button_light_tv));
+        cameraSliderStyle.background = new TextureRegionDrawable(getColoredTextureRegion(new Color(0f, 0f, 0f, 0f)));
+        cameraSlider = new VisSlider(0f, 1f, 0.01f, false, cameraSliderStyle);
+        cameraSlider.setPosition(windowCamera.viewportWidth / 4f, windowCamera.viewportHeight - 50f);
+        cameraSlider.setWidth(windowCamera.viewportWidth / 2f);
+        cameraSlider.setHeight(70f);
+        uiStage.addActor(cameraSlider);
+
+
     }
 
     private void updateProgressBarValue() {
         progressBar.setValue(getAvalancheProgress());
+        cameraSlider.setValue(camera.position.z / Landscape.TILES_LONG * Landscape.TILE_WIDTH);
     }
 
     private TextureRegion getColoredTextureRegion(Color color) {
