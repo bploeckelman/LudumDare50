@@ -1,8 +1,5 @@
 package lando.systems.ld50.screens;
 
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.equations.Linear;
-import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -38,9 +35,7 @@ import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
-import lando.systems.ld50.utils.Calc;
 import lando.systems.ld50.utils.Time;
-import lando.systems.ld50.utils.accessors.PerspectiveCameraAccessor;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
@@ -48,6 +43,7 @@ import text.formic.Stringf;
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
+    private static final int PICKMAP_SCALE = 8;
 
     public static class Stats {
         // TODO - add stats vars
@@ -85,8 +81,8 @@ public class GameScreen extends BaseScreen {
     private Vector3 lightDir;
     public DirectionalLight light;
 
-    public FrameBuffer fb;
-    public Texture fbTex;
+    public FrameBuffer pickMapFBO;
+    public Texture PickMapFBOTex;
     public Pixmap pickPixmap;
 
     private float cameraMovementT = 0;
@@ -113,8 +109,8 @@ public class GameScreen extends BaseScreen {
 
         touchPos = new Vector3();
 
-        fb =  new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-        fbTex = fb.getColorBufferTexture();
+        pickMapFBO =  new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth() / PICKMAP_SCALE, Gdx.graphics.getHeight() / PICKMAP_SCALE, true);
+        PickMapFBOTex = pickMapFBO.getColorBufferTexture();
 
         InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
@@ -235,17 +231,17 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         {
             // TODO -
-            batch.draw(fbTex, 0, 100, 100, -100);
+            batch.draw(PickMapFBOTex, 0, 100, 100, -100);
         }
         batch.end();
     }
 
     public void renderFrameBuffers(SpriteBatch batch) {
-        fb.begin();
+        pickMapFBO.begin();
         ScreenUtils.clear(Color.CLEAR, true);
         landscape.renderFBO(camera);
-        pickPixmap =  Pixmap.createFromFrameBuffer(0, 0, fb.getWidth(), fb.getHeight());
-        fb.end();
+        pickPixmap =  Pixmap.createFromFrameBuffer(0, 0, pickMapFBO.getWidth(), pickMapFBO.getHeight());
+        pickMapFBO.end();
     }
 
     public boolean isGameOver() {
@@ -450,7 +446,7 @@ public class GameScreen extends BaseScreen {
         if (pickPixmap == null) return hoverPos.set(-1, -1);
         int x = screenX;
         int y = screenY;
-        pickColor.set(pickPixmap.getPixel(x, y));
+        pickColor.set(pickPixmap.getPixel(x/PICKMAP_SCALE, y/PICKMAP_SCALE));
         if (pickColor.a == 0) return hoverPos.set(-1, -1);
         int col = (int) (pickColor.r * (255f));
         int row = (int) (pickColor.g * (255f));
