@@ -53,8 +53,8 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
     public boolean isSettingShown;
     public MoveToAction hideSettingsPaneAction;
     public MoveToAction showSettingsPaneAction;
-    public MoveToAction showCloseSettingsButton;
-    public MoveToAction hideCloseSettingsButton;
+    public MoveToAction showCloseSettingsButtonAction;
+    public MoveToAction hideCloseSettingsButtonAction;
 
 
     public boolean exitingScreen;
@@ -84,6 +84,8 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         this.windowCamera = new OrthographicCamera();
         this.windowCamera.setToOrtho(false, Config.window_width, Config.window_height);
         this.windowCamera.update();
+
+        audio.playMusic(AudioManager.Musics.mainTheme);
 
         initializeUI();
     }
@@ -149,14 +151,28 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         VisLabel musicVolumeLabel = new VisLabel("Music Volume", "outfit-medium-20px");
         settingsWindow.add(musicVolumeLabel).padBottom(10f);
         settingsWindow.row();
-        VisSlider musicSlider = new VisSlider(0, 1f, .05f, false, customCatSliderStyle);
-        settingsWindow.add(musicSlider).padBottom(10f);
+        VisSlider musicSlider = new VisSlider(0f, 1f, .1f, false, customCatSliderStyle);
+        musicSlider.setValue(audio.musicVolume.floatValue());
+        musicSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                audio.setMusicVolume(musicSlider.getValue());
+            }
+        });
+        settingsWindow.add(musicSlider).padBottom(10f).width(settingsWindow.getWidth() - 100f);
         settingsWindow.row();
         VisLabel soundVolumeLevel = new VisLabel("Sound Volume", "outfit-medium-20px");
         settingsWindow.add(soundVolumeLevel).padBottom(10f);
         settingsWindow.row();
-        VisSlider soundSlider = new VisSlider(0, 1f, .05f, false, customDogSliderStyle);
-        settingsWindow.add(soundSlider).padBottom(10f);
+        VisSlider soundSlider = new VisSlider(0f, 1f, .1f, false, customDogSliderStyle);
+        soundSlider.setValue(audio.soundVolume.floatValue());
+        soundSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                audio.setSoundVolume(soundSlider.getValue());
+            }
+        });
+        settingsWindow.add(soundSlider).padBottom(10f).width(settingsWindow.getWidth() - 100f);
         settingsWindow.row();
 
         settingsGroup = new Group();
@@ -168,19 +184,21 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         closeSettingsButton.setPosition(bounds.x + bounds.width - closeSettingsButton.getWidth(), bounds.y + bounds.height - closeSettingsButton.getHeight());
         closeSettingsButton.setClip(false);
 
-        hideCloseSettingsButton = new MoveToAction();
-        hideCloseSettingsButton.setPosition(settingsPaneBoundsHidden.x + settingsPaneBoundsHidden.width - closeSettingsButton.getWidth(), settingsPaneBoundsHidden.y + settingsPaneBoundsHidden.getHeight() - closeSettingsButton.getHeight());;
-        hideCloseSettingsButton.setDuration(.5f);
-        showCloseSettingsButton = new MoveToAction();
-        showCloseSettingsButton.setPosition(settingsPaneBoundsVisible.x + settingsPaneBoundsVisible.width - closeSettingsButton.getWidth(), settingsPaneBoundsVisible.y + settingsPaneBoundsVisible.getHeight() - closeSettingsButton.getHeight());
-        showCloseSettingsButton.setDuration(.5f);
+        hideCloseSettingsButtonAction = new MoveToAction();
+        hideCloseSettingsButtonAction.setPosition(settingsPaneBoundsHidden.x + settingsPaneBoundsHidden.width - closeSettingsButton.getWidth(), settingsPaneBoundsHidden.y + settingsPaneBoundsHidden.getHeight() - closeSettingsButton.getHeight());;
+        hideCloseSettingsButtonAction.setDuration(.5f);
+        showCloseSettingsButtonAction = new MoveToAction();
+        showCloseSettingsButtonAction.setPosition(settingsPaneBoundsVisible.x + settingsPaneBoundsVisible.width - closeSettingsButton.getWidth(), settingsPaneBoundsVisible.y + settingsPaneBoundsVisible.getHeight() - closeSettingsButton.getHeight());
+        showCloseSettingsButtonAction.setDuration(.5f);
 
         closeSettingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                    settingsWindow.addAction(hideSettingsPaneAction);
-                    closeSettingsButton.addAction(hideCloseSettingsButton);
-                    isSettingShown = false;
+                hideSettingsPaneAction.reset();
+                hideCloseSettingsButtonAction.reset();
+                settingsWindow.addAction(hideSettingsPaneAction);
+                closeSettingsButton.addAction(hideCloseSettingsButtonAction);
+                isSettingShown = false;
             }
         });
 
@@ -215,6 +233,8 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         worldCamera.update();
         windowCamera.update();
         uiStage.act(dt);
+        // keep close settings button on top of settings window at all times
+        closeSettingsButton.setZIndex(closeSettingsButton.getZIndex() + 3);
 
 //        audio.update(dt);
 

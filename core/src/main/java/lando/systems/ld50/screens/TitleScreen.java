@@ -47,10 +47,10 @@ public class TitleScreen extends BaseScreen {
         startGameButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!exitingScreen) {
-                    game.setScreen(new GameScreen());
-                    exitingScreen = true;
-                }
+            if (!exitingScreen) {
+                game.setScreen(new GameScreen());
+                exitingScreen = true;
+            }
             }
         });
 
@@ -58,11 +58,13 @@ public class TitleScreen extends BaseScreen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                    settingsWindow.setZIndex(settingsWindow.getZIndex() + 3);
-                    settingsWindow.addAction(showSettingsPaneAction);
-                    closeSettingsButton.setZIndex(closeSettingsButton.getZIndex() + 3);
-                    closeSettingsButton.addAction(showCloseSettingsButton);
-                    isSettingShown = true;
+                showSettingsPaneAction.reset();
+                showCloseSettingsButtonAction.reset();
+                settingsWindow.setZIndex(settingsWindow.getZIndex() + 3);
+                settingsWindow.addAction(showSettingsPaneAction);
+                closeSettingsButton.setZIndex(closeSettingsButton.getZIndex() + 3);
+                closeSettingsButton.addAction(showCloseSettingsButtonAction);
+                isSettingShown = true;
             }
         });
 
@@ -72,11 +74,11 @@ public class TitleScreen extends BaseScreen {
         creditButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (!exitingScreen) {
-                    game.setScreen(new EndScreen());
-                    audio.playSound(AudioManager.Sounds.chaching);
-                    exitingScreen = true;
-                }
+            if (!exitingScreen) {
+                game.setScreen(new EndScreen());
+                audio.playSound(AudioManager.Sounds.chaching);
+                exitingScreen = true;
+            }
             }
         });
 

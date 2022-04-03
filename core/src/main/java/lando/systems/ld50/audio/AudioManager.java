@@ -219,20 +219,20 @@ public class AudioManager implements Disposable {
         }
     }
 
-//    public void setMusicVolume(float level) {
-//        Prefs.put(Prefs.Name.music_volume_float, level);
-//        if (isMusicMuted)
-//            musicVolume.setValue(0f);
-//        else
-//            musicVolume.setValue(level);
-//    }
-//    public void setSoundVolume(float level) {
-//        Prefs.put(Prefs.Name.sound_volume_float, level);
-//        if (isSoundMuted)
-//            soundVolume.setValue(0f);
-//        else
-//            soundVolume.setValue(level);
-//    }
+    public void setMusicVolume(float level) {
+        //Prefs.put(Prefs.Name.music_volume_float, level);
+        if (isMusicMuted)
+            musicVolume.setValue(0f);
+        else
+            musicVolume.setValue(level);
+    }
+    public void setSoundVolume(float level) {
+        //Prefs.put(Prefs.Name.sound_volume_float, level);
+        if (isSoundMuted)
+            soundVolume.setValue(0f);
+        else
+            soundVolume.setValue(level);
+    }
 //
 //    public void setMusicMuted(boolean isMuted) {
 //        Prefs.put(Prefs.Name.music_muted_bool, isMuted);
