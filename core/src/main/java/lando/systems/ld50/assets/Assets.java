@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -55,6 +57,11 @@ public class Assets implements Disposable {
     public Music mainMusic;
     public Music mainTheme;
     public Sound chachingSound;
+
+    public enum Models {
+        coords, boulder_a, house_a, house_b, snowball_a, snowball_b, yeti;
+        public Model model;
+    }
 
     public enum Patch {
         debug, panel, metal, glass,
@@ -114,6 +121,14 @@ public class Assets implements Disposable {
             mgr.load("audio/musics/music-maintheme.ogg", Music.class);
             mgr.load("audio/sounds/chaching.ogg", Sound.class);
             mgr.load("images/noise.png", Texture.class);
+
+            // models
+            mgr.load("models/boulder-a.g3db", Model.class);
+            mgr.load("models/house-a.g3db", Model.class);
+            mgr.load("models/house-b.g3db", Model.class);
+            mgr.load("models/snowball-a.g3db", Model.class);
+            mgr.load("models/snowball-b.g3db", Model.class);
+            mgr.load("models/yeti_00.g3db", Model.class);
         }
 
         if (load == Load.SYNC) {
@@ -148,6 +163,7 @@ public class Assets implements Disposable {
         cat = new Animation<>(0.1f, atlas.findRegions("pets/cat"), Animation.PlayMode.LOOP);
         dog = new Animation<>(0.1f, atlas.findRegions("pets/dog"), Animation.PlayMode.LOOP);
 
+        // initialize particle images
         particles = new Particles();
         particles.circle  = atlas.findRegion("particles/circle");
         particles.ring    = atlas.findRegion("particles/ring");
@@ -155,6 +171,19 @@ public class Assets implements Disposable {
         particles.sparkle = atlas.findRegion("particles/sparkle");
         particles.dollar  = atlas.findRegion("particles/dollars");
 
+        // initialize models
+        Models.boulder_a.model  = mgr.get("models/boulder-a.g3db", Model.class);
+        Models.house_a.model    = mgr.get("models/house-a.g3db", Model.class);
+        Models.house_b.model    = mgr.get("models/house-b.g3db", Model.class);
+        Models.snowball_a.model = mgr.get("models/snowball-a.g3db", Model.class);
+        Models.snowball_b.model = mgr.get("models/snowball-b.g3db", Model.class);
+        Models.yeti.model       = mgr.get("models/yeti_00.g3db", Model.class);
+        // NOTE: coords is a special snowflake, not loaded via AssetsManager so must be disposed manually
+        ModelBuilder builder = new ModelBuilder();
+        Models.coords.model = builder.createXYZCoordinates(1f, 0.1f, 0.5f, 4, GL20.GL_TRIANGLES,
+                new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal);
+
+        // initialize patch values
         Patch.debug.ninePatch        = new NinePatch(atlas.findRegion("ninepatch/debug"), 2, 2, 2, 2);
         Patch.panel.ninePatch        = new NinePatch(atlas.findRegion("ninepatch/panel"), 15, 15, 15, 15);
         Patch.glass.ninePatch        = new NinePatch(atlas.findRegion("ninepatch/glass"), 8, 8, 8, 8);
@@ -173,6 +202,7 @@ public class Assets implements Disposable {
         Patch.glass_active.drawable = new NinePatchDrawable(Patch.glass_active.ninePatch);
         Patch.metal.drawable        = new NinePatchDrawable(Patch.metal.ninePatch);
 
+        // initialize shaders
         String defaultVertexPath = "shaders/default.vert";
         {
             transitionShaders = new ObjectMap<>();
@@ -208,6 +238,7 @@ public class Assets implements Disposable {
         font.dispose();
         smallFont.dispose();
         largeFont.dispose();
+        Models.coords.model.dispose();
         transitionShaders.values().forEach(ShaderProgram::dispose);
     }
 

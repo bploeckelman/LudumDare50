@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Interpolation;
@@ -31,6 +30,7 @@ import com.badlogic.gdx.utils.UBJsonReader;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
+import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
 import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.SimpleCameraController;
@@ -62,11 +62,7 @@ public class GameScreen extends BaseScreen {
     private final ModelBatch modelBatch;
     private final DecalBatch decalBatch;
 
-    private Model coordsModel;
     private ModelInstance coords;
-
-    private Model houseModelA, houseModelB;
-    private Model creatureModel;
     private Array<ModelInstance> houseInstances;
     private Array<ModelInstance> creatureInstances;
     private Array<AnimationDecal> decals;
@@ -123,10 +119,6 @@ public class GameScreen extends BaseScreen {
     @Override
     public void dispose() {
         super.dispose();
-        houseModelA.dispose();
-        houseModelB.dispose();
-        creatureModel.dispose();
-        coordsModel.dispose();
         modelBatch.dispose();
         decalBatch.dispose();
     }
@@ -275,21 +267,16 @@ public class GameScreen extends BaseScreen {
     }
 
     private void loadModels() {
-        G3dModelLoader loader = new G3dModelLoader(new UBJsonReader());
         BoundingBox box = new BoundingBox();
-
         float extentX, extentY, extentZ, maxExtent;
 
-        houseModelA = loader.loadModel(Gdx.files.internal("models/house-a.g3db"));
-        houseModelB = loader.loadModel(Gdx.files.internal("models/house-b.g3db"));
-
-        ModelInstance instanceA = new ModelInstance(houseModelA);
-        instanceA.calculateBoundingBox(box);
+        ModelInstance houseA = new ModelInstance(Assets.Models.house_a.model);
+        houseA.calculateBoundingBox(box);
         extentX = (box.max.x - box.min.x);
         extentY = (box.max.y - box.min.y);
         extentZ = (box.max.z - box.min.z);
         maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-        instanceA.transform
+        houseA.transform
                 .setToTranslationAndScaling(
                         0.5f, 0f, 0.5f,
                         1f / maxExtent,
@@ -297,13 +284,13 @@ public class GameScreen extends BaseScreen {
                         1f / maxExtent)
         ;
 
-        ModelInstance instanceB = new ModelInstance(houseModelB);
-        instanceB.calculateBoundingBox(box);
+        ModelInstance houseB = new ModelInstance(Assets.Models.house_b.model);
+        houseB.calculateBoundingBox(box);
         extentX = (box.max.x - box.min.x);
         extentY = (box.max.y - box.min.y);
         extentZ = (box.max.z - box.min.z);
         maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-        instanceB.transform
+        houseB.transform
                 .setToTranslationAndScaling(
                         1.5f, 0f, 0.5f,
                         1f / maxExtent,
@@ -312,16 +299,15 @@ public class GameScreen extends BaseScreen {
         ;
 
         houseInstances = new Array<>();
-        houseInstances.addAll(instanceA, instanceB);
+        houseInstances.addAll(houseA, houseB);
 
-        creatureModel = loader.loadModel(Gdx.files.internal("models/yeti_00.g3db"));
-        ModelInstance creatureInstance = new ModelInstance(creatureModel);
-        creatureInstance.calculateBoundingBox(box);
+        ModelInstance yeti = new ModelInstance(Assets.Models.yeti.model);
+        yeti.calculateBoundingBox(box);
         extentX = (box.max.x - box.min.x);
         extentY = (box.max.y - box.min.y);
         extentZ = (box.max.z - box.min.z);
         maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-        creatureInstance.transform
+        yeti.transform
                 .setToTranslationAndScaling(
                         4f, 0f, 3f,
                         1f / maxExtent,
@@ -330,13 +316,10 @@ public class GameScreen extends BaseScreen {
         ;
 
         creatureInstances = new Array<>();
-        creatureInstances.add(creatureInstance);
+        creatureInstances.add(yeti);
 
-        ModelBuilder builder = new ModelBuilder();
-        coordsModel = builder.createXYZCoordinates(1f, 0.1f, 0.5f, 6, GL20.GL_TRIANGLES,
-                new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked);
-        coords = new ModelInstance(coordsModel);
-        coords.transform.setToTranslation(0, 0, 0);
+        coords = new ModelInstance(Assets.Models.coords.model);
+        coords.transform.setToTranslation(0f, 0f, 0f);
     }
 
     private void loadDecals() {
