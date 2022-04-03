@@ -56,6 +56,9 @@ public class Assets implements Disposable {
 
     public Music mainMusic;
     public Music mainTheme;
+    public Music introMusic;
+
+
     public Sound chachingSound;
 
     public enum Models {
@@ -119,6 +122,8 @@ public class Assets implements Disposable {
             // audio
             mgr.load("audio/musics/main.mp3", Music.class);
             mgr.load("audio/musics/music-maintheme.ogg", Music.class);
+            mgr.load("audio/musics/music-intro.ogg", Music.class);
+
             mgr.load("audio/sounds/chaching.ogg", Sound.class);
             mgr.load("images/noise.png", Texture.class);
 
@@ -158,6 +163,8 @@ public class Assets implements Disposable {
         // get audio
         mainMusic = mgr.get("audio/musics/main.mp3", Music.class);
         mainTheme = mgr.get("audio/musics/music-maintheme.ogg", Music.class);
+        introMusic = mgr.get("audio/musics/music-intro.ogg", Music.class);
+
         chachingSound = mgr.get("audio/sounds/chaching.ogg", Sound.class);
 
         cat = new Animation<>(0.1f, atlas.findRegions("pets/cat"), Animation.PlayMode.LOOP);

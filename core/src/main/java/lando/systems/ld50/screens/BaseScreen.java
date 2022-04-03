@@ -84,6 +84,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         this.windowCamera.update();
 
         initializeUI();
+        game.audio.playMusic(AudioManager.Musics.introMusic);
     }
 
     /**
