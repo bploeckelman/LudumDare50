@@ -44,7 +44,7 @@ public class Landscape {
         indices = new short[MAX_INDICES * tiles.length];
         landscapeMesh = new Mesh(false, MAX_NUM_VERTICES * tiles.length, MAX_INDICES * tiles.length,
                 new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
-//                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
+                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
                 new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
                 new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
         );
@@ -98,15 +98,16 @@ public class Landscape {
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
         landscapeShader.bind();
+        landscapeShader.setUniformf("u_ambient", screen.ambientColor);
+        landscapeShader.setUniformf("u_lightColor", screen.light.color);
+        landscapeShader.setUniformf("u_lightDir", screen.light.direction);
         landscapeShader.setUniformi("u_texture", 0);
+
 
         Main.game.assets.noiseTex.bind(0);
         landscapeShader.setUniformMatrix("u_projTrans", camera.combined);
         landscapeMesh.render(landscapeShader, GL20.GL_TRIANGLES, 0, indices.length);
 
-//        for(LandTile tile : tiles) {
-//            tile.render(landscapeShader);
-//        }
 
         if (highlightedTile != null){
             highlightedTile.renderHighlight(camera);

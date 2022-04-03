@@ -40,6 +40,7 @@ import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
 import lando.systems.ld50.particles.PhysicsDecal;
 import lando.systems.ld50.utils.Time;
+import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
@@ -81,6 +82,7 @@ public class GameScreen extends BaseScreen {
 
     private Vector3 lightDir;
     public DirectionalLight light;
+    public Color ambientColor = new Color(.2f,.2f, .2f, 1f);
 
     public FrameBuffer pickMapFBO;
     public Texture PickMapFBOTex;
@@ -92,6 +94,7 @@ public class GameScreen extends BaseScreen {
     private VisWindow debugWindow;
     private VisProgressBar progressBar;
     private VisSlider cameraSlider;
+    private float accum = 0;
 
     public GameScreen() {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
@@ -105,7 +108,7 @@ public class GameScreen extends BaseScreen {
         landscape = new Landscape(this);
 
         env = new Environment();
-        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+        env.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientColor));
         env.add(light = new DirectionalLight().set(0.8f, 0.8f, 0.8f, lightDir.x, lightDir.y, lightDir.z));
         modelBatch = new ModelBatch();
         decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
@@ -142,6 +145,10 @@ public class GameScreen extends BaseScreen {
     @Override
     public void update(float dt) {
         super.update(dt);
+        accum += dt;
+
+        setGameDayTime(accum);
+
         boolean gameOver = isGameOver();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
@@ -298,6 +305,29 @@ public class GameScreen extends BaseScreen {
         landscape.renderFBO(camera);
         pickPixmap =  Pixmap.createFromFrameBuffer(0, 0, pickMapFBO.getWidth(), pickMapFBO.getHeight());
         pickMapFBO.end();
+    }
+
+    Color skyColor = new Color();
+    /**
+     * Set the day night cycle 0-24 (12 is noon)
+     * @param inTime
+     */
+    public void setGameDayTime(float inTime) {
+        while (inTime < 0) inTime += 24;
+        float time = inTime % 24f;
+        float radTime = time / 24f * MathUtils.PI2;
+        light.setDirection(MathUtils.sin(radTime), MathUtils.cos(radTime), -.2f);
+        light.direction.nor();
+        float duskTime = time > 12 ? 24 - time : time;
+        if (duskTime > 6.5){
+            float dayLight = Utils.smoothStep(6.5f, 7.5f, duskTime);
+            skyColor.set(.5f, .2f, 0, 1).lerp(Color.WHITE, dayLight);
+        } else {
+            float dayLight = Utils.smoothStep(5.5f, 6.5f, duskTime);
+            skyColor.set(0,0,0,1f).lerp(.5f, .2f, 0, 1, dayLight);
+        }
+        light.setColor(skyColor);
+
     }
 
     public boolean isGameOver() {

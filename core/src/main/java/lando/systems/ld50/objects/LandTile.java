@@ -17,10 +17,10 @@ import static lando.systems.ld50.objects.Landscape.TILES_WIDE;
 
 public class LandTile {
     public static final int NUM_COMPONENTS_POSITION = 3;
-    private static final int NUM_COMPONENTS_NORMAL = 3;
+    public static final int NUM_COMPONENTS_NORMAL = 3;
     public static final int NUM_COMPONENTS_TEXTURE = 2;
     public static final int NUM_COMPONENTS_COLOR = 4;
-    private static final int NUM_COMPONENTS_PER_VERTEX = NUM_COMPONENTS_POSITION + NUM_COMPONENTS_TEXTURE + NUM_COMPONENTS_COLOR;
+    private static final int NUM_COMPONENTS_PER_VERTEX = NUM_COMPONENTS_POSITION + NUM_COMPONENTS_TEXTURE + NUM_COMPONENTS_NORMAL +NUM_COMPONENTS_COLOR;
     private static final int MAX_TRIANGLES = 1000;
     public static final int MAX_INDICES = 12 * 3;
     public static final int MAX_NUM_VERTICES = 9 * NUM_COMPONENTS_PER_VERTEX;
@@ -84,7 +84,7 @@ public class LandTile {
 
         SimplexNoise noise = Main.game.assets.noise;
 
-        float terrainNoiseHeight = .4f;
+        float terrainNoiseHeight = .5f;
         ULHeight = Math.abs((float)noise.getNoise(x, z)) * terrainNoiseHeight;
         URHeight = Math.abs((float)noise.getNoise(x+1, z)) * terrainNoiseHeight;
         LLHeight = Math.abs((float)noise.getNoise(x, z+1)) * terrainNoiseHeight;
@@ -233,6 +233,7 @@ public class LandTile {
 
 
     private void rebuildMesh(){
+        getTriangles();
 
         this.verticesIndex = 0;
         this.indicesIndex = 0;
@@ -242,6 +243,9 @@ public class LandTile {
         vertices[verticesIndex++] = p1.x;
         vertices[verticesIndex++] = p1.y;
         vertices[verticesIndex++] = p1.z;
+        vertices[verticesIndex++] = triangles.get(0).getNormal().x; // Normal X
+        vertices[verticesIndex++] = triangles.get(0).getNormal().y; // Normal Y
+        vertices[verticesIndex++] = triangles.get(0).getNormal().z; // Normal Z
         vertices[verticesIndex++] = ULSnowHeight / MAX_SNOW; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b
@@ -253,6 +257,9 @@ public class LandTile {
         vertices[verticesIndex++] = p2.x;
         vertices[verticesIndex++] = p2.y;
         vertices[verticesIndex++] = p2.z;
+        vertices[verticesIndex++] = triangles.get(1).getNormal().x; // Normal X
+        vertices[verticesIndex++] = triangles.get(1).getNormal().y; // Normal Y
+        vertices[verticesIndex++] = triangles.get(1).getNormal().z; // Normal Z
         vertices[verticesIndex++] = URSnowHeight / MAX_SNOW; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b
@@ -264,6 +271,9 @@ public class LandTile {
         vertices[verticesIndex++] = p3.x;
         vertices[verticesIndex++] = p3.y;
         vertices[verticesIndex++] = p3.z;
+        vertices[verticesIndex++] = triangles.get(2).getNormal().x; // Normal X
+        vertices[verticesIndex++] = triangles.get(2).getNormal().y; // Normal Y
+        vertices[verticesIndex++] = triangles.get(2).getNormal().z; // Normal Z
         vertices[verticesIndex++] = LRSnowHeight / MAX_SNOW; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b
@@ -275,6 +285,9 @@ public class LandTile {
         vertices[verticesIndex++] = p4.x;
         vertices[verticesIndex++] = p4.y;
         vertices[verticesIndex++] = p4.z;
+        vertices[verticesIndex++] = triangles.get(3).getNormal().x; // Normal X
+        vertices[verticesIndex++] = triangles.get(3).getNormal().y; // Normal Y
+        vertices[verticesIndex++] = triangles.get(3).getNormal().z; // Normal Z
         vertices[verticesIndex++] = LLSnowHeight / MAX_SNOW; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b
@@ -286,6 +299,9 @@ public class LandTile {
         vertices[verticesIndex++] = p5.x;
         vertices[verticesIndex++] = p5.y;
         vertices[verticesIndex++] = p5.z;
+        vertices[verticesIndex++] = triangles.get(0).getNormal().x; // Normal X
+        vertices[verticesIndex++] = triangles.get(0).getNormal().y; // Normal Y
+        vertices[verticesIndex++] = triangles.get(0).getNormal().z; // Normal Z
         vertices[verticesIndex++] = (ULSnowHeight + URSnowHeight + LLSnowHeight + LRSnowHeight) / 4f / MAX_SNOW; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b
@@ -297,6 +313,9 @@ public class LandTile {
         vertices[verticesIndex++] = x;
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z;
+        vertices[verticesIndex++] = -1; // Normal X
+        vertices[verticesIndex++] = 0; // Normal Y
+        vertices[verticesIndex++] = 0; // Normal Z
         vertices[verticesIndex++] = -2; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b
@@ -308,6 +327,9 @@ public class LandTile {
         vertices[verticesIndex++] = x + width;
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z;
+        vertices[verticesIndex++] = 1; // Normal X
+        vertices[verticesIndex++] = 0; // Normal Y
+        vertices[verticesIndex++] = 0; // Normal Z
         vertices[verticesIndex++] = -2; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b
@@ -319,6 +341,9 @@ public class LandTile {
         vertices[verticesIndex++] = x + width;
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z + width;
+        vertices[verticesIndex++] = -1; // Normal X
+        vertices[verticesIndex++] = 0; // Normal Y
+        vertices[verticesIndex++] = 1; // Normal Z
         vertices[verticesIndex++] = -2; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b
@@ -330,6 +355,9 @@ public class LandTile {
         vertices[verticesIndex++] = x;
         vertices[verticesIndex++] = 0;
         vertices[verticesIndex++] = z + width;
+        vertices[verticesIndex++] = 1; // Normal X
+        vertices[verticesIndex++] = 0; // Normal Y
+        vertices[verticesIndex++] = 1; // Normal Z
         vertices[verticesIndex++] = -2; // r
         vertices[verticesIndex++] = x; // g
         vertices[verticesIndex++] = z; // b

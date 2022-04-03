@@ -4,12 +4,15 @@ precision highp float;
 
 uniform sampler2D u_texture;
 uniform vec4 u_ambient;
+uniform vec4 u_lightColor;
+uniform vec3 u_lightDir;
 
 
 //input from vertex shader
 varying vec2 v_texCoords;
 varying vec4 v_color;
 varying vec3 v_pos;
+varying vec3 v_normal;
 
 
 
@@ -26,6 +29,13 @@ void main() {
                     noise2.g * .05);
     vec3 grassColor = noise * mix( vec3(.3, .4, .05), vec3(.2, 1., .2), noise);
     vec3 snowColor = ((noise/2.)+.5) * vec3(1., 1., 1.);
-    gl_FragColor = vec4(mix(grassColor, snowColor, v_color.r), 1.);
+    vec4 finalColor = vec4(mix(grassColor, snowColor, v_color.r), 1.);
+
+    float NdotL = clamp(dot(v_normal, -u_lightDir), 0.0, 1.0);
+    vec4 lightColor = u_lightColor * NdotL;
+    lightColor = clamp(u_ambient + lightColor, 0., 1.);
+    lightColor.a = 1.;
+
+    gl_FragColor = finalColor * lightColor;
 //    gl_FragColor = vec4(v_color.r, 1., 1., 1.);
 }

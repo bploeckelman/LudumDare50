@@ -1,6 +1,7 @@
 package lando.systems.ld50.utils;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
 public class Utils {
@@ -33,6 +34,18 @@ public class Utils {
             default: throw new GdxRuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
         }
         return outColor;
+    }
+
+    /**
+     * Returns a smooth step where value < edge1 = 0 value > edge = 1 and smooth between
+     * @param edge0
+     * @param edge1
+     * @param value
+     * @return
+     */
+    public static float smoothStep(float edge0, float edge1, float value) {
+        float x = MathUtils.clamp((value-edge0)/ (edge1 - edge0), 0, 1);
+        return x * x * (3 - 2 * x);
     }
 
 
