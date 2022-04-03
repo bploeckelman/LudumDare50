@@ -37,6 +37,15 @@ public class PhysicsManager {
             ball.position.add(ball.velocity.x * dt, ball.velocity.y * dt, ball.velocity.z * dt);
 //            newPos.set(ball.position);
 //            newPos.add(ball.velocity);
+
+            // Test if ball falls off side and correct
+            float totWidth = Landscape.TILE_WIDTH * Landscape.TILES_WIDE;
+            if (ball.position.x - ball.radius < 0 || ball.position.x + ball.radius > totWidth) {
+                ball.velocity.scl(-0.5f, 1, 1);
+                ball.position.x = Math.max(ball.radius, Math.min(totWidth - ball.radius, ball.position.x));
+                //ball.position.add(ball.velocity.x * 0.1f, 0, 0);
+            }
+
             // Test if ball goes through floor
             landscape.getTilesAround(ball.position.x, ball.position.z, neighborTiles);
             for (LandTile tile : neighborTiles){
