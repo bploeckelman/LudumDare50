@@ -23,6 +23,6 @@ void main() {
                     noise3.b * .2 +
                     noise2.b * .25 +
                     noise2.g * .05);
-    gl_FragColor = vec4(vec3(noise), 1.);
+    gl_FragColor = vec4(vec3(noise) * vec3(.2, 1., .2), 1.);
 //    gl_FragColor = vec4(v_texCoords, 1., 1.);
 }

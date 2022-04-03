@@ -49,8 +49,13 @@ public class Landscape {
         for(LandTile tile : tiles) {
             tile.update(dt);
         }
-        for (Snowball ball : snowBalls){
+        for (int i = snowBalls.size-1; i >= 0; i--){
+            Snowball ball = snowBalls.get(i);
             ball.update(dt);
+
+            if (ball.position.y < -3){
+                snowBalls.removeIndex(i);
+            }
         }
     }
 

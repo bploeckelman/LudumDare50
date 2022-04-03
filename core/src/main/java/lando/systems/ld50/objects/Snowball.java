@@ -34,7 +34,7 @@ public class Snowball {
             int attribs = VertexAttributes.Usage.Position
                         | VertexAttributes.Usage.ColorPacked
                         | VertexAttributes.Usage.Normal;
-            model = builder.createSphere(1f, 1f, 1f, 20, 20,
+            model = builder.createSphere(1f, 1f, 1f, 10, 10,
                     new Material(ColorAttribute.createDiffuse(Color.FIREBRICK)), attribs);
         }
         instance = new ModelInstance(model);
