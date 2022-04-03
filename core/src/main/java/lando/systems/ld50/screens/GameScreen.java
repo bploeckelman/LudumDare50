@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
@@ -72,10 +73,19 @@ public class GameScreen extends BaseScreen {
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
+        BoundingBox box = new BoundingBox();
         G3dModelLoader loader = new G3dModelLoader(new UBJsonReader());
         testModel = loader.loadModel(Gdx.files.internal("models/cliff_block_rock.g3db"));
         testInstance = new ModelInstance(testModel);
-        testInstance.transform.translate(0, 1, 0);
+        testInstance.calculateBoundingBox(box);
+        testInstance.transform
+                .setToRotation(1f, 0f, 0f, 90f)
+                .scale(
+                        1f / (box.max.x - box.min.x),
+                        1f / (box.max.y - box.min.y),
+                        1f / (box.max.z - box.min.z))
+                .setTranslation(0.5f, 0.5f, 0f)
+        ;
 
         ModelBuilder builder = new ModelBuilder();
         coordsModel = builder.createXYZCoordinates(1f, 0.1f, 0.5f, 6, GL20.GL_TRIANGLES,
@@ -86,7 +96,6 @@ public class GameScreen extends BaseScreen {
         InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
     }
-    private final Vector3 scale = new Vector3();
 
     @Override
     public void dispose() {
@@ -144,6 +153,7 @@ public class GameScreen extends BaseScreen {
         // TODO - might need to make everything draw with the model batch
         modelBatch.begin(camera);
         {
+            modelBatch.render(testInstance, env);
             modelBatch.render(coords, env);
             landscape.render(modelBatch, env);
         }
