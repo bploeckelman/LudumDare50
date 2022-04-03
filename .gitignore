@@ -67,7 +67,7 @@ nb-configuration.xml
 
 ## OS Specific
 .DS_Store
-
+*.asd
 ## Miscellaneous
 *~
 *.*#
