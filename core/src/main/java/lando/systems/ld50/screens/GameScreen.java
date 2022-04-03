@@ -8,6 +8,9 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -15,10 +18,12 @@ import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.kotcrab.vis.ui.widget.VisLabel;
@@ -30,6 +35,7 @@ import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.utils.accessors.PerspectiveCameraAccessor;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
+
 
 public class GameScreen extends BaseScreen {
 
@@ -52,6 +58,9 @@ public class GameScreen extends BaseScreen {
     private Model coordsModel;
     private ModelInstance testInstance;
     private ModelInstance coords;
+
+    private final DecalBatch decalBatch;
+    private Array<Decal> decals = new Array<Decal>();
 
     private Vector3 touchPos;
     private Vector3 startPos, endPos;
@@ -84,6 +93,15 @@ public class GameScreen extends BaseScreen {
 
         loadModels();
 
+        decalBatch = new DecalBatch(new CameraGroupStrategy(camera));
+        Decal decal;
+        for (int i = 0; i < 100; i++) {
+            decal = Decal.newDecal(assets.particles.smoke, true);
+            decal.setColor(1f, 1f, 1f, 0.3f);
+            decal.setScale(0.025f);
+            decals.add(decal);
+        }
+
         InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
         fb =  new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -97,6 +115,7 @@ public class GameScreen extends BaseScreen {
         testModel.dispose();
         coordsModel.dispose();
         modelBatch.dispose();
+        decalBatch.dispose();
     }
 
     @Override
@@ -170,6 +189,13 @@ public class GameScreen extends BaseScreen {
         }
         modelBatch.end();
 
+        for (int iter = 0; iter < decals.size; iter++) {
+            decals.get(iter).setPosition(5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f), 5f + MathUtils.random(-2f, 2f));
+            decals.get(iter).lookAt(camera.position, camera.up);
+            decalBatch.add(decals.get(iter));
+        }
+        decalBatch.flush();
+
         // NOTE: always draw so the 'hide' transition is visible
         uiStage.draw();
 
@@ -180,6 +206,8 @@ public class GameScreen extends BaseScreen {
             batch.draw(fbTex, 0, 100, 100, -100);
         }
         batch.end();
+
+
     }
 
 
