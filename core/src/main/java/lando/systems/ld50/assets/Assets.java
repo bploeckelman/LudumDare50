@@ -53,6 +53,7 @@ public class Assets implements Disposable {
     public SimplexNoise noise;
 
     public Music mainMusic;
+    public Music mainTheme;
     public Sound chachingSound;
 
     public enum Patch {
@@ -110,6 +111,7 @@ public class Assets implements Disposable {
 
             // audio
             mgr.load("audio/musics/main.mp3", Music.class);
+            mgr.load("audio/musics/music-maintheme.ogg", Music.class);
             mgr.load("audio/sounds/chaching.ogg", Sound.class);
             mgr.load("images/noise.png", Texture.class);
         }
@@ -140,6 +142,7 @@ public class Assets implements Disposable {
 
         // get audio
         mainMusic = mgr.get("audio/musics/main.mp3", Music.class);
+        mainTheme = mgr.get("audio/musics/music-maintheme.ogg", Music.class);
         chachingSound = mgr.get("audio/sounds/chaching.ogg", Sound.class);
 
         cat = new Animation<>(0.1f, atlas.findRegions("pets/cat"), Animation.PlayMode.LOOP);

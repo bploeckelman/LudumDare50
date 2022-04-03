@@ -29,7 +29,8 @@ public class AudioManager implements Disposable {
 
     public enum Musics {
         none,
-        main
+        main,
+        mainTheme
     }
 
     public ObjectMap<Sounds, SoundContainer> sounds = new ObjectMap<>();
@@ -45,10 +46,15 @@ public class AudioManager implements Disposable {
     public AudioManager(Main game) {
         this.assets = game.assets;
         this.tween = game.tween;
+
         putSound(Sounds.chaching, assets.chachingSound);
+
         musics.put(Musics.main, assets.mainMusic);
+        musics.put(Musics.mainTheme, assets.mainTheme);
+
         musicVolume = new MutableFloat(1f);
         soundVolume = new MutableFloat(1f);
+
         isMusicMuted = false;
         isSoundMuted = false;
 //        musicVolume = new MutableFloat(Prefs.getFloat(Prefs.Name.music_volume_float));
