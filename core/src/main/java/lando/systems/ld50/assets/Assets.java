@@ -2,6 +2,8 @@ package lando.systems.ld50.assets;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -46,6 +48,9 @@ public class Assets implements Disposable {
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
     public SimplexNoise noise;
+
+    public Music mainMusic;
+    public Sound chachingSound;
 
     public enum Patch {
         debug, panel, metal, glass,
@@ -100,9 +105,9 @@ public class Assets implements Disposable {
             mgr.load("fonts/outfit-medium-40px.fnt", BitmapFont.class);
             mgr.load("fonts/outfit-medium-80px.fnt", BitmapFont.class);
 
-            // audio TODO
-//            mgr.load("audio/musics/example-music.ogg", Music.class);
-//            mgr.load("audio/sounds/example-sound.ogg", Sound.class);
+            // audio
+            mgr.load("audio/musics/main.mp3", Music.class);
+            mgr.load("audio/sounds/chaching.ogg", Sound.class);
         }
 
         if (load == Load.SYNC) {
@@ -127,8 +132,8 @@ public class Assets implements Disposable {
         largeFont = mgr.get("fonts/outfit-medium-80px.fnt");
 
         // get audio
-//        exampleMusic = mgr.get("audio/musics/example-music.ogg", Music.class);
-//        exampleSound = mgr.get("audio/sounds/example-sound.ogg", Sound.class);
+        mainMusic = mgr.get("audio/musics/main.mp3", Music.class);
+        chachingSound = mgr.get("audio/sounds/chaching.ogg", Sound.class);
 
         cat = new Animation<>(0.1f, atlas.findRegions("pets/cat"), Animation.PlayMode.LOOP);
         dog = new Animation<>(0.1f, atlas.findRegions("pets/dog"), Animation.PlayMode.LOOP);

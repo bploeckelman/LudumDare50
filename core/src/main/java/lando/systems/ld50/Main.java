@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.VisUI;
 import lando.systems.ld50.assets.Assets;
+import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.screens.BaseScreen;
 import lando.systems.ld50.screens.LaunchScreen;
 import lando.systems.ld50.screens.TitleScreen;
@@ -33,7 +34,7 @@ public class Main extends ApplicationAdapter {
 
 	public Assets assets;
 	public TweenManager tween;
-//	public AudioManager audio;
+	public AudioManager audio;
 
 	private OrthographicCamera camera;
 	private BaseScreen currentScreen;
@@ -53,6 +54,8 @@ public class Main extends ApplicationAdapter {
 
 		assets = new Assets(Assets.Load.SYNC);
 		VisUI.load(game.assets.mgr.get("gui/uiskin.json", Skin.class));
+
+		audio = new AudioManager(this);
 
 		Time.init();
 

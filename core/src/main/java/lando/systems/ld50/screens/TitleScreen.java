@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Align;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
+import lando.systems.ld50.audio.AudioManager;
 
 public class TitleScreen extends BaseScreen {
     private Skin skin;
@@ -28,6 +29,7 @@ public class TitleScreen extends BaseScreen {
         //   so that it's set correctly in desktop mode where there's no transition
         InputMultiplexer mux = new InputMultiplexer(uiStage, this);
         Gdx.input.setInputProcessor(mux);
+        //audio.playMusic(AudioManager.Musics.main);
     }
 
     @Override
@@ -60,8 +62,10 @@ public class TitleScreen extends BaseScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (!exitingScreen) {
                     game.setScreen(new EndScreen());
+                    audio.playSound(AudioManager.Sounds.chaching);
                     exitingScreen = true;
-                }            }
+                }
+            }
         });
 
         rootTable.add(startGameButton).padBottom(BUTTON_PADDING);

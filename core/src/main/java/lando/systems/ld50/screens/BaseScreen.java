@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
+import lando.systems.ld50.audio.AudioManager;
 
 public abstract class BaseScreen implements InputProcessor, ControllerListener, Disposable {
 
@@ -33,7 +34,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
 
     public boolean exitingScreen;
 //    public Particles particles;
-//    public AudioManager audio;
+    public AudioManager audio;
     public OrthographicCamera worldCamera;
     public OrthographicCamera windowCamera;
 
@@ -44,7 +45,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         this.assets = game.assets;
         this.tween = game.tween;
         this.batch = assets.batch;
-//        this.audio = game.audio;
+        this.audio = game.audio;
 //        this.particles = new Particles(game.assets);
         this.pointerPos = new Vector3();
 
@@ -70,6 +71,10 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         //  could go in the other direction, create the uiStage and set windowCam = stage.cam
         StretchViewport viewport = new StretchViewport(windowCamera.viewportWidth, windowCamera.viewportHeight);
         uiStage = new Stage(viewport, batch);
+    }
+
+    private void initializeSettingsUI() {
+
     }
 
     public void transitionCompleted() {
