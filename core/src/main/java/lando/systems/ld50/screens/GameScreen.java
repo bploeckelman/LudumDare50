@@ -69,10 +69,6 @@ public class GameScreen extends BaseScreen {
     private Array<Decal> decals;
     private Array<Decal> particleDecals;
 
-    private Model animTestModel;
-    private ModelInstance animTestInstance;
-    private AnimationController animTestController;
-
     private Vector3 touchPos;
     private Vector3 startPos, endPos;
     private Vector3 startUp, endUp;
@@ -126,7 +122,6 @@ public class GameScreen extends BaseScreen {
         super.dispose();
         houseModelA.dispose();
         houseModelB.dispose();
-        animTestModel.dispose();
         creatureModel.dispose();
         coordsModel.dispose();
         modelBatch.dispose();
@@ -221,7 +216,6 @@ public class GameScreen extends BaseScreen {
             modelBatch.render(coords, env);
             modelBatch.render(houseInstances, env);
             modelBatch.render(creatureInstances, env);
-            modelBatch.render(animTestInstance, env);
             landscape.render(modelBatch, env);
         }
         modelBatch.end();
@@ -327,21 +321,6 @@ public class GameScreen extends BaseScreen {
 
         creatureInstances = new Array<>();
         creatureInstances.add(creatureInstance);
-
-        animTestModel = loader.loadModel(Gdx.files.internal("models/Shambler.g3db"));
-        animTestInstance = new ModelInstance(animTestModel);
-        animTestInstance.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-        animTestInstance.transform
-                .setToTranslationAndScaling(
-                        6f, 0.25f, 5f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
 
         ModelBuilder builder = new ModelBuilder();
         coordsModel = builder.createXYZCoordinates(1f, 0.1f, 0.5f, 6, GL20.GL_TRIANGLES,
