@@ -107,7 +107,7 @@ public class PhysicsManager {
             nearestPoint.sub(ball.position);
             float overlap = ball.radius - nearestPoint.len();
             if (overlap > 0) {
-                ballContacts.add(contactPool.obtain().init(ball, t.getNormal(), overlap, tile));
+                ballContacts.add(contactPool.obtain().init(ball, t.getNormal(), overlap + .01f, tile));
             }
         }
 //        tile.freeTriangles();
