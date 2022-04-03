@@ -41,9 +41,12 @@ public class Assets implements Disposable {
     public BitmapFont largeFont;
 
     public Texture pixel;
+    public Texture noiseTex;
     public TextureRegion pixelRegion;
     public ShaderProgram landscapeShader;
     public ShaderProgram ballShader;
+    public ShaderProgram pickingShader;
+    public ShaderProgram highlightShader;
 
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
@@ -108,6 +111,7 @@ public class Assets implements Disposable {
             // audio
             mgr.load("audio/musics/main.mp3", Music.class);
             mgr.load("audio/sounds/chaching.ogg", Sound.class);
+            mgr.load("images/noise.png", Texture.class);
         }
 
         if (load == Load.SYNC) {
@@ -121,6 +125,9 @@ public class Assets implements Disposable {
         if (initialized) return 1;
 
         noise = new SimplexNoise(16, .8f, 12);
+
+        noiseTex = mgr.get("images/noise.png", Texture.class);
+        noiseTex.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
         atlas = mgr.get("sprites/sprites.atlas");
         strings = mgr.get("i18n/strings", I18NBundle.class);
@@ -184,6 +191,8 @@ public class Assets implements Disposable {
 
         landscapeShader = loadShader("shaders/default3d.vert", "shaders/landscape.frag");
         ballShader = loadShader("shaders/ball.vert", "shaders/ball.frag");
+        pickingShader = loadShader("shaders/default3d.vert", "shaders/picking.frag");
+        highlightShader = loadShader("shaders/default3d.vert", "shaders/highlight.frag");
         initialized = true;
         return 1;
     }

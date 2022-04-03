@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.physics.PhysicsManager;
+import lando.systems.ld50.screens.GameScreen;
 
 public class Landscape {
 
@@ -24,8 +25,11 @@ public class Landscape {
 
     private final ShaderProgram landscapeShader;
     private final ShaderProgram ballShader;
+    GameScreen screen;
+    LandTile highlightedTile;
 
-    public Landscape() {
+    public Landscape(GameScreen screen) {
+        this.screen = screen;
         physics = new PhysicsManager(this);
         ballShader = Main.game.assets.ballShader;
         landscapeShader = Main.game.assets.landscapeShader;
@@ -57,6 +61,17 @@ public class Landscape {
         }
     }
 
+    public void renderFBO(Camera camera){
+        ShaderProgram pickingShader = Main.game.assets.pickingShader;
+        pickingShader.bind();
+
+        pickingShader.setUniformMatrix("u_projTrans", camera.combined);
+
+        for(LandTile tile : tiles) {
+            tile.render(pickingShader);
+        }
+    }
+
     public void render(SpriteBatch batch, Camera camera) {
         batch.flush();
         batch.end();
@@ -64,10 +79,17 @@ public class Landscape {
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
         landscapeShader.bind();
+        landscapeShader.setUniformi("u_texture", 0);
+
+        Main.game.assets.noiseTex.bind(0);
         landscapeShader.setUniformMatrix("u_projTrans", camera.combined);
 
         for(LandTile tile : tiles) {
             tile.render(landscapeShader);
+        }
+
+        if (highlightedTile != null){
+            highlightedTile.renderHighlight(camera);
         }
 
 //        ballShader.bind();
@@ -99,6 +121,14 @@ public class Landscape {
                     neighborTiles.add(tiles[dx + TILES_WIDE * dy]);
                 }
             }
+        }
+    }
+
+    public void setSelectedTile(int x, int z){
+        if (x < 0 || z < 0) {
+            highlightedTile = null;
+        } else {
+            highlightedTile = tiles[x + TILES_WIDE * z];
         }
     }
 }

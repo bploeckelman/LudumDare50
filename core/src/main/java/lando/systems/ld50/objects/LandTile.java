@@ -1,9 +1,9 @@
 package lando.systems.ld50.objects;
 
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -30,6 +30,7 @@ public class LandTile {
     public float LRHeight = 0;
 
     private Mesh mesh;
+    private Mesh boxMesh;
     private float[] vertices;
     private short[] indices;
     private int verticesIndex;
@@ -64,6 +65,7 @@ public class LandTile {
         LRHeight = Math.abs((float)noise.getNoise(x+1, z+1)) * terrainNoiseHeight;
         update(0);
         rebuildMesh();
+        buildHighlightMesh();
     }
 
     public void update(float dt){
@@ -75,7 +77,88 @@ public class LandTile {
     }
 
     public void render(ShaderProgram shader) {
+        shader.setUniformf("x", (int)x);
+        shader.setUniformf("z", (int)z);
         mesh.render(shader, GL20.GL_TRIANGLES);
+    }
+
+    public void renderHighlight(Camera camera){
+        ShaderProgram shader = Main.game.assets.highlightShader;
+        shader.bind();
+        shader.setUniformMatrix("u_projTrans", camera.combined);
+
+        boxMesh.render(shader, GL20.GL_TRIANGLES);
+    }
+
+
+    private void buildHighlightMesh() {
+        if (boxMesh != null){
+            boxMesh.dispose();
+        }
+
+        boxMesh = new Mesh(true, MAX_NUM_VERTICES, MAX_INDICES,
+                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
+//                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
+                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
+        );
+
+        float[] boxverts = new float[9*4];
+        int vertIndex = 0;
+
+        boxverts[vertIndex++] = p1.x;
+        boxverts[vertIndex++] = p1.y+.05f;
+        boxverts[vertIndex++] = p1.z;
+        boxverts[vertIndex++] = .2f; // R
+        boxverts[vertIndex++] = .8f; // G
+        boxverts[vertIndex++] = 1f; // B
+        boxverts[vertIndex++] = 1; // A
+        boxverts[vertIndex++] = 0f; // U
+        boxverts[vertIndex++] = 0f; // V
+
+        boxverts[vertIndex++] = p2.x;
+        boxverts[vertIndex++] = p2.y + .05f;
+        boxverts[vertIndex++] = p2.z;
+        boxverts[vertIndex++] = .2f; // R
+        boxverts[vertIndex++] = .8f; // G
+        boxverts[vertIndex++] = 1f; // B
+        boxverts[vertIndex++] = 1; // A
+        boxverts[vertIndex++] = 1; // U
+        boxverts[vertIndex++] = 0; // V
+
+        boxverts[vertIndex++] = p3.x;
+        boxverts[vertIndex++] = p3.y + .05f;
+        boxverts[vertIndex++] = p3.z;
+        boxverts[vertIndex++] = .2f; // R
+        boxverts[vertIndex++] = .8f; // G
+        boxverts[vertIndex++] = 1f; // B
+        boxverts[vertIndex++] = 1; // A
+        boxverts[vertIndex++] = 1f; // U
+        boxverts[vertIndex++] = 1f; // V
+
+        boxverts[vertIndex++] = p4.x;
+        boxverts[vertIndex++] = p4.y + .05f;
+        boxverts[vertIndex++] = p4.z;
+        boxverts[vertIndex++] = .2f; // R
+        boxverts[vertIndex++] = .8f; // G
+        boxverts[vertIndex++] = 1f; // B
+        boxverts[vertIndex++] = 1; // A
+        boxverts[vertIndex++] = 0; // U
+        boxverts[vertIndex++] = 1f; // V
+
+        short[] boxIndices = new short[6];
+        int boxIndex = 0;
+        boxIndices[boxIndex++] = 0;
+        boxIndices[boxIndex++] = 1;
+        boxIndices[boxIndex++] = 2;
+
+        boxIndices[boxIndex++] = 2;
+        boxIndices[boxIndex++] = 3;
+        boxIndices[boxIndex++] = 0;
+
+        boxMesh.setVertices(boxverts);
+        boxMesh.setIndices(boxIndices);
+
     }
 
 
@@ -101,8 +184,8 @@ public class LandTile {
         vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = ULHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
-        vertices[verticesIndex++] = 1; // U
-        vertices[verticesIndex++] = 1; // V
+        vertices[verticesIndex++] = p1.x; // U
+        vertices[verticesIndex++] = p1.z; // V
 
         // Upper Right vert
         vertices[verticesIndex++] = p2.x;
@@ -112,8 +195,8 @@ public class LandTile {
         vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
-        vertices[verticesIndex++] = 1; // U
-        vertices[verticesIndex++] = 1; // V
+        vertices[verticesIndex++] = p2.x; // U
+        vertices[verticesIndex++] = p2.z; // V
 
         // Lower RIGHT vert
         vertices[verticesIndex++] = p3.x;
@@ -123,8 +206,8 @@ public class LandTile {
         vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
-        vertices[verticesIndex++] = 1; // U
-        vertices[verticesIndex++] = 1; // V
+        vertices[verticesIndex++] = p3.x; // U
+        vertices[verticesIndex++] = p3.z; // V
 
         // Lower Left vert
         vertices[verticesIndex++] = p4.x;
@@ -134,8 +217,8 @@ public class LandTile {
         vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
-        vertices[verticesIndex++] = 1; // U
-        vertices[verticesIndex++] = 1; // V
+        vertices[verticesIndex++] = p4.x; // U
+        vertices[verticesIndex++] = p4.z; // V
 
         // Center Vert
         vertices[verticesIndex++] = p5.x;
@@ -145,8 +228,8 @@ public class LandTile {
         vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // b
         vertices[verticesIndex++] = 1; // a
-        vertices[verticesIndex++] = 1; // U
-        vertices[verticesIndex++] = 1; // V
+        vertices[verticesIndex++] = p5.x; // U
+        vertices[verticesIndex++] = p5.z; // V
 
         // Floor Upper Left Vert
         vertices[verticesIndex++] = x;
