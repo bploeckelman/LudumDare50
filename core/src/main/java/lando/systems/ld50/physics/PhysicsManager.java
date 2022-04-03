@@ -10,7 +10,7 @@ import lando.systems.ld50.objects.Snowball;
 public class PhysicsManager {
 
     // TODO make this the real down
-    Vector3 gravity = new Vector3(0, 1f, -5f);
+    Vector3 gravity = new Vector3(0, -5f, 1f);
     Landscape landscape;
     Array<BallContact> ballContacts;
 
@@ -37,7 +37,7 @@ public class PhysicsManager {
 //            newPos.set(ball.position);
 //            newPos.add(ball.velocity);
             // Test if ball goes through floor
-            landscape.getTilesAround(ball.position.x, ball.position.y, neighborTiles);
+            landscape.getTilesAround(ball.position.x, ball.position.z, neighborTiles);
             for (LandTile tile : neighborTiles){
                 testBallTile(ball, tile);
             }

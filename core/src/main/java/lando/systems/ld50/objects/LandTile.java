@@ -35,7 +35,7 @@ public class LandTile {
     private int verticesIndex;
     private int indicesIndex;
     public float x;
-    public float y;
+    public float z;
     float width;
     Vector3 p1;
     Vector3 p2;
@@ -43,12 +43,12 @@ public class LandTile {
     Vector3 p4;
     Vector3 p5;
 
-    public LandTile(int x, int y, float width) {
+    public LandTile(int x, int z, float width) {
         this.vertices = new float[MAX_NUM_VERTICES * NUM_COMPONENTS_PER_VERTEX];
         this.indices = new short[MAX_INDICES];
         this.width = width;
         this.x = x * width;
-        this.y = y * width;
+        this.z = z * width;
         p1 = new Vector3();
         p2 = new Vector3();
         p3 = new Vector3();
@@ -57,20 +57,21 @@ public class LandTile {
 
         SimplexNoise noise = Main.game.assets.noise;
 
-        ULHeight = Math.abs((float)noise.getNoise(x, y)) * .4f;
-        URHeight = Math.abs((float)noise.getNoise(x+1, y)) * .4f;
-        LLHeight = Math.abs((float)noise.getNoise(x, y+1)) * .4f;
-        LRHeight = Math.abs((float)noise.getNoise(x+1, y+1)) * .4f;
+        float terrainNoiseHeight = .4f;
+        ULHeight = Math.abs((float)noise.getNoise(x, z)) * terrainNoiseHeight;
+        URHeight = Math.abs((float)noise.getNoise(x+1, z)) * terrainNoiseHeight;
+        LLHeight = Math.abs((float)noise.getNoise(x, z+1)) * terrainNoiseHeight;
+        LRHeight = Math.abs((float)noise.getNoise(x+1, z+1)) * terrainNoiseHeight;
         update(0);
         rebuildMesh();
     }
 
     public void update(float dt){
-        p1.set(x, y, ULHeight);
-        p2.set(x+1, y, URHeight);
-        p3.set(x+1, y+1, LRHeight);
-        p4.set(x, y+1, LLHeight);
-        p5.set(x + .5f, y + .5f, (p1.z + p2.z + p3.z + p4.z)/4f);
+        p1.set(x, ULHeight, z);
+        p2.set(x+1, URHeight, z);
+        p3.set(x+1, LRHeight, z+1);
+        p4.set(x, LLHeight, z+1);
+        p5.set(x + .5f, (p1.y + p2.y + p3.y + p4.y)/4f, z + .5f);
     }
 
     public void render(ShaderProgram shader) {
@@ -104,9 +105,9 @@ public class LandTile {
         vertices[verticesIndex++] = 1; // V
 
         // Upper Right vert
-        vertices[verticesIndex++] = x + width;
-        vertices[verticesIndex++] = y;
-        vertices[verticesIndex++] = URHeight;
+        vertices[verticesIndex++] = p2.x;
+        vertices[verticesIndex++] = p2.y;
+        vertices[verticesIndex++] = p2.z;
         vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // r
         vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = URHeight / HEIGHT_RANGE; // b
@@ -115,9 +116,9 @@ public class LandTile {
         vertices[verticesIndex++] = 1; // V
 
         // Lower RIGHT vert
-        vertices[verticesIndex++] = x + width;
-        vertices[verticesIndex++] = y + width;
-        vertices[verticesIndex++] = LRHeight;
+        vertices[verticesIndex++] = p3.x;
+        vertices[verticesIndex++] = p3.y;
+        vertices[verticesIndex++] = p3.z;
         vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // r
         vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = LRHeight / HEIGHT_RANGE; // b
@@ -126,9 +127,9 @@ public class LandTile {
         vertices[verticesIndex++] = 1; // V
 
         // Lower Left vert
-        vertices[verticesIndex++] = x;
-        vertices[verticesIndex++] = y + width;
-        vertices[verticesIndex++] = LLHeight;
+        vertices[verticesIndex++] = p4.x;
+        vertices[verticesIndex++] = p4.y;
+        vertices[verticesIndex++] = p4.z;
         vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // r
         vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = LLHeight / HEIGHT_RANGE; // b
@@ -137,9 +138,9 @@ public class LandTile {
         vertices[verticesIndex++] = 1; // V
 
         // Center Vert
-        vertices[verticesIndex++] = x + width * .5f;
-        vertices[verticesIndex++] = y + width * .5f;
-        vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f;
+        vertices[verticesIndex++] = p5.x;
+        vertices[verticesIndex++] = p5.y;
+        vertices[verticesIndex++] = p5.z;
         vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // r
         vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // g
         vertices[verticesIndex++] = (ULHeight + URHeight + LLHeight + LRHeight) / 4f / HEIGHT_RANGE; // b
@@ -149,8 +150,8 @@ public class LandTile {
 
         // Floor Upper Left Vert
         vertices[verticesIndex++] = x;
-        vertices[verticesIndex++] = y;
         vertices[verticesIndex++] = 0;
+        vertices[verticesIndex++] = z;
         vertices[verticesIndex++] = 0; // r
         vertices[verticesIndex++] = 0; // g
         vertices[verticesIndex++] = 0; // b
@@ -160,8 +161,8 @@ public class LandTile {
 
         // Floor Upper Right Vert
         vertices[verticesIndex++] = x + width;
-        vertices[verticesIndex++] = y;
         vertices[verticesIndex++] = 0;
+        vertices[verticesIndex++] = z;
         vertices[verticesIndex++] = 0; // r
         vertices[verticesIndex++] = 0; // g
         vertices[verticesIndex++] = 0; // b
@@ -171,8 +172,8 @@ public class LandTile {
 
         // Floor Lower Right Vert
         vertices[verticesIndex++] = x + width;
-        vertices[verticesIndex++] = y + width;
         vertices[verticesIndex++] = 0;
+        vertices[verticesIndex++] = z + width;
         vertices[verticesIndex++] = 0; // r
         vertices[verticesIndex++] = 0; // g
         vertices[verticesIndex++] = 0; // b
@@ -182,8 +183,8 @@ public class LandTile {
 
         // Floor Lower Left Vert
         vertices[verticesIndex++] = x;
-        vertices[verticesIndex++] = y + width;
         vertices[verticesIndex++] = 0;
+        vertices[verticesIndex++] = z + width;
         vertices[verticesIndex++] = 0; // r
         vertices[verticesIndex++] = 0; // g
         vertices[verticesIndex++] = 0; // b

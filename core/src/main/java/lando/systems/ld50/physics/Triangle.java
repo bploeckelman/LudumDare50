@@ -21,7 +21,7 @@ public class Triangle {
         AB.set(p1).sub(p2);
         AC.set(p1).sub(p3);
         normal.set(AB).crs(AC).nor();
-        if (normal.z < 0){
+        if (normal.y < 0){
             normal.scl(-1);
         }
         return normal;

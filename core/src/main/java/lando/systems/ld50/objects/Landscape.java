@@ -86,15 +86,15 @@ public class Landscape {
     public void startAvalanche(){
 //        snowBalls.clear();
         for (int i = 0; i < TILES_WIDE*3; i++){
-            snowBalls.add(new Snowball(i/3f, .5f, 1.5f, .3f));
+            snowBalls.add(new Snowball(i/3f, 1.5f, .5f, .3f));
         }
     }
 
 
-    public void getTilesAround(float x, float y, Array<LandTile> neighborTiles) {
+    public void getTilesAround(float x, float z, Array<LandTile> neighborTiles) {
         neighborTiles.clear();
         for (int dx = ((int)x)-1; dx <= x+1; dx++){
-            for (int dy = ((int)y)-1; dy <= y+1; dy++){
+            for (int dy = ((int)z)-1; dy <= z+1; dy++){
                 if (dx >= 0 && dx < TILES_WIDE && dy >= 0 && dy < TILES_LONG){
                     neighborTiles.add(tiles[dx + TILES_WIDE * dy]);
                 }
