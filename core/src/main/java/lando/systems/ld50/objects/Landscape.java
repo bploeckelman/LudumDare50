@@ -118,6 +118,14 @@ public class Landscape {
         }
     }
 
+    public float getHeightAt(float x, float z) {
+        if (x >= 0 && x < TILES_WIDE && z >= 0 && z <TILES_LONG){
+            return tiles[(int)x + TILES_WIDE * (int)z].getHeightAt(x % 1f, z%1f);
+        } else {
+            return -1;
+        }
+    }
+
 
     public void getTilesAround(float x, float z, Array<LandTile> neighborTiles) {
         neighborTiles.clear();

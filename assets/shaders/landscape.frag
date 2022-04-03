@@ -3,6 +3,7 @@ precision highp float;
 #endif
 
 uniform sampler2D u_texture;
+uniform vec4 u_ambient;
 
 
 //input from vertex shader

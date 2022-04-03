@@ -131,6 +131,12 @@ public class LandTile {
         return (ULHeight + URHeight + LLHeight + LRHeight) / 4f;
     }
 
+    public float getHeightAt(float x, float z){
+        float leftHeight = p1.y * z + p4.y *(1f - z);
+        float rightHeight = p2.y * z + p3.y *(1f - z);
+        return leftHeight * x + rightHeight * (1f - x);
+    }
+
 
     private void buildHighlightMesh() {
         if (boxMesh != null){

@@ -43,7 +43,7 @@ import text.formic.Stringf;
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
-    private static final int PICKMAP_SCALE = 8;
+    private static final int PICKMAP_SCALE = 16;
 
     public static class Stats {
         // TODO - add stats vars
