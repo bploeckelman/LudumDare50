@@ -31,6 +31,7 @@ public class PhysicsManager {
     }
 
     public void update(float dt){
+//        if (true) return;
         solve(MathUtils.clamp(dt,.001f, .015f));
     }
 

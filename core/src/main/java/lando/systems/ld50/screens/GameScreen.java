@@ -245,7 +245,7 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         {
             // TODO -
-            batch.draw(PickMapFBOTex, 0, 100, 100, -100);
+//            batch.draw(PickMapFBOTex, 0, 100, 100, -100);
         }
         batch.end();
     }
