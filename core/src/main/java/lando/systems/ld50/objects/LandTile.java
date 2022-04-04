@@ -158,10 +158,10 @@ public class LandTile {
         float dx = ball.position.x % 1f;
         float dz = ball.position.z % 1f;
 
-        float ULSnowHeightDelta = Math.min(MAX_SNOW - ULSnowHeight, .003f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f - dz)));
-        float URSnowHeightDelta = Math.min(MAX_SNOW - URSnowHeight, .003f * speed * (Math.max(0, dx) + Math.max(0, 1f - dz)));
-        float LLSnowHeightDelta = Math.min(MAX_SNOW - LLSnowHeight, .003f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f)));
-        float LRSnowHeightDelta = Math.min(MAX_SNOW - LRSnowHeight, .003f * speed * (Math.max(0, dx) + Math.max(0, 1f)));
+        float ULSnowHeightDelta = Math.min(MAX_SNOW - ULSnowHeight, .004f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f - dz)));
+        float URSnowHeightDelta = Math.min(MAX_SNOW - URSnowHeight, .004f * speed * (Math.max(0, dx) + Math.max(0, 1f - dz)));
+        float LLSnowHeightDelta = Math.min(MAX_SNOW - LLSnowHeight, .004f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f)));
+        float LRSnowHeightDelta = Math.min(MAX_SNOW - LRSnowHeight, .004f * speed * (Math.max(0, dx) + Math.max(0, 1f)));
 
 
         float maxLost = Math.max(ULSnowHeightDelta, URSnowHeightDelta);
