@@ -239,7 +239,9 @@ public class GameScreen extends BaseScreen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
-            particles.addPointsParticles((int)MathUtils.random(40, 800), Gdx.input.getX(), Gdx.input.getY(), 0.86f, 1f, 0f);
+            particles.addPointsParticles((int)MathUtils.random(40, 800), Gdx.input.getX(),camera.viewportHeight - Gdx.input.getY(), 0.86f, 1f, 0f);
+            particles.addParticleBurstCollect(16, new float[]{0f, 1f, 0.2f},
+                    new float[]{Gdx.input.getX(), camera.viewportHeight - Gdx.input.getY()}, new float[]{20f, 20f});
         }
 
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -376,6 +378,7 @@ public class GameScreen extends BaseScreen {
         {
             //batch.draw(PickMapFBOTex, 0, 100, 100, -100);
             particles.draw(batch, Particles.Layer.foreground);
+            particles.draw(batch, Particles.Layer.middle);
         }
         batch.end();
     }
