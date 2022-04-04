@@ -30,6 +30,9 @@ public class BallContact implements Comparable, Pool.Poolable
     public void resolve(float dt){
         resolveVelocity(dt);
         resolveInterpenetration(dt);
+        if (tile.LRHeight > .5f && tile.LLHeight > .5f) {
+            // Hit a ramp.
+        }
         tile.addSnow(ball);
 
     }
