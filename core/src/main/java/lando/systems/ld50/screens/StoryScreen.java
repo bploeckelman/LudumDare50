@@ -32,7 +32,8 @@ public class StoryScreen extends BaseScreen {
             "and me and the boys are going to be \n"+
             "shredding mad gnars all week long\n"+
             "\n\n" +
-            "Sick, right?\n\n" +
+            "Sick, right?\n" +
+            "\n\n" +
             "Rental dude was serving this \n" +
             "\"it's only a matter of time\" type energy, \n" +
             "which honestly had kind of an ominous vibe, \n" +
@@ -41,32 +42,41 @@ public class StoryScreen extends BaseScreen {
             "He mentioned something about a \n" +
             "particularly heavy snowfall this season?\n" +
             " \n" +
+            " ..." +
+            " \n" +
+            " \n" +
+            " \n" +
             "As long as we don't end up \n" +
-            "having to frantically place\n" +
-            "ramps and other structures\n" +
-            "around the mountainside,\n" +
+            "having to use our\n" +
+            "snowboard-ramp-building skills\n" +
+            "to select and strategically place\n" +
+            "structures on the mountainside,\n" +
             "\n"+
-            "in a desperate attempt \n" +
-            "to divert the flow of an\n" +
-//            "an unrelenting and ultimately\n"+
-            "unavoidable avalanche,\n"+
+            "to divert and/or speed up the flow\n" +
+            "of an unrelenting avalanche,\n"+
+            "(that conveniently doesn't begin\n"+
+            "until we're done building each day),\n"+
             "\n"+
             "to temporarily stave off\n" +
-            "the destruction of houses, \n\n"+
-            "whose debris we then use\n"+
+            "the destruction of houses, \n"+
+            "whose debris we can then use\n"+
             "to build additional structures,\n"+
             "\n"+
 
-            "as we continue trying \n"+
-            "to keep disaster at bay,\n"+
+            "to keep disaster at bay \n"+
+            "for as long as possible,\n"+
+            "(or, if we're feeling totally un-rad,\n"+
+            "increase total overall destruction),\n"+
             "\n"+
             "until, despite all our efforts,\n"+
-            "the ski lodge is ultimately \n"+
-            "destroyed anyway,\n"+
+            "our ski lodge AirBnB is inevitably \n"+
+            "destroyed in the end anyway,\n"+
             "\n"+
 
             "this will be the sickest\n"+
-            "Spring Break ever\n\n"+
+            "Spring Break ever\n"+
+            "\n\n" +
+            "..." +
             "\n\n" +
             "I feel like we can really\n" +
             "trust in the flow this week, bro\n\n" +
