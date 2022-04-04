@@ -280,7 +280,7 @@ public class Landscape {
 //        }
         for (int j = 0; j < numRows; j++) {
             for (int i = 0; i < TILES_WIDE * 3; i++) {
-                snowBalls.add(new Snowball(i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f), 1.5f, .5f, .3f + MathUtils.random(-0.06f, 0.12f)));
+                snowBalls.add(new Snowball(i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f), 1.5f, .5f, .3f + MathUtils.random(-0.06f, 0.12f), this));
             }
         }
     }

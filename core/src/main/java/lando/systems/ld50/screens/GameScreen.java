@@ -122,10 +122,12 @@ public class GameScreen extends BaseScreen {
     public boolean isControlShown = false;
     private Button minimizeButton;
     public int roundNumber = 1;
-    public int karmaPoint = 0;
-    public int stylePoint = 0;
+    public int goodKarmaPoints = 0;
+    public int badKarmaPoints = 0;
 
     public VisLabel roundLabel;
+    public VisLabel goodKarmaLabel;
+    public VisLabel badKarmaLabel;
 
     private float ambienceSoundTime;
     private Vector3 position = new Vector3();
@@ -234,6 +236,12 @@ public class GameScreen extends BaseScreen {
         updateGameTime();
         if (roundLabel != null){
             roundLabel.setText("Day " + roundNumber);
+        }
+        if (goodKarmaLabel != null) {
+            goodKarmaLabel.setText("Good Karma: " + goodKarmaPoints);
+        }
+        if (badKarmaLabel != null) {
+            badKarmaLabel.setText("Bad Karma: " + badKarmaPoints);
         }
 
         boolean gameOver = isGameOver();
@@ -857,20 +865,20 @@ public class GameScreen extends BaseScreen {
         //centerWindow
         Group progressBarGroup = createAvalancheProgressBarUI();
         //rightWindow
-        VisLabel karmaScoreLabel = new VisLabel("Karma Point: " + karmaPoint, "outfit-medium-20px");
-        VisLabel styleScoreLabel = new VisLabel("Style Point: " + stylePoint, "outfit-medium-20px");
+        goodKarmaLabel = new VisLabel("Good Karma : " + goodKarmaPoints, "outfit-medium-20px");
+        badKarmaLabel = new VisLabel("Bad Point: " + badKarmaPoints, "outfit-medium-20px");
 //        upperRightWindow.addActor(karmaScoreLabel);
 //        upperRightWindow.row();
 //        upperRightWindow.addActor(evilScoreLabel);
         //fuck this it's ludumdare
-        karmaScoreLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 45f);
-        styleScoreLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 15f);
+        goodKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 45f);
+        badKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 15f);
 
         uiStage.addActor(upperLeftWindow);
         uiStage.addActor(upperCenterWindow);
         uiStage.addActor(upperRightWindow);
-        uiStage.addActor(karmaScoreLabel);
-        uiStage.addActor(styleScoreLabel);
+        uiStage.addActor(goodKarmaLabel);
+        uiStage.addActor(badKarmaLabel);
         uiStage.addActor(progressBarGroup);
 
     }

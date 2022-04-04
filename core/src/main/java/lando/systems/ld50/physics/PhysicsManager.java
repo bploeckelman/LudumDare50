@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import lando.systems.ld50.Config;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
@@ -78,9 +79,6 @@ public class PhysicsManager {
             for (LandTile tile : neighborTiles){
                 testBallTile(ball, tile);
 
-                Vector3 coords = new Vector3(tile.x+0.5f, 0.5f, tile.z+0.5f);
-                landscape.screen.camera.project(coords);
-
                 if (testBuilding(ball, tile)) {
                     ball.radius = 0;
 
@@ -92,12 +90,6 @@ public class PhysicsManager {
                     ColorAttribute attrib = (ColorAttribute) tile.decoration.materials.get(0).get(ColorAttribute.Diffuse);
                     attrib.color.set(1f, tile.decorationHealth, tile.decorationHealth, 1f);
 
-                    // spawn good karma particles
-                    landscape.screen.particles.addPointsParticles(200, coords.x, coords.y, 0.9f, 0.1f, 0.1f);
-                    landscape.screen.particles.addParticleBurstCollect(16,
-                            new float[]{1f, 0.1f, 0.1f},
-                            new float[]{coords.x, coords.y},
-                            new float[]{20f, 20f});
 
                     // decoration got killed, do stuff
                     if (tile.decorationHealth <= 0f) {
@@ -145,14 +137,7 @@ public class PhysicsManager {
                             tile.decoration = null;
                         }
                     } else { // building is safe, spawn good karma particles
-                        if (!ball.pointsGiven.contains((long) (1000*tile.x + tile.z), false)) {
-                            landscape.screen.particles.addPointsParticles(75, coords.x, coords.y, 0.1f, 0.8f, 0.1f);
-                            landscape.screen.particles.addParticleBurstCollect(6,
-                                    new float[]{0.2f, 0.9f, 0.1f},
-                                    new float[]{coords.x, coords.y},
-                                    new float[]{20f, 20f});
-                            ball.pointsGiven.add((long) (1000 * tile.x + tile.z));
-                        }
+
                     }
 
                     Main.game.audio.playSound(AudioManager.Sounds.houseImpact, 0.6F);
@@ -240,6 +225,12 @@ public class PhysicsManager {
         if (!tile.isDecorated()) {
             return false;
         }
+        if (!tile.isDecorationDestructable){
+            return false;
+        }
+        if (ball.interactedDecorations.contains(tile, true)) {
+            return false;
+        }
 //<<<<<<< HEAD
 //        boolean result = tile.isDecorated() && ball.position.y < 0.5 + ball.radius/2;
 //
@@ -257,8 +248,34 @@ public class PhysicsManager {
         boolean isBallInBoundsX = ball.position.x > tile.x - ball.radius/2 && ball.position.x < tile.x + 1f + ball.radius/2;
         boolean isBallInBoundsZ = ball.position.z > tile.z - ball.radius/2 && ball.position.z < tile.z + 1f + ball.radius/2;
         boolean isBallLowEnoughToHit = ball.position.y < 0.5 + ball.radius / 2;
+        boolean hitBuilding = tile.isDecorationDestructable && isBallLowEnoughToHit && isBallInBoundsX && isBallInBoundsZ;
 
-        return tile.isDecorationDestructable && isBallLowEnoughToHit && isBallInBoundsX && isBallInBoundsZ;
+        if (isBallInBoundsX && isBallInBoundsZ){
+            Vector3 coords = new Vector3(tile.x+0.5f, 0.5f, tile.z+0.5f);
+            landscape.screen.camera.project(coords);
+
+            if (isBallLowEnoughToHit){
+                // spawn bad karma particles
+                int badKarma = 93;
+                landscape.screen.badKarmaPoints += 93;
+                landscape.screen.particles.addPointsParticles(93, coords.x, coords.y, 0.9f, 0.1f, 0.1f);
+                landscape.screen.particles.addParticleBurstCollect(16,
+                        new float[]{1f, 0.1f, 0.1f},
+                        new float[]{coords.x, coords.y},
+                        new float[]{Config.window_width - MathUtils.random(40f, 100f), Config.window_height - MathUtils.random(20f, 50f)});
+            } else {
+                // Spawn good particles
+                landscape.screen.goodKarmaPoints += 137;
+                    landscape.screen.particles.addPointsParticles(137, coords.x, coords.y, 0.1f, 0.8f, 0.1f);
+                    landscape.screen.particles.addParticleBurstCollect(6,
+                            new float[]{0.2f, 0.9f, 0.1f},
+                            new float[]{coords.x, coords.y},
+                            new float[]{Config.window_width - MathUtils.random(40f, 100f), Config.window_height - MathUtils.random(20f, 50f)});
+            }
+            ball.interactedDecorations.add(tile);
+        }
+
+        return hitBuilding;
 //>>>>>>> e88e15f... Destroy buildings, add particle effect and replace with broken building model
     }
 
