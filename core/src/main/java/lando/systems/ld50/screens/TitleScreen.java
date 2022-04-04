@@ -31,6 +31,7 @@ public class TitleScreen extends BaseScreen {
         Gdx.input.setInputProcessor(mux);
 
         game.audio.playMusic(AudioManager.Musics.introMusic);
+//        game.audio.playMusic(AudioManager.Musics.outroMusic);
     }
 
     @Override

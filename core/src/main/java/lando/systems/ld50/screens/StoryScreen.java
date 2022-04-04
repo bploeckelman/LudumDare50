@@ -79,7 +79,7 @@ public class StoryScreen extends BaseScreen {
         game.assets.font.getData().setScale(textScale);
         layout.setText(game.assets.font, text, Color.WHITE, worldCamera.viewportWidth, Align.center, true);
 
-        game.assets.font.getData().setScale(1f);
+        game.assets.font.getData().setScale(1.125f);
 //        game.audio.playMusic(AudioManager.Musics.introMusic);
 
         perspectiveCamera = new PerspectiveCamera(90, 1280, 800);
@@ -87,8 +87,8 @@ public class StoryScreen extends BaseScreen {
         perspectiveCamera.position.set(640, 0, 500);
         perspectiveCamera.lookAt(640, 00, 0);
         perspectiveCamera.update();
-        skipRect = new Rectangle(windowCamera.viewportWidth - 150, 20, 130, 50);
-        speedRect = new Rectangle(windowCamera.viewportWidth - 150, 90, 130, 50);
+        skipRect = new Rectangle(windowCamera.viewportWidth - 170, windowCamera.viewportHeight-70, 150, 50);
+        speedRect = new Rectangle(windowCamera.viewportWidth - 370, windowCamera.viewportHeight-140, 350, 50);
 
     }
 
@@ -162,7 +162,7 @@ public class StoryScreen extends BaseScreen {
         } else {
             Assets.Patch.glass_dim.ninePatch.draw(batch, skipRect.x, skipRect.y, skipRect.width, skipRect.height);
         }
-        assets.layout.setText(font, "Skip", Color.WHITE, skipRect.width, Align.center, false);
+        assets.layout.setText(font, "Skip", Color.GRAY, skipRect.width, Align.center, false);
         font.draw(batch, assets.layout, skipRect.x, skipRect.y + (skipRect.height + assets.layout.height)/2f);
 
         if (hoverSpeed){
@@ -170,7 +170,7 @@ public class StoryScreen extends BaseScreen {
         } else {
             Assets.Patch.glass_dim.ninePatch.draw(batch, speedRect.x, speedRect.y, speedRect.width, speedRect.height);
         }
-        assets.layout.setText(font, "10x", Color.WHITE, speedRect.width, Align.center, false);
+        assets.layout.setText(font, "Hurry up, bro", Color.WHITE, speedRect.width, Align.center, false);
         font.draw(batch, assets.layout, speedRect.x, speedRect.y + (speedRect.height + assets.layout.height)/2f);
 
         batch.end();
