@@ -811,14 +811,19 @@ public class GameScreen extends BaseScreen {
         Group progressBarGroup = createAvalancheProgressBarUI();
         //rightWindow
         VisLabel karmaScoreLabel = new VisLabel("Karma Point: " + karmaPoint, "outfit-medium-20px");
-        VisLabel evilScoreLabel = new VisLabel("Style Point: " + stylePoint, "outfit-medium-20px");
-        upperRightWindow.addActor(karmaScoreLabel);
-        upperRightWindow.row();
-        upperRightWindow.addActor(evilScoreLabel);
+        VisLabel styleScoreLabel = new VisLabel("Style Point: " + stylePoint, "outfit-medium-20px");
+//        upperRightWindow.addActor(karmaScoreLabel);
+//        upperRightWindow.row();
+//        upperRightWindow.addActor(evilScoreLabel);
+        //fuck this it's ludumdare
+        karmaScoreLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 45f);
+        styleScoreLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 15f);
 
         uiStage.addActor(upperLeftWindow);
         uiStage.addActor(upperCenterWindow);
         uiStage.addActor(upperRightWindow);
+        uiStage.addActor(karmaScoreLabel);
+        uiStage.addActor(styleScoreLabel);
         uiStage.addActor(progressBarGroup);
 
     }
