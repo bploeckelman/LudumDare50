@@ -18,7 +18,7 @@ public class StoryScreen extends BaseScreen {
     PerspectiveCamera perspectiveCamera;
     GlyphLayout layout;
 
-    String text = "Bro, check it\n\n" +
+    String text = "\n\n\n\n\n\n\n\nBro, check it\n\n" +
             "Trent and Chad scored a righteous AirBnB\n" +
             "up in the mountains for Spring Break,\n" +
             "and me and the boys are going to be \n"+
@@ -37,7 +37,7 @@ public class StoryScreen extends BaseScreen {
             "ramps and other structures\n" +
             "around the mountainside,\n" +
             "\n"+
-//            "in a desperate attempt \n" +
+            "in a desperate attempt \n" +
             "to divert the flow of an\n" +
 //            "an unrelenting and ultimately\n"+
             "unavoidable avalanche,\n"+
@@ -86,7 +86,7 @@ public class StoryScreen extends BaseScreen {
         if (Gdx.input.isTouched()){
             speedMultiplier = 10f;
         }
-        accum += 45*dt * speedMultiplier;
+        accum += 75*dt * speedMultiplier;
 //        accum = MathUtils.clamp(accum, 0, layout.height);
         if (accum > layout.height && Gdx.input.justTouched()) {
             launchGame();
