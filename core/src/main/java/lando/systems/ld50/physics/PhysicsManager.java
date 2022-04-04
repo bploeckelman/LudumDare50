@@ -2,6 +2,7 @@ package lando.systems.ld50.physics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.MathUtils;
@@ -43,17 +44,15 @@ public class PhysicsManager {
     }
 
     float scale = 1f;
+    float internalTime = 0;
+    float timeStep = .005f;
     public void update(float dt){
         if (dt == 0) return;
-//        if (true) return;
-        // TODO: Remove this stuff for release
-        if (Gdx.input.isKeyJustPressed(Input.Keys.T)){
-            scale = .25f;
+        internalTime += dt;
+        while (internalTime > timeStep) {
+            internalTime -= timeStep;
+            solve(MathUtils.clamp(timeStep * scale, .0001f, .05f));
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
-            scale = .5f;
-        }
-        solve(MathUtils.clamp(dt*scale,.0001f, .015f));
     }
 
 
@@ -117,6 +116,12 @@ public class PhysicsManager {
                         }
 
                         landscape.screen.removeModelInstance(tile.decoration);
+
+                        // This is a lodge Tile
+                        if (tile.z == Landscape.TILES_LONG -1){
+                            landscape.setGameOver();
+                        }
+
                         if (tile.decoration.model == Assets.Models.building_a.model) {
                             ModelInstance instance = new ModelInstance(Assets.Models.building_a_snowed.model);
                             instance.calculateBoundingBox(box);

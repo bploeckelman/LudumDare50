@@ -326,7 +326,7 @@ public class Landscape {
     }
 
     public void setGameOver(){
-        // TODO: set true when first lodge is destroyed
+        if (screen.gameOver) return; // only call once
         screen.gameOver = true;
         int numRows = 5;
         for (int j = 0; j < numRows; j++) {

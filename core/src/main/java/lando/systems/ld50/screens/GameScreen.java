@@ -239,7 +239,9 @@ public class GameScreen extends BaseScreen {
 
         if (gameOver && landscape.snowBalls.size == 0){
             gameOverDelay += dt;
-            if (gameOverDelay > 1.5f){
+            if (gameOverDelay > 2.5f && !exitingScreen){
+                exitingScreen = true;
+                Main.Transition.set(assets, Assets.Transition.heart);
                 game.setScreen(new EpilogueScreen());
             }
         }
