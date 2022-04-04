@@ -14,10 +14,7 @@ import lando.systems.ld50.Config;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
-import lando.systems.ld50.objects.Debris;
-import lando.systems.ld50.objects.LandTile;
-import lando.systems.ld50.objects.Landscape;
-import lando.systems.ld50.objects.Snowball;
+import lando.systems.ld50.objects.*;
 import lando.systems.ld50.particles.PhysicsDecal;
 
 public class PhysicsManager {
@@ -71,6 +68,12 @@ public class PhysicsManager {
                 ball.velocity.scl(-1f, 1, 1);
                 ball.position.x = Math.max(ball.radius, Math.min(totWidth - ball.radius, ball.position.x));
                 //ball.position.add(ball.velocity.x * 0.1f, 0, 0);
+            }
+
+            for (AnimationDecal decal : landscape.screen.decals) {
+                if (decal.get().getPosition().dst(ball.position) < ball.radius / 2) {
+                    decal.hit();
+                }
             }
 
             // Test if ball goes through floor

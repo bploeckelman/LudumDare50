@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -77,7 +78,7 @@ public class GameScreen extends BaseScreen {
     public final PerspectiveCamera camera;
     private final ScreenShakeCameraController shaker;
     private final SimpleCameraController cameraController;
-    private final Landscape landscape;
+    public final Landscape landscape;
     private final RailsCamera railController;
     private final InputMultiplexer inputMuxPlanPhase, inputMuxAvalanchePhase;
 
@@ -91,7 +92,8 @@ public class GameScreen extends BaseScreen {
     private Array<ModelInstance> treeInstances;
     private Array<ModelInstance> creatureInstances;
     private Array<ModelInstance> lodgeInstances;
-    private Array<AnimationDecal> decals;
+    public Array<AnimationDecal> decals;
+    public Array<Decal> decalsStatic = new Array<>();
 
     private Vector3 touchPos;
     private Vector3 startPos, endPos;
@@ -335,6 +337,10 @@ public class GameScreen extends BaseScreen {
             }
         }
 
+        for (int i = decals.size - 1; i >= 0; i--) {
+            Decal decal = decalsStatic.get(i);
+            decalBatch.add(decal);
+        }
         PhysicsDecal.updateAllDecalParticles(dt);
         for (PhysicsDecal decal : PhysicsDecal.instances) {
             decal.decal.lookAt(camera.position, camera.up);
@@ -425,7 +431,7 @@ public class GameScreen extends BaseScreen {
                 break;
 
             case plan:
-                //TODO time of day stuff
+                //TODO time of day stuff(??)
                 break;
 
 

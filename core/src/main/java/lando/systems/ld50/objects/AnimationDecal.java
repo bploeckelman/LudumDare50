@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
+import lando.systems.ld50.screens.BaseScreen;
+import lando.systems.ld50.screens.GameScreen;
 
 public class AnimationDecal {
 
@@ -37,6 +39,10 @@ public class AnimationDecal {
 
     private Array<Decal> decals = new Array<>();
     private Array<Decal> waveDecals = new Array<>();
+
+    public AnimationDecal(ImageInfo imageInfo, int x, int z) {
+        this(Main.game.getScreen().assets, imageInfo, ((GameScreen) Main.game.getScreen()).landscape, x, z);
+    }
 
     public AnimationDecal(Assets assets, ImageInfo imageInfo, Landscape landscape, int x, int z) {
         regionAnimation = new Animation<>(0.1f, assets.atlas.findRegions(imageInfo.region), Animation.PlayMode.LOOP);
@@ -107,6 +113,11 @@ public class AnimationDecal {
         if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
             wave(4);
         }
+    }
+
+    public void hit() {
+        this.launch();
+        
     }
 
     private void updateMovement(float dt) {
