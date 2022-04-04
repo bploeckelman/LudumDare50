@@ -97,7 +97,9 @@ public class GameScreen extends BaseScreen {
     private Vector3 startPos, endPos;
     private Vector3 startUp, endUp;
     private Vector3 startDir, endDir;
-    private float cameraTransitionDT = 0;
+    private float timeInTransition = 0;
+    private float transitionLength;
+    private float transitionPostDelay = 0;
 
     private Vector3 lightDir;
     public DirectionalLight light;
@@ -138,17 +140,18 @@ public class GameScreen extends BaseScreen {
     public Skill activeSkill = Skill.NONE;
 
     public enum CameraPhase {
-        start, plan, avalanche;
+        transitionToRails, plan, transitionToAvalanche, avalanche, transitionViewLodge;
         static CameraPhase next(CameraPhase phase) {
             switch (phase) {
-                case start: return plan;
-                case plan: return avalanche;
-                case avalanche:
-                default: return start;
+                case transitionToRails: return plan;
+                case plan: return transitionToAvalanche;
+                case transitionToAvalanche: return avalanche;
+                case avalanche: return transitionViewLodge;
+                default: return transitionToRails;
             }
         }
     }
-    public CameraPhase currentCameraPhase = CameraPhase.start;
+    public CameraPhase currentCameraPhase = CameraPhase.plan;
 
     public GameScreen() {
 //        profiler = new GLProfiler(Gdx.graphics);
@@ -272,13 +275,13 @@ public class GameScreen extends BaseScreen {
             uiStage.addAction(transitionAction);
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && currentCameraPhase == CameraPhase.start) {
-            TransitionCamera();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && currentCameraPhase == CameraPhase.avalanche) {
-            UntransitionCamera();
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && currentCameraPhase == CameraPhase.transitionToRails) {
+//            TransitionCamera();
+//        }
+//
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && currentCameraPhase == CameraPhase.avalanche) {
+//            UntransitionCamera();
+//        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P) && landscape.highlightedTile != null) {
             landscape.highlightedTile.makeRamp();
         }
@@ -294,10 +297,6 @@ public class GameScreen extends BaseScreen {
         worldCamera.unproject(touchPos);
         Vector2 selectedTile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
         landscape.setSelectedTile((int)selectedTile.x, (int)selectedTile.y);
-
-        camera.update();
-        cameraController.update();
-        shaker.update(dt);
 
         landscape.update(dt);
 
@@ -324,9 +323,9 @@ public class GameScreen extends BaseScreen {
         if (pickPixmap != null){
             pickPixmap.dispose();
         }
-
+/*
         // keep the camera focused on the bulk of the avalanche wave
-        if (!cameraMovementPaused && currentCameraPhase == CameraPhase.start) {
+        if (!cameraMovementPaused && currentCameraPhase == CameraPhase.transitionToRails) {
 //            float prevCameraMovementT = cameraMovementT;
 //            float currCameraMovementT = getAvalancheProgress();
 //            cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
@@ -341,7 +340,7 @@ public class GameScreen extends BaseScreen {
                 frac = 1;
                 currentCameraPhase = CameraPhase.next(currentCameraPhase);
                 cameraTransitionDT = 0;
-                if (currentCameraPhase == CameraPhase.start) {
+                if (currentCameraPhase == CameraPhase.transitionToRails) {
                     Gdx.input.setInputProcessor(inputMuxPlanPhase);
                 }
             }
@@ -363,6 +362,55 @@ public class GameScreen extends BaseScreen {
             float target = Math.max(10f, 100 * getAvalancheProgress() + 8.5f);
             camera.position.z = MathUtils.lerp(camera.position.z, target, 2*dt);
         }
+*/
+
+        switch (currentCameraPhase) {
+            case transitionViewLodge:
+            case transitionToAvalanche:
+            case transitionToRails:
+                timeInTransition += dt;
+                double frac = Math.min(1, timeInTransition / transitionLength);
+
+                //perform easeInOutQuad with a quadratic bezier
+                double tVal = frac < 0.5 ? 2 * frac * frac : 1 - ((-2 * frac + 2)*(-2*frac + 2)) / 2;//1-((1-frac)*(1-frac)*(1-frac));
+                t1.set(camStartPos);
+                t2.set(camMidPos);
+                t3.set(camEndPos);
+                t4.set(camStartDir);
+                t5.set(camEndDir);
+                camera.position.set(
+                        t1.scl((float)((1-tVal)*(1-tVal)))
+                                .add(t2.scl((float)(2*tVal*(1-tVal))))
+                                .add(t3.scl((float)(tVal*tVal))));
+                camera.direction.set(t4.scl((float)(1-frac)).add(t5.scl((float)frac)));
+                double hor = Math.sqrt(camera.direction.x * camera.direction.x + camera.direction.z * camera.direction.z);
+                camera.up.set((float) (-camera.direction.x * camera.direction.y / hor), (float) (hor), (float) (-camera.direction.z * camera.direction.y / hor));
+
+                if (timeInTransition > transitionLength + transitionPostDelay) {
+                    goToNextCameraPhase();
+                }
+                break;
+
+            case avalanche:
+                float target = Math.max(10f, Landscape.TILES_LONG * Landscape.TILE_WIDTH * getAvalancheProgress() + avalancheOffset);
+                camera.position.z = MathUtils.lerp(camera.position.z, target, 2*dt);
+                if (landscape.snowBalls.size == 0 || camera.position.z > avalancheOffset + 0.9 * Landscape.TILES_LONG * Landscape.TILE_WIDTH) {//TODO set avalanche percent to transition
+                    goToNextCameraPhase();
+                }
+                break;
+
+            case plan:
+                //TODO time of day stuff
+                break;
+
+
+        }
+
+        camera.update();
+        cameraController.update();
+        shaker.update(dt);
+
+
 
         updateDebugElements();
         updateProgressBarValue();
@@ -380,11 +428,71 @@ public class GameScreen extends BaseScreen {
         }
     }
 
+    private void goToNextCameraPhase() {
+        currentCameraPhase = CameraPhase.next(currentCameraPhase);
+        switch (currentCameraPhase) {
+            case transitionViewLodge:
+                if (landscape.snowBalls.size > 0) {
+                    camStartPos.set(camera.position);
+                    camMidPos.set(1f, 3.4f, camera.position.z + 10);
+                    camEndPos.set(1f, 4f, 105f);
+                    camStartDir.set(camera.direction);
+                    camEndDir.set(0.50008386f, -0.656027f, -0.5652821f);
+                    camEndDir.nor();
+
+                    transitionLength = 1.5f;
+                    transitionPostDelay = 3.5f;
+                    timeInTransition = 0;
+                    break;
+                } else { currentCameraPhase = CameraPhase.next(currentCameraPhase); }
+            case transitionToRails:
+                camStartPos.set(camera.position);
+                camMidPos.set(4f, 3.4f, camera.position.z - 5);
+                camEndPos.set(1f, 4f, 10f);
+                camStartDir.set(camera.direction);
+                camEndDir.set(0.50008386f,-0.656027f,-0.5652821f);
+                camEndDir.nor();
+
+                transitionLength = 2.5f;
+                transitionPostDelay = 0f;
+                timeInTransition = 0;
+                break;
+            case transitionToAvalanche:
+                camStartPos.set(camera.position);
+                camMidPos.set(3f, avalancheViewHeight + 0.8f, camera.position.z + 5);
+                camEndPos.set(4f, avalancheViewHeight, 10f);
+                camStartDir.set(camera.direction);
+                camEndDir.set(0f, -(MathUtils.sinDeg(avalancheViewAngleDeg) / MathUtils.cosDeg(avalancheViewAngleDeg)), -1f);
+                camEndDir.nor();
+
+                transitionLength = 2.5f;
+                transitionPostDelay = 0f;
+                timeInTransition = 0;
+                break;
+
+            case avalanche:
+                break;
+            case plan:
+                break;
+
+        }
+    }
+
+    private float avalancheOffset = 8.5f;
+    private float avalancheViewAngleDeg = 30f;
+    private float avalancheViewHeight = 2.5f;
+
     Vector3 t1 = new Vector3();
     Vector3 t2 = new Vector3();
     Vector3 t3 = new Vector3();
     Vector3 t4 = new Vector3();
     Vector3 t5 = new Vector3();
+
+    Vector3 camStartPos = new Vector3();
+    Vector3 camMidPos = new Vector3();
+    Vector3 camEndPos = new Vector3();
+    Vector3 camStartDir = new Vector3();
+    Vector3 camEndDir = new Vector3();
 
     @Override
     public void render(SpriteBatch batch) {
@@ -450,14 +558,13 @@ public class GameScreen extends BaseScreen {
                 .push(Tween.call((type, source) -> {
                     dayTime.setValue(buildHour);
                     landscape.startAvalanche();
-                    TransitionCamera();
+                    goToNextCameraPhase();
                 }))
                 .start(Main.game.tween);
     }
 
     public void beginBuildPhase(){
         roundNumber++;
-        UntransitionCamera();
         showNextDayWindow();
     }
 
@@ -520,32 +627,10 @@ public class GameScreen extends BaseScreen {
         camera.update();
     }
 
-    Vector3 camStartPos = new Vector3();
-    Vector3 camMidPos = new Vector3();
-    Vector3 camEndPos = new Vector3();
-    Vector3 camStartDir = new Vector3();
-    Vector3 camEndDir = new Vector3();
 
-    private void TransitionCamera() {
-        Gdx.input.setInputProcessor(inputMuxAvalanchePhase);
-        currentCameraPhase = CameraPhase.plan;
-        camStartPos.set(camera.position);
-        camMidPos.set(3f, 2.75f, camera.position.z + 5);
-        camEndPos.set(4f, 2f, 10f);
-        camStartDir.set(camera.direction);
-        camEndDir.set(0f, -0.577f, -1f);
-        camEndDir.nor();
-    }
 
-    private void UntransitionCamera() {
-        currentCameraPhase = CameraPhase.start;
-        camStartPos.set(camera.position);
-        camMidPos.set(1f, 3.4f, camera.position.z + 5);
-        camEndPos.set(1f, 4f, 10f);
-        camStartDir.set(camera.direction);
-        camEndDir.set(startDir);
-        camEndDir.nor();
-    }
+
+
 
     private void loadModels() {
         BoundingBox box = new BoundingBox();
