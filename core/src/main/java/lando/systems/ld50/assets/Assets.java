@@ -57,6 +57,7 @@ public class Assets implements Disposable {
     public TextureRegion waveIcon;
     public TextureRegion settingsIcon;
     public TextureRegion videoCameraIcon;
+    public TextureRegion skiLodge;
 
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
@@ -310,6 +311,7 @@ public class Assets implements Disposable {
         waveIcon = atlas.findRegion("icons/wave");
         settingsIcon = atlas.findRegion("icons/settings");
         videoCameraIcon = atlas.findRegion("icons/video-camera");
+        skiLodge = atlas.findRegion("icons/ski-lodge");
 
         // initialize particle images
         particles = new Particles();

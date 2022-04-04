@@ -28,9 +28,11 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -114,16 +116,20 @@ public class GameScreen extends BaseScreen {
     private VisSlider cameraSlider;
     private VisWindow nextDayWindow;
     private VisTextButton nextDayButton;
+    private Group skillButtonGroup;
     private float accum = 0;
     private boolean isControlShown = false;
     private Button minimizeButton;
     public int roundNumber = 1;
-    public int karmaScore = 0;
-    public int evilScore = 0;
+    public int karmaPoint = 0;
+    public int stylePoint = 0;
 
     public VisLabel roundLabel;
 
     private float ambienceSoundTime;
+
+    public enum KARMA_SWITCH {GOOD, EVIL}
+    public KARMA_SWITCH currentKarmaPicked = KARMA_SWITCH.GOOD;
 
     public GameScreen() {
 //        profiler = new GLProfiler(Gdx.graphics);
@@ -330,6 +336,7 @@ public class GameScreen extends BaseScreen {
 
         updateDebugElements();
         updateProgressBarValue();
+        skillButtonGroup.setZIndex(skillButtonGroup.getZIndex() + 100);
         minimizeButton.setZIndex(minimizeButton.getZIndex() + 100);
 
         // Create periodic rumbles of avalanche
@@ -802,8 +809,8 @@ public class GameScreen extends BaseScreen {
         //centerWindow
         Group progressBarGroup = createAvalancheProgressBarUI();
         //rightWindow
-        VisLabel karmaScoreLabel = new VisLabel("Karma Score: " + karmaScore, "outfit-medium-20px");
-        VisLabel evilScoreLabel = new VisLabel("Evil Score: " + evilScore, "outfit-medium-20px");
+        VisLabel karmaScoreLabel = new VisLabel("Karma Point: " + karmaPoint, "outfit-medium-20px");
+        VisLabel evilScoreLabel = new VisLabel("Style Point: " + stylePoint, "outfit-medium-20px");
         upperRightWindow.addActor(karmaScoreLabel);
         upperRightWindow.row();
         upperRightWindow.addActor(evilScoreLabel);
@@ -873,6 +880,18 @@ public class GameScreen extends BaseScreen {
         minimizeButton.setSize(buttonSize, buttonSize);
         minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth(), 0f);
 
+        skillButtonGroup = new Group();
+
+        VisTextButton.VisTextButtonStyle blueTextButtonStyle = skin.get("toggle", VisTextButton.VisTextButtonStyle.class);
+        VisTextButton.VisTextButtonStyle redTextButtonStyle = new VisTextButton.VisTextButtonStyle(blueTextButtonStyle);
+        //blue: {focusBorder: border-dark-blue, down: button-blue-down, up: button-blue, over: button-blue-over, disabled: button, font: default-font, fontColor: white, disabledFontColor: grey },
+        blueTextButtonStyle.disabled = new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE));
+        redTextButtonStyle.checked = new TextureRegionDrawable(getColoredTextureRegion(Color.RED));
+        redTextButtonStyle.disabled = new TextureRegionDrawable(getColoredTextureRegion(Color.RED));
+
+
+        VisTextButton karmaTabGood = new VisTextButton("Good", blueTextButtonStyle);
+        VisTextButton karmaTabEvil = new VisTextButton("Evil", redTextButtonStyle);
         VisImageButton skillButton1 = new VisImageButton("default");
         VisImageButton skillButton2 = new VisImageButton("default");
         VisImageButton skillButton3 = new VisImageButton("default");
@@ -883,17 +902,82 @@ public class GameScreen extends BaseScreen {
         skillButton1.setSize(buttonWidth, buttonHeight);
         skillButton2.setSize(buttonWidth, buttonHeight);
         skillButton3.setSize(buttonWidth, buttonHeight);
-        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, buttonMargin * 3f - controlWindow.getHeight() + minimizeButton.getHeight());
-        skillButton2.setPosition(skillButton1.getX() + buttonWidth + buttonMargin , buttonMargin * 3f - controlWindow.getHeight() + minimizeButton.getHeight());
-        skillButton3.setPosition(skillButton2.getX() + buttonWidth + buttonMargin, buttonMargin * 3f - controlWindow.getHeight() + minimizeButton.getHeight());
+        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
+        skillButton2.setPosition(skillButton1.getX() + buttonWidth + buttonMargin , buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
+        skillButton3.setPosition(skillButton2.getX() + buttonWidth + buttonMargin, buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
+        skillButtonGroup.addActor(skillButton1);
+        skillButtonGroup.addActor(skillButton2);
+        skillButtonGroup.addActor(skillButton3);
+        karmaTabGood.setPosition(controlWindow.getX() + buttonMargin, minimizeButton.getHeight() - buttonMargin * 7f);
+        karmaTabGood.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE)));
+        karmaTabGood.setSize(controlWindow.getWidth() / 2 - buttonMargin, 30f);
+        karmaTabGood.setChecked(true);
+        karmaTabGood.setDisabled(true);
+        karmaTabEvil.setPosition(controlWindow.getWidth() / 2 + controlWindow.getX(), minimizeButton.getHeight() - buttonMargin * 7f);
+        karmaTabEvil.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.RED)));
+        karmaTabEvil.setSize(controlWindow.getWidth() / 2 - buttonMargin, 30f);
+        karmaTabGood.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if (!karmaTabGood.isDisabled()) {
+                    karmaTabEvil.setDisabled(false);
+                    karmaTabEvil.setChecked(false);
+                    karmaTabGood.setDisabled(true);
+                    //karmaTabGood.setChecked(true);
+                    currentKarmaPicked = KARMA_SWITCH.GOOD;
+                }
+            }
+        });
+        karmaTabEvil.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if (!karmaTabEvil.isDisabled()) {
+                    karmaTabGood.setDisabled(false);
+                    karmaTabGood.setChecked(false);
+                    karmaTabEvil.setDisabled(true);
+                    //karmaTabGood.setChecked(true);
+                    currentKarmaPicked = KARMA_SWITCH.GOOD;
+                }
+            }
+        });
+//        karmaTabGood.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                if (karmaTabGood.isDisabled()) {
+//                    karmaTabEvil.setDisabled(false);
+//                    karmaTabEvil.setChecked(false);
+//                    karmaTabGood.setDisabled(true);
+//                    //karmaTabGood.setChecked(true);
+//                    currentKarmaPicked = KARMA_SWITCH.GOOD;
+//                }
+//            }
+//        });
+//        karmaTabEvil.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                karmaTabGood.setDisabled(false);
+//                karmaTabGood.setChecked(false);
+//                karmaTabEvil.setDisabled(true);
+//                //karmaTabEvil.setChecked(true);
+//                currentKarmaPicked = KARMA_SWITCH.EVIL;
+//            }
+//        });
+        skillButtonGroup.addActor(karmaTabGood);
+        skillButtonGroup.addActor(karmaTabEvil);
 
 
         Group controlGroup = new Group();
         controlGroup.addActor(controlWindow);
         controlGroup.addActor(minimizeButton);
-        controlGroup.addActor(skillButton1);
-        controlGroup.addActor(skillButton2);
-        controlGroup.addActor(skillButton3);
+        controlGroup.addActor(skillButtonGroup);
 
         uiStage.addActor(controlGroup);
 
@@ -936,8 +1020,8 @@ public class GameScreen extends BaseScreen {
         cameraSliderStyle.disabledKnob = new TextureRegionDrawable(assets.videoCameraIcon);
         cameraSliderStyle.background = new TextureRegionDrawable(getColoredTextureRegion(new Color(0f, 0f, 0f, 0f)));
         cameraSlider = new VisSlider(0f, 100f, 0.1f, false, cameraSliderStyle);
-        cameraSlider.setPosition(windowCamera.viewportWidth / 4f + 25f, windowCamera.viewportHeight * 7 / 8);
-        cameraSlider.setWidth(windowCamera.viewportWidth / 2f - 50f);
+        cameraSlider.setPosition(windowCamera.viewportWidth / 4f + 50f, windowCamera.viewportHeight * 7 / 8);
+        cameraSlider.setWidth(windowCamera.viewportWidth / 2f - 100f);
         cameraSlider.setHeight(70f);
         cameraSlider.setDisabled(true);
         uiStage.addActor(cameraSlider);
@@ -947,9 +1031,14 @@ public class GameScreen extends BaseScreen {
         label.setPosition(windowCamera.viewportWidth / 4f + 25f, windowCamera.viewportHeight - 45f);
         label.setWidth(windowCamera.viewportWidth / 2f);
 
+        VisImage skiLodge = new VisImage(new TextureRegionDrawable(assets.skiLodge));
+        skiLodge.setPosition(cameraSlider.getX() + cameraSlider.getWidth() - 20f, cameraSlider.getY() + 15f);
+        skiLodge.setSize(50f, 50f);
+
         Group progressBarGroup = new Group();
         progressBarGroup.addActor(progressBar);
         progressBarGroup.addActor(cameraSlider);
+        progressBarGroup.addActor(skiLodge);
         progressBarGroup.addActor(label);
         return progressBarGroup;
     }
