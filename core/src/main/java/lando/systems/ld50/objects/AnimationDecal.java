@@ -14,23 +14,35 @@ import lando.systems.ld50.assets.ImageInfo;
 public class AnimationDecal {
 
     private float time = 0;
-    private Animation<TextureRegion> regionAnimation;
+
+    public boolean dead = false;
+
     private Landscape landscape;
     private ImageInfo imageInfo;
 
     private Vector3 initPos = new Vector3();
     private Vector3 position = new Vector3();
 
+    private Animation<TextureRegion> regionAnimation;
+    private Animation<TextureRegion> waveAnimation;
+
     private float moveTime, moveTimeTotal;
     private Vector3 movePosition = new Vector3();
+
+    private float waveTime = 0;
 
     private float directionX;
     private boolean right = true;
 
     private Array<Decal> decals = new Array<>();
+    private Array<Decal> waveDecals = new Array<>();
 
     public AnimationDecal(Assets assets, ImageInfo imageInfo, Landscape landscape, int x, int z) {
         regionAnimation = new Animation<>(0.1f, assets.atlas.findRegions(imageInfo.region), Animation.PlayMode.LOOP);
+        waveAnimation = (imageInfo.waveRegion != null)
+                ? new Animation<>(0.1f, assets.atlas.findRegions(imageInfo.waveRegion), Animation.PlayMode.LOOP_PINGPONG)
+                : regionAnimation;
+
         this.landscape = landscape;
         this.imageInfo = imageInfo;
 
@@ -44,7 +56,12 @@ public class AnimationDecal {
 
         directionX = imageInfo.right ? 1 : -1;
 
-        for (TextureRegion region : regionAnimation.getKeyFrames()) {
+        addDecals(regionAnimation, decals);
+        addDecals(waveAnimation, waveDecals);
+    }
+
+    private void addDecals(Animation<TextureRegion> animation, Array<Decal> decals) {
+        for (TextureRegion region : animation.getKeyFrames()) {
             Decal decal = Decal.newDecal(region, true);
             decal.setDimensions(imageInfo.width, imageInfo.height);
             decal.setPosition(position);
@@ -74,16 +91,25 @@ public class AnimationDecal {
         if (!launched) {
             time += dt;
         }
-        updateMovement(dt);
 
+        if (waveTime > 0) {
+            waveTime -= dt;
+        } else {
+            updateMovement(dt);
+        }
+
+        // temp
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             if (!launched) { launch(); }
         }
+
+        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+            wave(4);
+        }
     }
 
-    public boolean dead = false;
-
     private void updateMovement(float dt) {
+
         if (moveTimeTotal > 0) {
             moveTime += dt;
             float lerp = MathUtils.clamp(moveTime / moveTimeTotal, 0, 1);
@@ -114,9 +140,14 @@ public class AnimationDecal {
         }
     }
 
+    public void wave(float waveTime) {
+        time = 0;
+        this.waveTime = waveTime;
+    }
+
     public Decal get() {
-        int index = regionAnimation.getKeyFrameIndex(time);
-        Decal decal = decals.get(index);
+        int index = (waveTime > 0) ? waveAnimation.getKeyFrameIndex(time) : regionAnimation.getKeyFrameIndex(time);
+        Decal decal = (waveTime > 0) ? waveDecals.get(index) : decals.get(index);
         decal.setScaleX(right ? directionX : -directionX);
         decal.setPosition(position);
 

@@ -567,13 +567,15 @@ public class GameScreen extends BaseScreen {
     private void loadDecals() {
         decals = new Array<>();
 
-        AnimationDecal babe = new AnimationDecal(assets, ImageInfo.Babe, landscape, 0, 7);
-        decals.add(babe);
+        decals.add(new AnimationDecal(assets, ImageInfo.BabeA, landscape, 0, 7));
+        decals.add(new AnimationDecal(assets, ImageInfo.BabeB, landscape, 4, 5));
 //        decals.add(new AnimationDecal(assets, ImageInfo.Dude, landscape, 0, 4));
 //        decals.add(new AnimationDecal(assets, ImageInfo.Deer, landscape, 0, 6));
 //        decals.add(new AnimationDecal(assets, ImageInfo.Plow, landscape, 4, -1));
 
-        babe.moveToTile(3, 7);
+        // real temp
+        decals.get(0).moveToTile(3, 7);
+        decals.get(1).moveToTile(2, 7);
 
     }
 
