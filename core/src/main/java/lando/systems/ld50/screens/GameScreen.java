@@ -59,8 +59,6 @@ import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
-import java.time.LocalDateTime;
-
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
@@ -782,7 +780,6 @@ public class GameScreen extends BaseScreen {
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
         if (isGameOver()) return false;
         if (isSettingShown) return false;
-        Gdx.app.log("Active Skill", LocalDateTime.now() + " " + activeSkill.name());
         if (landscape.highlightedTile != null) {
             switch (activeSkill) {
                 case RAMP:
@@ -999,11 +996,11 @@ public class GameScreen extends BaseScreen {
 
         Button.ButtonStyle toggleButtonStyle = skin.get("toggle", Button.ButtonStyle.class);
         Button.ButtonStyle customMinimizeStyle = new Button.ButtonStyle(toggleButtonStyle);
-        customMinimizeStyle.up = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_plus));
-        customMinimizeStyle.checked = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_minus));
+        customMinimizeStyle.up = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_right_circle));
+        customMinimizeStyle.checked = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_left_circle));
         minimizeButton = new Button(customMinimizeStyle);
         minimizeButton.setSize(buttonSize, buttonSize);
-        minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth(), 0f);
+        minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth() / 2f, controlWindow.getY() + controlWindow.getHeight() / 2f);
 
         skillButtonGroup = new Group();
 
@@ -1066,26 +1063,27 @@ public class GameScreen extends BaseScreen {
         VisImageButton skillButton2 = new VisImageButton(plowButtonStyle);
         VisImageButton skillButton3 = new VisImageButton(heliButtonStyle);
 
-        float buttonMargin = 10f;
-        float buttonWidth = controlWindow.getWidth() / 3f - 2 * buttonMargin;
-        float buttonHeight = buttonWidth;
+        float margin = 10f;
+        karmaTabGood.setSize(controlWindow.getWidth() / 2 - 10f, 30f);
+        karmaTabGood.setPosition(controlWindow.getX() + 10f, controlWindow.getY() + controlWindow.getHeight() - karmaTabGood.getHeight() - margin);
+        karmaTabGood.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE)));
+        karmaTabGood.setChecked(true);
+        karmaTabGood.setDisabled(true);
+        karmaTabEvil.setSize(controlWindow.getWidth() / 2 - 10f, 30f);
+        karmaTabEvil.setPosition(controlWindow.getWidth() / 2 + controlWindow.getX(), controlWindow.getY() + controlWindow.getHeight() - karmaTabEvil.getHeight() - margin);
+        karmaTabEvil.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.RED)));
+
+        float buttonHeight = controlWindow.getHeight() / 4f;
+        float buttonWidth = buttonHeight;
         skillButton1.setSize(buttonWidth, buttonHeight);
         skillButton2.setSize(buttonWidth, buttonHeight);
         skillButton3.setSize(buttonWidth, buttonHeight);
-        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, controlWindow.getY() + karmaTabGood.getHeight() - buttonMargin);
-        skillButton2.setPosition(controlWindow.getX() + buttonMargin * 2f , skillButton1.getY() - buttonMargin);
-        skillButton3.setPosition(controlWindow.getX() + buttonMargin * 2f, skillButton2.getY() - karmaTabGood.getHeight() - buttonMargin);
+        skillButton1.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, karmaTabGood.getY() - buttonHeight - margin * 2f);
+        skillButton2.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, skillButton1.getY() - buttonHeight - margin);
+        skillButton3.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, skillButton2.getY() - buttonHeight - margin);
         skillButtonGroup.addActor(skillButton1);
         skillButtonGroup.addActor(skillButton2);
         skillButtonGroup.addActor(skillButton3);
-        karmaTabGood.setPosition(controlWindow.getX() + buttonMargin, controlWindow.getY() - buttonMargin * 7f);
-        karmaTabGood.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE)));
-        karmaTabGood.setSize(controlWindow.getWidth() / 2 - buttonMargin, 30f);
-        karmaTabGood.setChecked(true);
-        karmaTabGood.setDisabled(true);
-        karmaTabEvil.setPosition(controlWindow.getWidth() / 2 + controlWindow.getX(), minimizeButton.getHeight() - buttonMargin * 7f);
-        karmaTabEvil.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.RED)));
-        karmaTabEvil.setSize(controlWindow.getWidth() / 2 - buttonMargin, 30f);
         skillButton1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -1198,8 +1196,8 @@ public class GameScreen extends BaseScreen {
 
         uiStage.addActor(controlGroup);
 
-        Action minimizeTransitionAction = Actions.moveBy(0, -controlWindow.getHeight() + minimizeButton.getHeight(), 0.5f);
-        Action maximizeTransitionAction = Actions.moveBy(0, controlWindow.getHeight() - minimizeButton.getHeight(), 0.5f);
+        Action minimizeTransitionAction = Actions.moveBy(controlWindow.getWidth() - minimizeButton.getWidth() + 25f, 0f, 0.5f);
+        Action maximizeTransitionAction = Actions.moveBy(-controlWindow.getWidth() + minimizeButton.getWidth() - 25f, 0f, 0.5f);
 
         minimizeButton.addListener(new ChangeListener() {
             @Override
@@ -1215,7 +1213,7 @@ public class GameScreen extends BaseScreen {
                 }
             }
         });
-        isControlShown = false;
+        isControlShown = true;
 
     }
 

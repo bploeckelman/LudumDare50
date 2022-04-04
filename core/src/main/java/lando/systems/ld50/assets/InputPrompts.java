@@ -75,6 +75,8 @@ public class InputPrompts {
         , hand_grab_end(4, 17)
         , light_big_minus(13, 20)
         , light_big_plus(14, 20)
+        , light_left_circle(10, 22)
+        , light_right_circle(12, 22)
         ;
 
         public final int x;
