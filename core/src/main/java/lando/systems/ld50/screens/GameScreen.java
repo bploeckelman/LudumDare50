@@ -507,9 +507,9 @@ public class GameScreen extends BaseScreen {
         }
     }
 
-    private float avalancheOffset = 8.5f;
-    private float avalancheViewAngleDeg = 30f;
-    private float avalancheViewHeight = 2.5f;
+    private float avalancheOffset = 12.5f;
+    private float avalancheViewAngleDeg = 40f;
+    private float avalancheViewHeight = 4.5f;
 
     Vector3 t1 = new Vector3();
     Vector3 t2 = new Vector3();
