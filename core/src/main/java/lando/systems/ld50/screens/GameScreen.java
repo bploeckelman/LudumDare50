@@ -3,6 +3,7 @@ package lando.systems.ld50.screens;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.equations.Quad;
+import aurelienribon.tweenengine.equations.Sine;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -85,9 +86,11 @@ public class GameScreen extends BaseScreen {
     private final DecalBatch particlesDecalBatch;
 
     private ModelInstance coords;
+    public ModelInstance yetiModel;
+    public Vector3 yetiPosition = new Vector3();
     private Array<ModelInstance> houseInstances;
     private Array<ModelInstance> treeInstances;
-    private Array<ModelInstance> creatureInstances;
+    public Array<ModelInstance> creatureInstances;
     private Array<ModelInstance> lodgeInstances;
     public Array<AnimationDecal> decals;
     public Array<Decal> decalsStatic = new Array<>();
@@ -240,6 +243,7 @@ public class GameScreen extends BaseScreen {
     public void update(float dt) {
         super.update(dt);
         accum += dt;
+        yetiModel.transform.setTranslation(yetiPosition);
 
         if (gameOver && landscape.snowBalls.size == 0){
             gameOverDelay += dt;
@@ -507,9 +511,9 @@ public class GameScreen extends BaseScreen {
         }
     }
 
-    private float avalancheOffset = 8.5f;
-    private float avalancheViewAngleDeg = 30f;
-    private float avalancheViewHeight = 2.5f;
+    private float avalancheOffset = 12.5f;
+    private float avalancheViewAngleDeg = 40f;
+    private float avalancheViewHeight = 4.5f;
 
     Vector3 t1 = new Vector3();
     Vector3 t2 = new Vector3();
@@ -586,7 +590,7 @@ public class GameScreen extends BaseScreen {
                 .push(
                         Tween.to(dayTime, 1, 5f)
                         .target(24f + buildHour)
-                                .ease(Quad.INOUT))
+                                .ease(Sine.IN))
                 .push(Tween.call((type, source) -> {
                     dayTime.setValue(buildHour);
                     landscape.startAvalanche();
@@ -753,7 +757,8 @@ public class GameScreen extends BaseScreen {
         // TODO - place down by lodge (or maybe make it rise up from the ground or come running down with the final wave that destroys the lodge)
         // yeti statue
         creatureInstances = new Array<>();
-        creatureInstances.add(createUnitModelInstance(Assets.Models.yeti.model, 4f, 0f, 3f));
+        yetiModel = createUnitModelInstance(Assets.Models.yeti.model, 4f, 0f, 3f);
+
 
         coords = new ModelInstance(Assets.Models.coords.model);
         coords.transform.setToTranslation(0f, 0f, 0f);
@@ -794,7 +799,7 @@ public class GameScreen extends BaseScreen {
 
         int numPeople = 24;
         for (int i = 0; i < numPeople; i++) {
-            LandTile tile = getUndecoratedTile(6);
+            LandTile tile = getUndecoratedTile(12);
 
             decals.add(getRandomPerson(tile.intX, tile.intZ));
         }

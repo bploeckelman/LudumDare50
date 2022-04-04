@@ -43,9 +43,10 @@ public class PhysicsManager {
     float scale = 1f;
     float internalTime = 0;
     float timeStep = .005f;
+    float slowdownScale = 0.4f;
     public void update(float dt){
         if (dt == 0) return;
-        internalTime += dt;
+        internalTime += slowdownScale * dt;
         while (internalTime > timeStep) {
             internalTime -= timeStep;
             solve(MathUtils.clamp(timeStep * scale, .0001f, .05f));
@@ -255,7 +256,7 @@ public class PhysicsManager {
 
         boolean isBallInBoundsX = ball.position.x > tile.x - ball.radius/2 && ball.position.x < tile.x + 1f + ball.radius/2;
         boolean isBallInBoundsZ = ball.position.z > tile.z - ball.radius/2 && ball.position.z < tile.z + 1f + ball.radius/2;
-        boolean isBallLowEnoughToHit = ball.position.y < 0.5 + ball.radius / 2;
+        boolean isBallLowEnoughToHit = ball.position.y < 0.8 + ball.radius / 2;
         boolean hitBuilding = tile.isDecorationDestructable && isBallLowEnoughToHit && isBallInBoundsX && isBallInBoundsZ;
 
         if (isBallInBoundsX && isBallInBoundsZ){
