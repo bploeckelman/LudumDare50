@@ -261,7 +261,7 @@ public class Particles implements Disposable {
                     .startColor(color[0], color[1], color[2], 1)
                     .targetPos(target[0], target[1])
                     .startPos(position[0] + MathUtils.random(35, 70) * MathUtils.sinDeg(i*360f/quantity), position[1] + MathUtils.random(35, 70) * MathUtils.cosDeg(i*360f/quantity))
-                    .timeToLive(1.5f)
+                    .timeToLive(MathUtils.random(0.8f, 1.4f))
                     .startSize(25, 25)
                     .endSize(10, 10)
                     .init());

@@ -66,7 +66,9 @@ public class PhysicsManager {
                 if (testBuilding(ball, tile)) {
                     ball.radius = 0;
                     // TODO: Remove Decoration
-                    tile.decoration.transform.scale(0.7f, 0.7f, 0.7f);
+                    tile.decoration.transform.scl(0.7f);
+                    //temp solutions
+                    if (tile.decoration.transform.getScaleX() < 0.1) { tile.decoration.transform.scl(0f); tile.decoration = null; }
                     Main.game.audio.playSound(AudioManager.Sounds.houseImpact, 0.3F);
                     break;
                 }
