@@ -1,6 +1,7 @@
 package lando.systems.ld50.cameras;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.MathUtils;
@@ -38,6 +39,7 @@ public class RailsCamera extends InputAdapter {
     Vector3 cameraDir = new Vector3(0.50008386f,-0.656027f,-0.5652821f);
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
+        if (Input.Buttons.LEFT != pointer) { return false; }
         float deltaX = -Gdx.input.getDeltaX() * unitsPerPixel * 0.707f;
         float deltaY = -Gdx.input.getDeltaY() * unitsPerPixel * 0.707f;
         camera.position.z = MathUtils.clamp(camera.position.z + deltaX + deltaY, 10, 110);

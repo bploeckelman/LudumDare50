@@ -273,7 +273,7 @@ public class GameScreen extends BaseScreen {
             camera.up.set((float) (-camera.direction.x * camera.direction.y / hor), (float) (hor), (float) (-camera.direction.z * camera.direction.y / hor));
 
         } else if (cameraPhase == 3) {
-            float target = Math.max(10f, 100 * getAvalancheProgress() + 6f);
+            float target = Math.max(10f, 100 * getAvalancheProgress() + 8.5f);
             camera.position.z = MathUtils.lerp(camera.position.z, target, 2*dt);
         }
 
@@ -397,17 +397,17 @@ public class GameScreen extends BaseScreen {
         Gdx.input.setInputProcessor(muxPX);
         cameraPhase = 2;
         camStartPos.set(camera.position);
-        camMidPos.set(3f, 2f, camera.position.z + 5);
-        camEndPos.set(4f, 1f, 10f);
+        camMidPos.set(3f, 2.75f, camera.position.z + 5);
+        camEndPos.set(4f, 2f, 10f);
         camStartDir.set(camera.direction);
-        camEndDir.set(0f, -0.27f, -1f);
+        camEndDir.set(0f, -0.577f, -1f);
         camEndDir.nor();
     }
 
     private void UntransitionCamera() {
         cameraPhase = 0;
         camStartPos.set(camera.position);
-        camMidPos.set(1f, 3f, camera.position.z + 5);
+        camMidPos.set(1f, 3.4f, camera.position.z + 5);
         camEndPos.set(1f, 4f, 10f);
         camStartDir.set(camera.direction);
         camEndDir.set(startDir);
