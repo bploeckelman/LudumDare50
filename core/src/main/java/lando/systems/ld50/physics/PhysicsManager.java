@@ -2,17 +2,21 @@ package lando.systems.ld50.physics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import lando.systems.ld50.Main;
+import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.objects.Debris;
 import lando.systems.ld50.objects.LandTile;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
-import lando.systems.ld50.Main;
+import lando.systems.ld50.particles.PhysicsDecal;
 
 public class PhysicsManager {
 
@@ -28,6 +32,8 @@ public class PhysicsManager {
     Array<BallContact> ballContacts;
 
     Array<LandTile> neighborTiles;
+    Vector3 position = new Vector3();
+    BoundingBox box = new BoundingBox();
 
     public PhysicsManager(Landscape landscape) {
         this.landscape = landscape;
@@ -70,17 +76,84 @@ public class PhysicsManager {
             landscape.getTilesAround(ball.position.x, ball.position.z, neighborTiles);
             for (LandTile tile : neighborTiles){
                 testBallTile(ball, tile);
+
+                Vector3 coords = new Vector3(tile.x+0.5f, 0.5f, tile.z+0.5f);
+                landscape.screen.camera.project(coords);
+
                 if (testBuilding(ball, tile)) {
                     ball.radius = 0;
-                    tile.decoration.transform.scl(0.7f);
-                    //temp solutions
-                    if (tile.decoration.transform.getScaleX() < 0.1) {
-                        tile.decoration.transform.scl(0f);
-                        tile.decoration = null;
+
+                    // decoration got hit, fuck it up somehow
+                    // TODO - maybe tweak how much damage it takes each collision
+                    tile.decorationHealth -= 0.1f;
+
+                    // make more red based on health
+                    ColorAttribute attrib = (ColorAttribute) tile.decoration.materials.get(0).get(ColorAttribute.Diffuse);
+                    attrib.color.set(1f, tile.decorationHealth, tile.decorationHealth, 1f);
+
+                    // spawn good karma particles
+                    landscape.screen.particles.addPointsParticles(200, coords.x, coords.y, 0.9f, 0.1f, 0.1f);
+                    landscape.screen.particles.addParticleBurstCollect(16,
+                            new float[]{1f, 0.1f, 0.1f},
+                            new float[]{coords.x, coords.y},
+                            new float[]{20f, 20f});
+
+                    // decoration got killed, do stuff
+                    if (tile.decorationHealth <= 0f) {
+                        // spawn a particle effect
+                        float radius = 0.1f;
+                        position.set(tile.x + 0.5f, 0f, tile.z + 0.5f);
+                        int numParticles = 40;
+                        for (int i = 0; i < numParticles; i++) {
+                            PhysicsDecal.addDecalParticle(
+                                    Main.game.assets.particles.smoke,
+                                    position.x + MathUtils.random(-radius, radius),
+                                    position.y + MathUtils.random(0, 0.5f),
+                                    position.z + MathUtils.random(-radius, radius),
+                                    MathUtils.random(-0.5f, 0.5f),
+                                    1f,
+                                    MathUtils.random(-0.5f, 0.5f),
+                                    0f, 0f, 0f, 0.75f,
+                                    1.25f + MathUtils.random(.5f),
+                                    PhysicsDecal.Phys.NoPhysics);
+                        }
+
+                        // TODO this isn't what we want for trees and shit
                         for (int i = 0; i < 4; i++){
                             landscape.debris.add(new Debris(tile.x, .5f, tile.z, .1f));
                         }
+
+                        landscape.screen.removeModelInstance(tile.decoration);
+                        if (tile.decoration.model == Assets.Models.building_a.model) {
+                            ModelInstance instance = new ModelInstance(Assets.Models.building_a_snowed.model);
+                            instance.calculateBoundingBox(box);
+                            float extentX = (box.max.x - box.min.x);
+                            float extentY = (box.max.y - box.min.y);
+                            float extentZ = (box.max.z - box.min.z);
+                            float maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+                            instance.transform
+                                    .setToTranslationAndScaling(
+                                            0f, 0f, 0f,
+                                            1f / maxExtent,
+                                            1f / maxExtent,
+                                            1f / maxExtent);
+                            tile.decorate(instance);
+                            tile.isDecorationDestructable = false;
+                            landscape.screen.addHouseModelInstance(instance);
+                        } else {
+                            tile.decoration = null;
+                        }
+                    } else { // building is safe, spawn good karma particles
+                        if (!ball.pointsGiven.contains((long) (1000*tile.x + tile.z), false)) {
+                            landscape.screen.particles.addPointsParticles(75, coords.x, coords.y, 0.1f, 0.8f, 0.1f);
+                            landscape.screen.particles.addParticleBurstCollect(6,
+                                    new float[]{0.2f, 0.9f, 0.1f},
+                                    new float[]{coords.x, coords.y},
+                                    new float[]{20f, 20f});
+                            ball.pointsGiven.add((long) (1000 * tile.x + tile.z));
+                        }
                     }
+
                     Main.game.audio.playSound(AudioManager.Sounds.houseImpact, 0.6F);
                     break;
                 }
@@ -159,31 +232,27 @@ public class PhysicsManager {
     }
 
     private boolean testBuilding(Snowball ball, LandTile tile) {
-        if (ball.position.x - ball.radius / 2 > tile.x + 0.85 ||
-        ball.position.x + ball.radius / 2 < tile.x + 0.15 ||
-        ball.position.z - ball.radius / 2 > tile.z + 0.85 ||
-        ball.position.z + ball.radius / 2 < tile.z + 0.15) {
+        if (!tile.isDecorated()) {
             return false;
         }
-        if (!tile.isDecorated() || tile.decoration == null) { return false; }
-        //LandTile t = landscape.tiles[(int)ball.position.x + Landscape.TILES_WIDE * (int)ball.position.z];
-        boolean result = tile.isDecorated() && ball.position.y < 0.5 + ball.radius/2;
-            Vector3 coords = new Vector3(tile.x+0.5f, 0.5f, tile.z+0.5f);
-            landscape.screen.camera.project(coords);
-        if (result) {
+//<<<<<<< HEAD
+//        boolean result = tile.isDecorated() && ball.position.y < 0.5 + ball.radius/2;
+//
+//=======
 
-            landscape.screen.particles.addPointsParticles(200, coords.x, coords.y, 0.9f, 0.1f, 0.1f);
-            landscape.screen.particles.addParticleBurstCollect(16, new float[]{1f, 0.1f, 0.1f},
-                    new float[]{coords.x, coords.y}, new float[]{20f, 20f});
-        } else {
-            if (!ball.pointsGiven.contains((long) (1000*tile.x + tile.z), false)) {
-                landscape.screen.particles.addPointsParticles(75, coords.x, coords.y, 0.1f, 0.8f, 0.1f);
-                landscape.screen.particles.addParticleBurstCollect(6, new float[]{0.2f, 0.9f, 0.1f},
-                        new float[]{coords.x, coords.y}, new float[]{20f, 20f});
-                ball.pointsGiven.add((long) (1000 * tile.x + tile.z));
-            }
-        }
-        return result;
+//        boolean ballNotNearTile =
+//                   ball.position.x - ball.radius / 2 > tile.x + 0.85
+//                || ball.position.x + ball.radius / 2 < tile.x + 0.15
+//                || ball.position.z - ball.radius / 2 > tile.z + 0.85
+//                || ball.position.z + ball.radius / 2 < tile.z + 0.15;
+//        if (ballNotNearTile) {
+//            return false;
+//        }
+
+        boolean isBallLowEnoughToHit = ball.position.y < 0.5 + ball.radius / 2;
+
+        return tile.isDecorationDestructable && isBallLowEnoughToHit;
+//>>>>>>> e88e15f... Destroy buildings, add particle effect and replace with broken building model
     }
 
     Vector3 ab = new Vector3();

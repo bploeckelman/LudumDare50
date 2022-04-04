@@ -67,6 +67,8 @@ public class LandTile {
     Vector3 p5;
 
     public ModelInstance decoration = null;
+    public boolean isDecorationDestructable = true;
+    public float decorationHealth = 1f;
 
 
     public LandTile(int x, int z, float width, Landscape landscape) {

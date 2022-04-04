@@ -33,10 +33,11 @@ public class PhysicsDecal implements Pool.Poolable {
     public static void addDecalParticle(TextureRegion texture,
                                         float posX, float posY, float posZ,
                                         float velX, float velY, float velZ,
+                                        float r, float g, float b, float a,
                                         float life, Phys type) {
         Decal decal = decalPool.obtain();
         decal.setTextureRegion(texture);
-        decal.setColor(1f, 1f, 1f, 0.5f);
+        decal.setColor(r, g, b, a);
         decal.setWidth(texture.getRegionWidth());
         decal.setHeight(texture.getRegionHeight());
         decal.setScale(0.01f);
@@ -82,7 +83,7 @@ public class PhysicsDecal implements Pool.Poolable {
     public void update(float dt) {
         ttl -= dt;
         position.add(velocity.x * dt, velocity.y * dt, velocity.z * dt);
-        decal.setColor(1f, 1f, 1f, ttl);
+        decal.setColor(decal.getColor().r, decal.getColor().g, decal.getColor().b, ttl);
         decal.setPosition(position);
         switch (pathing) {
             case GravityHighDrag:

@@ -1,10 +1,7 @@
 package lando.systems.ld50.screens;
 
-import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenCallback;
-import aurelienribon.tweenengine.equations.Linear;
 import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
@@ -14,7 +11,10 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
@@ -58,8 +58,6 @@ import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
-import java.math.RoundingMode;
-
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
@@ -71,6 +69,7 @@ public class GameScreen extends BaseScreen {
     }
 
 //    private GLProfiler profiler;
+//    private StringBuilder str = new StringBuilder();
 
     private final Color background = Color.SKY.cpy();
     public final PerspectiveCamera camera;
@@ -127,6 +126,7 @@ public class GameScreen extends BaseScreen {
     public VisLabel roundLabel;
 
     private float ambienceSoundTime;
+    private Vector3 position = new Vector3();
 
     public enum KARMA_SWITCH {GOOD, EVIL}
     public KARMA_SWITCH currentKarmaPicked = KARMA_SWITCH.GOOD;
@@ -181,6 +181,17 @@ public class GameScreen extends BaseScreen {
 
     }
 
+    public void addHouseModelInstance(ModelInstance instance) {
+        houseInstances.add(instance);
+    }
+
+    public void removeModelInstance(ModelInstance instance) {
+        // don't know which bucket it's in, so we'll just try to remove from all and cross our fingers
+        houseInstances.removeValue(instance, true);
+        treeInstances.removeValue(instance, true);
+        creatureInstances.removeValue(instance, true);
+    }
+
     @Override
     public void dispose() {
         super.dispose();
@@ -194,8 +205,6 @@ public class GameScreen extends BaseScreen {
         super.transitionCompleted();
         Gdx.input.setInputProcessor(muxP1);
     }
-
-    StringBuilder str = new StringBuilder();
 
     @Override
     public void update(float dt) {
@@ -568,7 +577,7 @@ public class GameScreen extends BaseScreen {
                         1f / maxExtent,
                         1f / maxExtent)
         ;
-        landscape.getTileAt(2, 0).decorate(treeB);
+//        landscape.getTileAt(2, 0).decorate(treeB);
 
         ModelInstance treeD = new ModelInstance(Assets.Models.tree_d.model);
         treeD.calculateBoundingBox(box);
@@ -583,10 +592,10 @@ public class GameScreen extends BaseScreen {
                         1f / maxExtent,
                         1f / maxExtent)
         ;
-        landscape.getTileAt(3, 0).decorate(treeD);
+//        landscape.getTileAt(3, 0).decorate(treeD);
 
         treeInstances = new Array<>();
-        treeInstances.addAll(treeB, treeD);
+//        treeInstances.addAll(treeB, treeD);
 
         ModelInstance yeti = new ModelInstance(Assets.Models.yeti.model);
         yeti.calculateBoundingBox(box);
