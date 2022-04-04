@@ -900,7 +900,7 @@ public class GameScreen extends BaseScreen {
     }
 
     private void updateProgressBarValue() {
-        Gdx.app.log("getLastRowWithSnowAccum", " " + getLastRowWithSnowAccum());
+        //Gdx.app.log("getLastRowWithSnowAccum", " " + getLastRowWithSnowAccum());
         progressBar.setValue(getFirstBallProgress());
         //progressBar.setValue(getLastRowWithSnowAccum());
         cameraSlider.setValue(camera.position.z / Landscape.TILES_LONG * Landscape.TILE_WIDTH);
