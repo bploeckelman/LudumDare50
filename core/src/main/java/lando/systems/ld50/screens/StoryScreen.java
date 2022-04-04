@@ -46,11 +46,13 @@ public class StoryScreen extends BaseScreen {
             " \n" +
             " \n" +
             " \n" +
-            "As long as we don't end up \n" +
-            "having to use our\n" +
-            "snowboard-ramp-building skills\n" +
+            "As long as we don't end up having to \n" +
+            "move up and down the mountain\n" +
+            "(via right-click dragging)\n" +
+            "\n" +
             "to select and strategically place\n" +
             "structures on the mountainside,\n" +
+            "(via left mouse button),\n" +
             "\n"+
             "to divert and/or speed up the flow\n" +
             "of an unrelenting avalanche,\n"+
@@ -78,8 +80,9 @@ public class StoryScreen extends BaseScreen {
             "\n\n" +
             "..." +
             "\n\n" +
+            "\n\n" +
             "I feel like we can really\n" +
-            "trust in the flow this week, bro\n\n" +
+            "trust the flow this week, bro\n\n" +
             "Namaste with us\n\n" +
             "\n\n";
 
