@@ -21,6 +21,7 @@ public class Landscape {
 
     public LandTile[] tiles;
     public Array<Snowball> snowBalls;
+    public Array<Debris> debris;
 
     private PhysicsManager physics;
 
@@ -38,6 +39,7 @@ public class Landscape {
         ballShader = Main.game.assets.ballShader;
         landscapeShader = Main.game.assets.landscapeShader;
         snowBalls = new Array<>();
+        debris = new Array<>();
         tiles = new LandTile[TILES_WIDE * TILES_LONG];
         vertices = new float[MAX_NUM_VERTICES * tiles.length + 8 * MAX_NUM_VERTICES];
         indices = new short[MAX_INDICES * tiles.length + 12];
@@ -75,12 +77,23 @@ public class Landscape {
                 screen.beginBuildPhase();
             }
         }
+        for (int i = debris.size-1; i >= 0; i--){
+            Debris debrises = debris.get(i);
+            debrises.update(dt);
+
+            if (debrises.position.y < -3 || debrises.TTL <= 0){
+                debris.removeIndex(i);
+            }
+        }
     }
 
     public void render(ModelBatch batch, Environment env) {
         // TODO add land tiles
         for (Snowball ball : snowBalls) {
             ball.render(batch, env);
+        }
+        for (Debris debrises : debris){
+            debrises.render(batch, env);
         }
     }
 

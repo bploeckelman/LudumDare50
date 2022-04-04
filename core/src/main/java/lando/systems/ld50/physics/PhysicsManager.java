@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import lando.systems.ld50.audio.AudioManager;
+import lando.systems.ld50.objects.Debris;
 import lando.systems.ld50.objects.LandTile;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
@@ -52,10 +53,8 @@ public class PhysicsManager {
         // Snowballs
         for (Snowball ball : landscape.snowBalls){
             ball.velocity.add(gravity.x * dt, gravity.y * dt, gravity.z * dt);
-            ball.velocity.clamp(0, 5);
+            ball.velocity.clamp(0, 4);
             ball.position.add(ball.velocity.x * dt, ball.velocity.y * dt, ball.velocity.z * dt);
-//            newPos.set(ball.position);
-//            newPos.add(ball.velocity);
 
             // Test if ball falls off side and correct
             float totWidth = Landscape.TILE_WIDTH * Landscape.TILES_WIDE;
@@ -66,40 +65,55 @@ public class PhysicsManager {
                 //ball.position.add(ball.velocity.x * 0.1f, 0, 0);
             }
 
-
-
             // Test if ball goes through floor
-
             landscape.getTilesAround(ball.position.x, ball.position.z, neighborTiles);
             for (LandTile tile : neighborTiles){
                 testBallTile(ball, tile);
                 if (testBuilding(ball, tile)) {
                     ball.radius = 0;
-                    // TODO: Remove Decoration
                     tile.decoration.transform.scl(0.7f);
                     //temp solutions
-                    if (tile.decoration.transform.getScaleX() < 0.1) { tile.decoration.transform.scl(0f); tile.decoration = null; }
+                    if (tile.decoration.transform.getScaleX() < 0.1) {
+                        tile.decoration.transform.scl(0f);
+                        tile.decoration = null;
+                        for (int i = 0; i < 4; i++){
+                            landscape.debris.add(new Debris(tile.x, .5f, tile.z, .1f));
+                        }
+                    }
                     Main.game.audio.playSound(AudioManager.Sounds.houseImpact, 0.6F);
                     break;
                 }
-
             }
-
-//            // Keep from falling through floor
-//            if (ball.position.x > 0 && ball.position.z >0 && ball.position.x < totWidth && ball.position.z < totalLength && ball.position.y - ball.radius < 0){
-//                ball.position.y = ball.radius;
-//            }
 
             float height = ball.position.y - ball.radius - landscape.getHeightAt(ball.position.x, ball.position.z);
             if (ball.position.x > 0 && ball.position.z >0 && ball.position.x < totWidth && ball.position.z < totalLength && height < 0){
                 ball.position.y += -height;
             }
-
-
-
         }
+
+        // Debris
+        for (Debris debris : landscape.debris) {
+            debris.velocity.add(gravity.x * dt, gravity.y * dt, gravity.z * dt);
+            debris.velocity.clamp(0, 5);
+            debris.position.add(debris.velocity.x * dt, debris.velocity.y * dt, debris.velocity.z * dt);
+
+            // Test if debris falls off side and correct
+            float totWidth = Landscape.TILE_WIDTH * Landscape.TILES_WIDE;
+            float totalLength = Landscape.TILE_WIDTH * Landscape.TILES_LONG;
+            if (debris.position.x - debris.radius < 0 || debris.position.x + debris.radius > totWidth) {
+                debris.velocity.scl(-1f, 1, 1);
+                debris.position.x = Math.max(debris.radius, Math.min(totWidth - debris.radius, debris.position.x));
+            }
+            // Test if debris goes through floor
+            landscape.getTilesAround(debris.position.x, debris.position.z, neighborTiles);
+            for (LandTile tile : neighborTiles) {
+                testBallTile(debris, tile);
+            }
+        }
+
+
         int iteration = 0;
-        while (ballContacts.size > 0 && iteration++ < 50) {
+        while (ballContacts.size > 0 && iteration++ < 100) {
             ballContacts.sort();
             ballContacts.get(0).resolve(dt);
             contactPool.free(ballContacts.removeIndex(0));
@@ -130,7 +144,7 @@ public class PhysicsManager {
     Vector3 p1 = new Vector3();
     Vector3 p2 = new Vector3();
     Vector3 p3 = new Vector3();
-    private void testBallTile(Snowball ball, LandTile tile) {
+    private void testBallTile(PhysicsObject ball, LandTile tile) {
         Array<Triangle> triangles = tile.getTriangles();
         for (Triangle t : triangles){
             Vector3 nearestPoint = closestPtPointTriangle(ball.position, p1.set(t.p1), p2.set(t.p2), p3.set(t.p3));

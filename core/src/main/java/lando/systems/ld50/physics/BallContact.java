@@ -12,7 +12,7 @@ import lando.systems.ld50.particles.PhysicsDecal;
 // TODO: POOL THIS!!!
 public class BallContact implements Comparable, Pool.Poolable
 {
-    public Snowball ball;
+    public PhysicsObject thing;
     public Vector3 contactNormal;
     public float penetrationDepth;
     public LandTile tile;
@@ -21,9 +21,9 @@ public class BallContact implements Comparable, Pool.Poolable
 
     }
 
-    public BallContact init(Snowball ball, Vector3 normal, float pen, LandTile tile) {
+    public BallContact init(PhysicsObject thing, Vector3 normal, float pen, LandTile tile) {
         this.tile = tile;
-        this.ball = ball;
+        this.thing = thing;
         this.contactNormal = normal;
         this.penetrationDepth = pen;
         return this;
@@ -35,17 +35,19 @@ public class BallContact implements Comparable, Pool.Poolable
         if (tile.LRHeight > .3f && tile.LLHeight > .5f) {
             // Hit a ramp.
 
-            Main.game.audio.playSound(AudioManager.Sounds.thud);
-
+            if (thing instanceof Snowball) {
+                Main.game.audio.playSound(AudioManager.Sounds.thud);
+                tile.addSnow((Snowball) thing);
+            }
         }
-//        Main.game.audio.playSound(AudioManager.Sounds.thud, 0.1F);
 
-        tile.addSnow(ball);
+
+
 
     }
 
     public float calculateSeparatingVelocity() {
-        return ball.velocity.dot(contactNormal);
+        return thing.velocity.dot(contactNormal);
     }
 
     Vector3 impulseVelocity = new Vector3();
@@ -58,15 +60,15 @@ public class BallContact implements Comparable, Pool.Poolable
         float newSeparatingVelocity = -separatingVelocity * 0.1f;
         float deltaVelocity = newSeparatingVelocity - separatingVelocity;
         impulseVelocity.set(contactNormal).scl(deltaVelocity);
-        ball.velocity.add(impulseVelocity);
-        ball.velocity.y += 1f;
+        thing.velocity.add(impulseVelocity);
+        thing.velocity.y += 1f;
 
     }
 
     Vector3 movementVector = new Vector3();
     private void resolveInterpenetration(float dt) {
         movementVector.set(contactNormal).scl(penetrationDepth);
-        ball.position.add(movementVector);
+        thing.position.add(movementVector);
     }
 
     @Override

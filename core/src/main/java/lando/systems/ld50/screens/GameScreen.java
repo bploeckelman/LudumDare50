@@ -121,6 +121,8 @@ public class GameScreen extends BaseScreen {
     public int karmaScore = 0;
     public int evilScore = 0;
 
+    public VisLabel roundLabel;
+
     private float ambienceSoundTime;
 
     public GameScreen() {
@@ -196,6 +198,9 @@ public class GameScreen extends BaseScreen {
 
 //        setGameDayTime(accum);
         updateGameTime();
+        if (roundLabel != null){
+            roundLabel.setText("Day " + roundNumber);
+        }
 
         boolean gameOver = isGameOver();
 
@@ -790,7 +795,7 @@ public class GameScreen extends BaseScreen {
         setupUpperUIWindow(upperRightWindow,windowCamera.viewportWidth * 3 / 4, windowCamera.viewportHeight - windowCamera.viewportHeight / 8, windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 8);
 
         //leftWindow
-        VisLabel roundLabel = new VisLabel("Round #" + roundNumber, "outfit-medium-40px");
+        roundLabel = new VisLabel("Round #" + roundNumber, "outfit-medium-40px");
         roundLabel.setAlignment(Align.center);
         roundLabel.setFillParent(true);
         upperLeftWindow.addActor(roundLabel);
