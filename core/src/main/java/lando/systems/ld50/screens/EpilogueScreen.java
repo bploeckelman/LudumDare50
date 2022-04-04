@@ -92,7 +92,7 @@ public class EpilogueScreen extends BaseScreen {
         perspectiveCamera.lookAt(640, 00, 0);
         perspectiveCamera.update();
 //        skipRect = new Rectangle(windowCamera.viewportWidth - 170, windowCamera.viewportHeight-70, 150, 50);
-        speedRect = new Rectangle(windowCamera.viewportWidth - 370, windowCamera.viewportHeight-140, 350, 50);
+        speedRect = new Rectangle(windowCamera.viewportWidth - 370, windowCamera.viewportHeight-70, 350, 50);
 
     }
 
@@ -133,7 +133,7 @@ public class EpilogueScreen extends BaseScreen {
     private void launchGame() {
         if (!exitingScreen){
             exitingScreen = true;
-            game.setScreen(new GameScreen());
+            game.setScreen(new EndScreen());
 
         }
     }
@@ -169,11 +169,11 @@ public class EpilogueScreen extends BaseScreen {
 //        assets.layout.setText(font, "Skip", Color.GRAY, skipRect.width, Align.center, false);
 //        font.draw(batch, assets.layout, skipRect.x, skipRect.y + (skipRect.height + assets.layout.height)/2f);
 
-//        if (hoverSpeed){
-//            Assets.Patch.glass_active.ninePatch.draw(batch, speedRect.x, speedRect.y, speedRect.width, speedRect.height);
-//        } else {
-//            Assets.Patch.glass_dim.ninePatch.draw(batch, speedRect.x, speedRect.y, speedRect.width, speedRect.height);
-//        }
+        if (hoverSpeed){
+            Assets.Patch.glass_active.ninePatch.draw(batch, speedRect.x, speedRect.y, speedRect.width, speedRect.height);
+        } else {
+            Assets.Patch.glass_dim.ninePatch.draw(batch, speedRect.x, speedRect.y, speedRect.width, speedRect.height);
+        }
         assets.layout.setText(font, "Hurry up, bro", Color.WHITE, speedRect.width, Align.center, false);
         font.draw(batch, assets.layout, speedRect.x, speedRect.y + (speedRect.height + assets.layout.height)/2f);
 
