@@ -665,37 +665,37 @@ public class GameScreen extends BaseScreen {
                 camera.position, camera.up, camera.direction,
                 side.set(camera.up).crs(camera.direction).nor())); }
 
-    protected void getStatus (final StringBuilder stringBuilder) {
-        stringBuilder.setLength(0);
-        stringBuilder.append("GL calls: ");
-        stringBuilder.append(profiler.getCalls());
-        Gdx.app.log(TAG, stringBuilder.toString());
-
-        stringBuilder.setLength(0);
-        stringBuilder.append("Draw calls: ");
-        stringBuilder.append(profiler.getDrawCalls());
-        Gdx.app.log(TAG, stringBuilder.toString());
-
-        stringBuilder.setLength(0);
-        stringBuilder.append("Shader switches: ");
-        stringBuilder.append(profiler.getShaderSwitches());
-        Gdx.app.log(TAG, stringBuilder.toString());
-
-        stringBuilder.setLength(0);
-        stringBuilder.append("Texture bindings: ");
-        stringBuilder.append(profiler.getTextureBindings());
-        Gdx.app.log(TAG, stringBuilder.toString());
-
-        stringBuilder.setLength(0);
-        stringBuilder.append("Vertices: ");
-        stringBuilder.append(profiler.getVertexCount().total);
-        Gdx.app.log(TAG, stringBuilder.toString());
-
-        Gdx.app.log(TAG, "-----------------------------");
-
-        profiler.reset();
-
-        stringBuilder.setLength(0);
-    }
+//    protected void getStatus (final StringBuilder stringBuilder) {
+//        stringBuilder.setLength(0);
+//        stringBuilder.append("GL calls: ");
+//        stringBuilder.append(profiler.getCalls());
+//        Gdx.app.log(TAG, stringBuilder.toString());
+//
+//        stringBuilder.setLength(0);
+//        stringBuilder.append("Draw calls: ");
+//        stringBuilder.append(profiler.getDrawCalls());
+//        Gdx.app.log(TAG, stringBuilder.toString());
+//
+//        stringBuilder.setLength(0);
+//        stringBuilder.append("Shader switches: ");
+//        stringBuilder.append(profiler.getShaderSwitches());
+//        Gdx.app.log(TAG, stringBuilder.toString());
+//
+//        stringBuilder.setLength(0);
+//        stringBuilder.append("Texture bindings: ");
+//        stringBuilder.append(profiler.getTextureBindings());
+//        Gdx.app.log(TAG, stringBuilder.toString());
+//
+//        stringBuilder.setLength(0);
+//        stringBuilder.append("Vertices: ");
+//        stringBuilder.append(profiler.getVertexCount().total);
+//        Gdx.app.log(TAG, stringBuilder.toString());
+//
+//        Gdx.app.log(TAG, "-----------------------------");
+//
+//        profiler.reset();
+//
+//        stringBuilder.setLength(0);
+//    }
 
 }
