@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -55,6 +56,8 @@ public class GameScreen extends BaseScreen {
         // TODO - add stats vars
     }
 
+    private final GLProfiler profiler;
+
     private final Color background = Color.SKY.cpy();
     private final PerspectiveCamera camera;
     private final ScreenShakeCameraController shaker;
@@ -94,6 +97,9 @@ public class GameScreen extends BaseScreen {
     private float accum = 0;
 
     public GameScreen() {
+//        profiler = new GLProfiler(Gdx.graphics);
+//        profiler.enable();
+
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
         initializeCamera();
 
@@ -138,6 +144,8 @@ public class GameScreen extends BaseScreen {
         InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(mux);
     }
+
+    StringBuilder str = new StringBuilder();
 
     @Override
     public void update(float dt) {
@@ -656,5 +664,38 @@ public class GameScreen extends BaseScreen {
         Gdx.app.log(TAG, Stringf.format("Camera: pos%s up%s dir%s side%s",
                 camera.position, camera.up, camera.direction,
                 side.set(camera.up).crs(camera.direction).nor())); }
+
+    protected void getStatus (final StringBuilder stringBuilder) {
+        stringBuilder.setLength(0);
+        stringBuilder.append("GL calls: ");
+        stringBuilder.append(profiler.getCalls());
+        Gdx.app.log(TAG, stringBuilder.toString());
+
+        stringBuilder.setLength(0);
+        stringBuilder.append("Draw calls: ");
+        stringBuilder.append(profiler.getDrawCalls());
+        Gdx.app.log(TAG, stringBuilder.toString());
+
+        stringBuilder.setLength(0);
+        stringBuilder.append("Shader switches: ");
+        stringBuilder.append(profiler.getShaderSwitches());
+        Gdx.app.log(TAG, stringBuilder.toString());
+
+        stringBuilder.setLength(0);
+        stringBuilder.append("Texture bindings: ");
+        stringBuilder.append(profiler.getTextureBindings());
+        Gdx.app.log(TAG, stringBuilder.toString());
+
+        stringBuilder.setLength(0);
+        stringBuilder.append("Vertices: ");
+        stringBuilder.append(profiler.getVertexCount().total);
+        Gdx.app.log(TAG, stringBuilder.toString());
+
+        Gdx.app.log(TAG, "-----------------------------");
+
+        profiler.reset();
+
+        stringBuilder.setLength(0);
+    }
 
 }
