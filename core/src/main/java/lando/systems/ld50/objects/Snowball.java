@@ -62,6 +62,7 @@ public class Snowball extends PhysicsObject {
         int numParticles = 2;
         for (int i = 0; i < numParticles; i++) {
             float scale = radius * MathUtils.random(2f, 4f);
+            float gray = MathUtils.random(.8f, 1f);
             PhysicsDecal.addDecalParticle(
                     Main.game.assets.particles.smoke,
                     position.x + MathUtils.random(-radius, radius),
@@ -70,7 +71,7 @@ public class Snowball extends PhysicsObject {
                     scale * 6.5f * MathUtils.sin(MathUtils.random(360f)),
                     scale * 0.2f + MathUtils.random(.7f),
                     scale * 6.5f * MathUtils.cos(MathUtils.random(360f)),
-                    1f, 1f, 1f, 0.6f,
+                    gray, gray, gray, 0.7f,
                     1.25f + MathUtils.random(.5f),
                     PhysicsDecal.Phys.GravityHighDrag);
         }
