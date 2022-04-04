@@ -740,14 +740,7 @@ public class GameScreen extends BaseScreen {
 
             // find an undecorated landtile
             int excludedRows = 2;
-            int x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
-            int z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
-            tile = landscape.getTileAt(x, z);
-            while (tile.isDecorated()) {
-                x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
-                z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
-                tile = landscape.getTileAt(x, z);
-            }
+            tile = getUndecoratedTile(excludedRows);
 
             // decorate it with the instance
             tile.decorate(instance);
@@ -764,6 +757,19 @@ public class GameScreen extends BaseScreen {
 
         coords = new ModelInstance(Assets.Models.coords.model);
         coords.transform.setToTranslation(0f, 0f, 0f);
+    }
+
+    private LandTile getUndecoratedTile(int excludedRows) {
+        int x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
+        int z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
+        LandTile tile = landscape.getTileAt(x, z);
+        while (tile.isDecorated()) {
+            x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
+            z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
+            tile = landscape.getTileAt(x, z);
+        }
+
+        return tile;
     }
 
     private final BoundingBox box = new BoundingBox();
@@ -786,16 +792,29 @@ public class GameScreen extends BaseScreen {
     private void loadDecals() {
         decals = new Array<>();
 
-        decals.add(new AnimationDecal(assets, ImageInfo.BabeA, landscape, 0, 7));
-        decals.add(new AnimationDecal(assets, ImageInfo.BabeB, landscape, 4, 5));
-//        decals.add(new AnimationDecal(assets, ImageInfo.Dude, landscape, 0, 4));
-//        decals.add(new AnimationDecal(assets, ImageInfo.Deer, landscape, 0, 6));
-//        decals.add(new AnimationDecal(assets, ImageInfo.Plow, landscape, 4, -1));
+        int numPeople = 24;
+        for (int i = 0; i < numPeople; i++) {
+            LandTile tile = getUndecoratedTile(6);
 
-        // real temp
-        decals.get(0).moveToTile(3, 7);
-        decals.get(1).moveToTile(2, 7);
+            decals.add(getRandomPerson(tile.intX, tile.intZ));
+        }
+    }
 
+    private AnimationDecal getRandomPerson(int x, int z) {
+        ImageInfo personInfo;
+        switch (MathUtils.random.nextInt(2)) {
+            case 0:
+                personInfo = ImageInfo.BabeA;
+                break;
+            default:
+                personInfo = ImageInfo.BabeB;
+                break;
+        }
+
+        AnimationDecal person = new AnimationDecal(assets, personInfo, landscape, x, z);
+        person.autoMove = true;
+        person.moveToTile(landscape.getRandomX(), z);
+        return person;
     }
 
     private float getAvalancheProgress() {

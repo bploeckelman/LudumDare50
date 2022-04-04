@@ -336,6 +336,9 @@ public class Landscape {
                 snowBalls.add(s);
             }
         }
+    }
 
+    public int getRandomX() {
+        return MathUtils.random.nextInt(TILES_WIDE);
     }
 }

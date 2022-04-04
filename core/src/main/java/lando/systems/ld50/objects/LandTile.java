@@ -66,12 +66,17 @@ public class LandTile {
     Vector3 p4;
     Vector3 p5;
 
+    // cool, eh?
+    public int intX, intZ;
+
     public ModelInstance decoration = null;
     public boolean isDecorationDestructable = true;
     public float decorationHealth = 1f;
 
 
     public LandTile(int x, int z, float width, Landscape landscape) {
+        intX = x;
+        intZ = z;
         this.landscape = landscape;
         this.vertices = new float[MAX_NUM_VERTICES];
         this.indices = new short[MAX_INDICES];

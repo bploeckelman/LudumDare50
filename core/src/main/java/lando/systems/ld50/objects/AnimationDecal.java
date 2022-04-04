@@ -40,9 +40,11 @@ public class AnimationDecal {
     private Array<Decal> decals = new Array<>();
     private Array<Decal> waveDecals = new Array<>();
 
-    public AnimationDecal(ImageInfo imageInfo, int x, int z) {
-        this(Main.game.getScreen().assets, imageInfo, ((GameScreen) Main.game.getScreen()).landscape, x, z);
-    }
+    public boolean autoMove = false;
+
+//    public AnimationDecal(ImageInfo imageInfo, int x, int z) {
+//        this(Main.game.getScreen().assets, imageInfo, ((GameScreen) Main.game.getScreen()).landscape, x, z);
+//    }
 
     public AnimationDecal(Assets assets, ImageInfo imageInfo, Landscape landscape, int x, int z) {
         regionAnimation = new Animation<>(0.1f, assets.atlas.findRegions(imageInfo.region), Animation.PlayMode.LOOP);
@@ -139,9 +141,19 @@ public class AnimationDecal {
                     return;
                 }
 
-                moveToTile(MathUtils.random.nextInt(5), MathUtils.random.nextInt(4));
+                if (autoMove) {
+                    moveToTile(landscape.getRandomX(), getNextZ());
+                }
             }
         }
+    }
+
+    private int getNextZ() {
+        int curZ = (int)initPos.z;
+
+        int dif = MathUtils.random.nextInt(4);
+        int z = curZ + ((MathUtils.random.nextBoolean()) ? dif : -dif);
+        return MathUtils.clamp(z, 4, Landscape.TILES_LONG - 8);
     }
 
     private boolean isInSnow() {
