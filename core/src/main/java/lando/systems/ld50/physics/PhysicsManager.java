@@ -43,9 +43,10 @@ public class PhysicsManager {
     float scale = 1f;
     float internalTime = 0;
     float timeStep = .005f;
+    float slowdownScale = 0.4f;
     public void update(float dt){
         if (dt == 0) return;
-        internalTime += dt;
+        internalTime += slowdownScale * dt;
         while (internalTime > timeStep) {
             internalTime -= timeStep;
             solve(MathUtils.clamp(timeStep * scale, .0001f, .05f));
