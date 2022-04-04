@@ -20,6 +20,6 @@ public class NoDepthCameraGroupStrategy extends CameraGroupStrategy {
     @Override
     public void beforeGroups () {
         super.beforeGroups();
-        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
     }
 }

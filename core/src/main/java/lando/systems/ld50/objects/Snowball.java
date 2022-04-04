@@ -70,7 +70,7 @@ public class Snowball extends PhysicsObject {
                     scale * 6.5f * MathUtils.sin(MathUtils.random(360f)),
                     scale * 0.2f + MathUtils.random(.7f),
                     scale * 6.5f * MathUtils.cos(MathUtils.random(360f)),
-                    1f, 1f, 1f, 0.2f,
+                    1f, 1f, 1f, 0.6f,
                     1.25f + MathUtils.random(.5f),
                     PhysicsDecal.Phys.GravityHighDrag);
         }

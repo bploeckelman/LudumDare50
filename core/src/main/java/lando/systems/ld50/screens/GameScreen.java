@@ -186,7 +186,8 @@ public class GameScreen extends BaseScreen {
             particlesDecalBatch = new DecalBatch(5000, new NoDepthCameraGroupStrategy(camera, (o1, o2) -> {
                 // sorting hurts the framerate significantly (especially on web)
                 // and for particle effects we mostly don't care
-                return 0;
+
+                return (int)Math.signum(o1.getPosition().z - o2.getPosition().z);
             }));
         } else { // desktop
             particlesDecalBatch = new DecalBatch(5000, new CameraGroupStrategy(camera));
