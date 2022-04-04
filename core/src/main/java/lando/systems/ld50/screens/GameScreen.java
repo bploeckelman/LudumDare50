@@ -133,6 +133,9 @@ public class GameScreen extends BaseScreen {
     private float ambienceSoundTime;
     private Vector3 position = new Vector3();
 
+    public boolean gameOver;
+    public float gameOverDelay = 0;
+
     public enum Karma {GOOD, EVIL}
     public Karma currentKarmaPicked = Karma.GOOD;
     public enum Skill {NONE, PLOW, RAMP, DIVERTER, BOULDER, LASER, HELI}
@@ -155,7 +158,7 @@ public class GameScreen extends BaseScreen {
     public GameScreen() {
 //        profiler = new GLProfiler(Gdx.graphics);
 //        profiler.enable();
-
+        gameOver = false;
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
         initializeCamera();
 
@@ -234,6 +237,12 @@ public class GameScreen extends BaseScreen {
         super.update(dt);
         accum += dt;
 
+        if (gameOver && landscape.snowBalls.size == 0){
+            gameOverDelay += dt;
+            if (gameOverDelay > 1.5f){
+                game.setScreen(new EpilogueScreen());
+            }
+        }
 //        setGameDayTime(accum);
         updateGameTime();
         if (roundLabel != null){
@@ -245,8 +254,6 @@ public class GameScreen extends BaseScreen {
         if (badKarmaLabel != null) {
             badKarmaLabel.setText("Bad Karma: " + badKarmaPoints);
         }
-
-        boolean gameOver = isGameOver();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             dumpCameraVecsToLog();
@@ -260,6 +267,10 @@ public class GameScreen extends BaseScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             shaker.addDamage(0.5f);
             landscape.startAvalanche();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
+            landscape.setGameOver();
         }
         // toggle debug states
         if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
@@ -288,16 +299,21 @@ public class GameScreen extends BaseScreen {
             landscape.highlightedTile.makeDiverter(false);
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
-            startNewDay();
+        if (gameOver) {
+            landscape.setSelectedTile(-1, -1);
+        } else {
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            worldCamera.unproject(touchPos);
+            Vector2 selectedTile = getSelectedTile((int) touchPos.x, (int) touchPos.y);
+            landscape.setSelectedTile((int) selectedTile.x, (int) selectedTile.y);
         }
 
-        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        worldCamera.unproject(touchPos);
-        Vector2 selectedTile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
-        landscape.setSelectedTile((int)selectedTile.x, (int)selectedTile.y);
+        camera.update();
+        cameraController.update();
+        shaker.update(dt);
 
         landscape.update(dt);
+
 
         billboardCameraPos.set(camera.position).y = 0f;
 
@@ -365,6 +381,10 @@ public class GameScreen extends BaseScreen {
 
         switch (currentCameraPhase) {
             case transitionViewLodge:
+                if (landscape.snowBalls.size > 0 || gameOver) {
+                    timeInTransition = MathUtils.clamp(timeInTransition, 0, transitionLength);
+                }
+
             case transitionToAvalanche:
             case transitionToRails:
                 timeInTransition += dt;
@@ -608,7 +628,7 @@ public class GameScreen extends BaseScreen {
     }
 
     public boolean isGameOver() {
-        return false;
+        return gameOver;
     }
 
     private void initializeCamera() {
@@ -645,7 +665,7 @@ public class GameScreen extends BaseScreen {
 
         // TODO - be more clever about how these are randomly placed so they don't cluster
         houseInstances = new Array<>();
-        int numHouses = 40;
+        int numHouses = 20;
         for (int i = 0; i < numHouses; i++) {
             // create the instance
             ModelInstance instance = createUnitModelInstance(Assets.Models.randomHouse(), 0f, 0f, 0f);
@@ -840,6 +860,7 @@ public class GameScreen extends BaseScreen {
         if (pickColor.a == 0 || pickColor.b == 0) return hoverPos.set(-1, -1);
         int col = (int) (pickColor.r * (255f));
         int row = (int) (pickColor.g * (255f));
+        if (row < 4 || row > 96) row = -1;
         return hoverPos.set(col, row);
     }
 

@@ -70,12 +70,20 @@ public class Landscape {
             Snowball ball = snowBalls.get(i);
             ball.update(dt);
 
-            if (ball.position.z > TILES_LONG || ball.radius < .1f){
+            if (ball.position.z > TILES_LONG){
+                snowBalls.removeIndex(i);
+                // TODO: make these launch particles
+            }
+            if (ball.radius < .1f){
                 snowBalls.removeIndex(i);
             }
-            if (snowBalls.size == 0){
-                screen.beginBuildPhase();
+
+            if (!screen.gameOver){
+                if (snowBalls.size == 0){
+                    screen.beginBuildPhase();
+                }
             }
+
         }
         for (int i = debris.size-1; i >= 0; i--){
             Debris debrises = debris.get(i);
@@ -273,11 +281,7 @@ public class Landscape {
 
 
     public void startAvalanche(){
-//        snowBalls.clear();
         int numRows = 2;
-//        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-//            numRows = 4;
-//        }
         for (int j = 0; j < numRows; j++) {
             for (int i = 0; i < TILES_WIDE * 3; i++) {
                 snowBalls.add(new Snowball(i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f), 1.5f, .5f, .3f + MathUtils.random(-0.06f, 0.12f), this));
@@ -319,5 +323,19 @@ public class Landscape {
         } else {
             highlightedTile = tiles[x + TILES_WIDE * z];
         }
+    }
+
+    public void setGameOver(){
+        // TODO: set true when first lodge is destroyed
+        screen.gameOver = true;
+        int numRows = 5;
+        for (int j = 0; j < numRows; j++) {
+            for (int i = 0; i < TILES_WIDE * 3; i++) {
+                Snowball s = new Snowball(i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f), 1.f, 85.5f - j, .3f + MathUtils.random(-0.06f, 0.12f), this);
+                s.velocity.z = 20f;
+                snowBalls.add(s);
+            }
+        }
+
     }
 }
