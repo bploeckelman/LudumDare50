@@ -44,7 +44,7 @@ public class PhysicsManager {
     float scale = 1f;
     public void update(float dt){
 //        if (true) return;
-
+        // TODO: Remove this stuff for release
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)){
             scale = .25f;
         }
@@ -182,6 +182,10 @@ public class PhysicsManager {
             landscape.getTilesAround(debris.position.x, debris.position.z, neighborTiles);
             for (LandTile tile : neighborTiles) {
                 testBallTile(debris, tile);
+            }
+            float height = debris.position.y - debris.radius - landscape.getHeightAt(debris.position.x, debris.position.z);
+            if (debris.position.x > 0 && debris.position.z >0 && debris.position.x < totWidth && debris.position.z < totalLength && height < 0){
+                debris.position.y += -height;
             }
         }
 

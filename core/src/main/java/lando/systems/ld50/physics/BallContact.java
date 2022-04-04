@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pool;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.audio.AudioManager;
+import lando.systems.ld50.objects.Debris;
 import lando.systems.ld50.objects.LandTile;
 import lando.systems.ld50.objects.Snowball;
 import lando.systems.ld50.particles.PhysicsDecal;
@@ -38,10 +39,15 @@ public class BallContact implements Comparable, Pool.Poolable
             if (thing instanceof Snowball) {
                 Main.game.audio.playSound(AudioManager.Sounds.thud);
             }
+
         }
 
         if (thing instanceof Snowball) {
             tile.addSnow((Snowball) thing);
+        }
+
+        if (thing instanceof Debris){
+            thing.radialVelocity.y += MathUtils.random(5, 50);
         }
 
 

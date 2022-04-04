@@ -21,6 +21,7 @@ public class Debris extends PhysicsObject {
     public Debris(float x, float y, float z, float radius) {
         this.velocity = new Vector3(MathUtils.random(-5, 5f), 4f, MathUtils.random(5, 15f));
         this.position = new Vector3((int)x + .5f, y, (int)z + .5f);
+        this.radialVelocity= new Vector3(0, MathUtils.random(100f, 150f), MathUtils.random(-100f, 100f));
         this.radius = radius;
         this.initialRadius = radius;
         TTL = 10;
@@ -51,14 +52,17 @@ public class Debris extends PhysicsObject {
                         1f / maxExtent,
                         1f / maxExtent)
                 .scale(radius, radius, radius)
+                .rotate(rotation)
         ;
     }
 
     public void update(float dt) {
+        updateRotation(dt);
         TTL -= dt;
         radius = initialRadius * TTL/10f;
         instance.transform.setToTranslation(position)
-                .scale(radius, radius, radius);
+                .scale(radius, radius, radius)
+                .rotate(rotation);
 
     }
 

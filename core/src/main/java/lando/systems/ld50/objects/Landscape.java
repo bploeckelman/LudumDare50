@@ -70,7 +70,7 @@ public class Landscape {
             Snowball ball = snowBalls.get(i);
             ball.update(dt);
 
-            if (ball.position.y < -3 || ball.radius < .1f){
+            if (ball.position.z > TILES_LONG || ball.radius < .1f){
                 snowBalls.removeIndex(i);
             }
             if (snowBalls.size == 0){
@@ -154,7 +154,7 @@ public class Landscape {
         vertices[verIndex++] = 0; // r
         vertices[verIndex++] = -1; // g
         vertices[verIndex++] = -1; // b
-        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // a
         vertices[verIndex++] = -2; // U
         vertices[verIndex++] = 0; // V
 
@@ -167,7 +167,7 @@ public class Landscape {
         vertices[verIndex++] = 0; // r
         vertices[verIndex++] = -1; // g
         vertices[verIndex++] = -1; // b
-        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // a
         vertices[verIndex++] = 0; // U
         vertices[verIndex++] = 0; // V
 
@@ -180,7 +180,7 @@ public class Landscape {
         vertices[verIndex++] = 0; // r
         vertices[verIndex++] = -1; // g
         vertices[verIndex++] = -1; // b
-        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // a
         vertices[verIndex++] = 0; // U
         vertices[verIndex++] = 100; // V
 
@@ -193,7 +193,7 @@ public class Landscape {
         vertices[verIndex++] = 0; // r
         vertices[verIndex++] = -1; // g
         vertices[verIndex++] = -1; // b
-        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // a
         vertices[verIndex++] = -2; // U
         vertices[verIndex++] = 100; // V
 
@@ -209,7 +209,7 @@ public class Landscape {
         vertices[verIndex++] = 0; // r
         vertices[verIndex++] = -1; // g
         vertices[verIndex++] = -1; // b
-        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // a
         vertices[verIndex++] = TILES_WIDE; // U
         vertices[verIndex++] = 0; // V
 
@@ -222,7 +222,7 @@ public class Landscape {
         vertices[verIndex++] = 0; // r
         vertices[verIndex++] = -1; // g
         vertices[verIndex++] = -1; // b
-        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // a
         vertices[verIndex++] = TILES_WIDE+2; // U
         vertices[verIndex++] = 0; // V
 
@@ -236,7 +236,7 @@ public class Landscape {
         vertices[verIndex++] = 0; // r
         vertices[verIndex++] = -1; // g
         vertices[verIndex++] = -1; // b
-        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // a
         vertices[verIndex++] = TILES_WIDE+2; // U
         vertices[verIndex++] = 100; // V
 
@@ -249,7 +249,7 @@ public class Landscape {
         vertices[verIndex++] = 0; // r
         vertices[verIndex++] = -1; // g
         vertices[verIndex++] = -1; // b
-        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // a
         vertices[verIndex++] = TILES_WIDE; // U
         vertices[verIndex++] = 100; // V
 
