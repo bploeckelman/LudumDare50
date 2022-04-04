@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Disposable;
@@ -92,6 +93,15 @@ public class Assets implements Disposable {
     public enum Models {
         coords, boulder_a, house_a, house_b, snowball_a, snowball_b, tree_b, tree_d, yeti, sphere;
         public Model model;
+
+        public static Model randomHouse() {
+            int which = MathUtils.random(0, 1);
+            switch (which) {
+                default:
+                case 0: return house_a.model;
+                case 1: return house_b.model;
+            }
+        }
     }
 
     public enum Patch {

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -43,6 +44,7 @@ import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.RailsCamera;
 import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.AnimationDecal;
+import lando.systems.ld50.objects.LandTile;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
 import lando.systems.ld50.particles.NoDepthCameraGroupStrategy;
@@ -477,38 +479,38 @@ public class GameScreen extends BaseScreen {
         BoundingBox box = new BoundingBox();
         float extentX, extentY, extentZ, maxExtent;
 
-        ModelInstance houseA = new ModelInstance(Assets.Models.house_a.model);
-        houseA.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-        houseA.transform
-                .setToTranslationAndScaling(
-                        0.5f, 0f, 0.5f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
-        landscape.getTileAt(0, 0).flattenTo(0f);
-
-        ModelInstance houseB = new ModelInstance(Assets.Models.house_b.model);
-        houseB.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-        houseB.transform
-                .setToTranslationAndScaling(
-                        1.5f, 0f, 0.5f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
-        landscape.getTileAt(1, 0).flattenTo(0f);
-
         houseInstances = new Array<>();
-        houseInstances.addAll(houseA, houseB);
+
+        int numHouses = 20;
+        for (int i = 0; i < numHouses; i++) {
+            // create the instance
+            Model model = Assets.Models.randomHouse();
+            ModelInstance instance = new ModelInstance(model);
+            instance.calculateBoundingBox(box);
+            extentX = (box.max.x - box.min.x);
+            extentY = (box.max.y - box.min.y);
+            extentZ = (box.max.z - box.min.z);
+            maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+            instance.transform
+                    .setToTranslationAndScaling(
+                            0f, 0f, 0f,
+                            1f / maxExtent,
+                            1f / maxExtent,
+                            1f / maxExtent)
+            ;
+            // get an undecorated landtile
+            int x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
+            int z = MathUtils.random(0, Landscape.TILES_LONG - 1);
+            LandTile tile = landscape.getTileAt(x, z);
+            while (tile.isDecorated()) {
+                x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
+                z = MathUtils.random(0, Landscape.TILES_LONG - 1);
+                tile = landscape.getTileAt(x, z);
+            }
+            // decorate it
+            tile.decorate(instance);
+            houseInstances.add(instance);
+        }
 
         ModelInstance treeB = new ModelInstance(Assets.Models.tree_b.model);
         treeB.calculateBoundingBox(box);
@@ -518,12 +520,12 @@ public class GameScreen extends BaseScreen {
         maxExtent = Math.max(Math.max(extentX, extentY), extentZ) * 2f;
         treeB.transform
                 .setToTranslationAndScaling(
-                        2.5f, 0f, 0.5f,
+                        0.5f, 0f, 0.5f,
                         1f / maxExtent,
                         1f / maxExtent,
                         1f / maxExtent)
         ;
-        landscape.getTileAt(2, 0).flattenTo(0f);
+        landscape.getTileAt(2, 0).decorate(treeB);
 
         ModelInstance treeD = new ModelInstance(Assets.Models.tree_d.model);
         treeD.calculateBoundingBox(box);
@@ -533,12 +535,12 @@ public class GameScreen extends BaseScreen {
         maxExtent = Math.max(Math.max(extentX, extentY), extentZ) * 2f;
         treeD.transform
                 .setToTranslationAndScaling(
-                        3.5f, 0f, 0.5f,
+                        0.5f, 0f, 0.5f,
                         1f / maxExtent,
                         1f / maxExtent,
                         1f / maxExtent)
         ;
-        landscape.getTileAt(3, 0).flattenTo(0f);
+        landscape.getTileAt(3, 0).decorate(treeD);
 
         treeInstances = new Array<>();
         treeInstances.addAll(treeB, treeD);

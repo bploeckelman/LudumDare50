@@ -1,11 +1,8 @@
 package lando.systems.ld50.objects;
 
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -68,6 +65,8 @@ public class LandTile {
     Vector3 p4;
     Vector3 p5;
 
+    public ModelInstance decoration = null;
+
 
     public LandTile(int x, int z, float width, Landscape landscape) {
         this.landscape = landscape;
@@ -106,6 +105,20 @@ public class LandTile {
         update(0);
         rebuildMesh();
 
+    }
+
+    public boolean isDecorated() {
+        return decoration != null;
+    }
+
+    public void decorate(ModelInstance decoration) {
+        decorate(decoration, 0f);
+    }
+
+    public void decorate(ModelInstance decoration, float newTileHeight) {
+        this.decoration = decoration;
+        this.decoration.transform.setTranslation(x + 0.5f, 0f, z + 0.5f);
+        flattenTo(newTileHeight);
     }
 
     public void update(float dt){
