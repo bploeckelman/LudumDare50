@@ -456,7 +456,7 @@ public class GameScreen extends BaseScreen {
         extentX = (box.max.x - box.min.x);
         extentY = (box.max.y - box.min.y);
         extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        maxExtent = Math.max(Math.max(extentX, extentY), extentZ) * 2f;
         treeB.transform
                 .setToTranslationAndScaling(
                         2.5f, 0f, 0.5f,
@@ -471,7 +471,7 @@ public class GameScreen extends BaseScreen {
         extentX = (box.max.x - box.min.x);
         extentY = (box.max.y - box.min.y);
         extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        maxExtent = Math.max(Math.max(extentX, extentY), extentZ) * 2f;
         treeD.transform
                 .setToTranslationAndScaling(
                         3.5f, 0f, 0.5f,
