@@ -35,7 +35,7 @@ public class EndScreen extends BaseScreen {
     private final String emotionalSupport = "{COLOR=cyan}Emotional Support:{COLOR=white}\n  Asuka and Cherry";
     private final String music = "{COLOR=gray}Sound by:{COLOR=white}\n {GRADIENT=white;gray}Pete Valeo{ENDGRADIENT}";
     private final String libgdx = "Made with {COLOR=red}<3{COLOR=white}\nand LibGDX";
-    private final String disclaimer = "{GRADIENT=black;gray}Disclaimer:{ENDGRADIENT}  {GRADIENT=gold;yellow}{JUMP=.2}{WAVE=0.8;1.1;1.1}No bananas were harmed in the making of this game{ENDWAVE}{ENDJUMP}{ENDGRADIENT}";
+    private final String disclaimer = "{GRADIENT=black;gray}Disclaimer:{ENDGRADIENT}  {GRADIENT=gold;yellow}{JUMP=.2}{WAVE=0.8;1.1;1.1}No babes were harmed in the making of this game{ENDWAVE}{ENDJUMP}{ENDGRADIENT}";
 
     private float accum = 0f;
 
@@ -47,11 +47,11 @@ public class EndScreen extends BaseScreen {
     public EndScreen() {
         super();
 
-        titleLabel = new TypingLabel(game.assets.smallFont, title.toLowerCase(), 0f, Config.window_height / 2f + 290f);
+        titleLabel = new TypingLabel(game.assets.largeFont, title.toLowerCase(), 0f, Config.window_height / 2f + 290f);
         titleLabel.setWidth(Config.window_width);
         titleLabel.setFontScale(1f);
 
-        themeLabel = new TypingLabel(game.assets.smallFont, theme.toLowerCase(), 0f, Config.window_height / 2f + 220f);
+        themeLabel = new TypingLabel(game.assets.font, theme.toLowerCase(), 0f, Config.window_height / 2f + 220f);
         themeLabel.setWidth(Config.window_width);
         themeLabel.setFontScale(1f);
 
