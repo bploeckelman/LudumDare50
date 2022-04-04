@@ -47,6 +47,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
     public Group settingsGroup;
     public VisWindow settingsWindow;
     public VisImageButton closeSettingsButton;
+    public VisWindow greyOutWindow;
     private Rectangle settingsPaneBoundsVisible;
     private Rectangle settingsPaneBoundsHidden;
     public boolean isSettingShown;
@@ -100,6 +101,26 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         initializeSettingsUI();
     }
 
+    public void showSettings() {
+        showSettingsPaneAction.reset();
+        showCloseSettingsButtonAction.reset();
+        greyOutWindow.setZIndex(settingsWindow.getZIndex() + 100);
+        settingsWindow.setZIndex(settingsWindow.getZIndex() + 100);
+        settingsWindow.addAction(showSettingsPaneAction);
+        closeSettingsButton.addAction(showCloseSettingsButtonAction);
+        greyOutWindow.setVisible(true);
+        isSettingShown = true;
+    }
+
+    public void hideSettings() {
+        hideSettingsPaneAction.reset();
+        hideCloseSettingsButtonAction.reset();
+        settingsWindow.addAction(hideSettingsPaneAction);
+        closeSettingsButton.addAction(hideCloseSettingsButtonAction);
+        greyOutWindow.setVisible(false);
+        isSettingShown = false;
+    }
+
     private void initializeSettingsUI() {
 
         Window.WindowStyle defaultWindowStyle = skin.get("default", Window.WindowStyle.class);
@@ -124,16 +145,24 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         settingsPaneBoundsHidden.y -= settingsPaneBoundsVisible.height;
 
         isSettingShown = false;
-        Rectangle bounds = isSettingShown ? settingsPaneBoundsVisible : settingsPaneBoundsHidden;
+//        Rectangle bounds = isSettingShown ? settingsPaneBoundsVisible : settingsPaneBoundsHidden;
 
 //        settingsPane = new VisImage(Assets.Patch.glass_active.drawable);
 //        settingsPane.setSize(bounds.width, bounds.height);
 //        settingsPane.setPosition(bounds.x, bounds.y);
 //        settingsPane.setColor(Color.DARK_GRAY);
 
+        greyOutWindow = new VisWindow("", false);
+        greyOutWindow.setSize(windowCamera.viewportWidth, windowCamera.viewportHeight);
+        greyOutWindow.setPosition(0f, 0f);
+        greyOutWindow.setMovable(false);
+        greyOutWindow.setColor(1f, 1f, 1f, .8f);
+        greyOutWindow.setKeepWithinStage(false);
+        greyOutWindow.setVisible(false);
+
         settingsWindow = new VisWindow("", glassWindowStyle);
-        settingsWindow.setSize(bounds.width, bounds.height);
-        settingsWindow.setPosition(bounds.x, bounds.y);
+        settingsWindow.setSize(settingsPaneBoundsHidden.width, settingsPaneBoundsHidden.height);
+        settingsWindow.setPosition(settingsPaneBoundsHidden.x, settingsPaneBoundsHidden.y);
         settingsWindow.setMovable(false);
         settingsWindow.align(Align.top | Align.center);
         settingsWindow.setModal(false);
@@ -182,7 +211,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         closeSettingsButton = new VisImageButton("close");
         closeSettingsButton.setWidth(50f);
         closeSettingsButton.setHeight(50f);
-        closeSettingsButton.setPosition(bounds.x + bounds.width - closeSettingsButton.getWidth(), bounds.y + bounds.height - closeSettingsButton.getHeight());
+        closeSettingsButton.setPosition(settingsPaneBoundsHidden.x + settingsPaneBoundsHidden.width - closeSettingsButton.getWidth(), settingsPaneBoundsHidden.y + settingsPaneBoundsHidden.height - closeSettingsButton.getHeight());
         closeSettingsButton.setClip(false);
 
         hideCloseSettingsButtonAction = new MoveToAction();
@@ -195,11 +224,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         closeSettingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                hideSettingsPaneAction.reset();
-                hideCloseSettingsButtonAction.reset();
-                settingsWindow.addAction(hideSettingsPaneAction);
-                closeSettingsButton.addAction(hideCloseSettingsButtonAction);
-                isSettingShown = false;
+                hideSettings();
             }
         });
 
@@ -215,7 +240,8 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         showSettingsPaneAction.setPosition(settingsPaneBoundsVisible.x, settingsPaneBoundsVisible.y);
         showSettingsPaneAction.setDuration(.5f);
         //showSettingsPaneAction.setActor(settingsWindow);
-
+        //greyOutWindow.addActor(settingsWindow);
+        uiStage.addActor(greyOutWindow);
         uiStage.addActor(settingsWindow);
         uiStage.addActor(closeSettingsButton);
     }
@@ -236,7 +262,8 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         uiStage.act(dt);
         particles.update(dt);
         // keep close settings button on top of settings window at all times
-        closeSettingsButton.setZIndex(closeSettingsButton.getZIndex() + 3);
+        settingsWindow.setZIndex(settingsWindow.getZIndex() + 100);
+        closeSettingsButton.setZIndex(closeSettingsButton.getZIndex() + 100);
 
         audio.update(dt);
     }

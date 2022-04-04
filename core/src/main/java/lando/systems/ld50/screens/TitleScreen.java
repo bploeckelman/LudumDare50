@@ -59,13 +59,7 @@ public class TitleScreen extends BaseScreen {
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                showSettingsPaneAction.reset();
-                showCloseSettingsButtonAction.reset();
-                settingsWindow.setZIndex(settingsWindow.getZIndex() + 3);
-                settingsWindow.addAction(showSettingsPaneAction);
-                closeSettingsButton.setZIndex(closeSettingsButton.getZIndex() + 3);
-                closeSettingsButton.addAction(showCloseSettingsButtonAction);
-                isSettingShown = true;
+                showSettings();
             }
         });
 

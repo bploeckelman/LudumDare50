@@ -34,10 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.kotcrab.vis.ui.widget.VisLabel;
-import com.kotcrab.vis.ui.widget.VisProgressBar;
-import com.kotcrab.vis.ui.widget.VisSlider;
-import com.kotcrab.vis.ui.widget.VisWindow;
+import com.kotcrab.vis.ui.widget.*;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
@@ -114,6 +111,9 @@ public class GameScreen extends BaseScreen {
     private float accum = 0;
     private boolean isControlHidden = false;
     private Button minimizeButton;
+    public int roundNumber = 1;
+    public int karmaScore = 0;
+    public int evilScore = 0;
 
     private float ambienceSoundTime;
 
@@ -318,7 +318,7 @@ public class GameScreen extends BaseScreen {
 
         updateDebugElements();
         updateProgressBarValue();
-        minimizeButton.setZIndex(minimizeButton.getZIndex() + 3);
+        minimizeButton.setZIndex(minimizeButton.getZIndex() + 100);
 
         // Create periodic rumbles of avalanche
 
@@ -733,6 +733,7 @@ public class GameScreen extends BaseScreen {
     private void initializeGameUI() {
         initializeUpperUI();
         initializeControlUI();
+        initializeSettingsControlButton();
     }
 
     private void setupUpperUIWindow(VisWindow upperWindow, float x, float y, float w, float h) {
@@ -741,7 +742,29 @@ public class GameScreen extends BaseScreen {
         upperWindow.setKeepWithinStage(false);
         upperWindow.setMovable(false);
     }
-    
+
+    private void initializeSettingsControlButton() {
+        VisImageButton.VisImageButtonStyle defaultStyle = skin.get("default", VisImageButton.VisImageButtonStyle.class);
+        VisImageButton.VisImageButtonStyle settingsButtonStyle = new VisImageButton.VisImageButtonStyle(defaultStyle);
+        settingsButtonStyle.up = new TextureRegionDrawable(assets.settingsIcon);
+        settingsButtonStyle.down = new TextureRegionDrawable(assets.settingsIcon);
+        settingsButtonStyle.over = new TextureRegionDrawable(assets.settingsIcon);
+
+
+        VisImageButton settingsButton = new VisImageButton("default");
+        settingsButton.setSize(100f, 100f);
+        settingsButton.setPosition(50f, 7 / 8 * windowCamera.viewportHeight - settingsButton.getHeight());
+
+        settingsButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                showSettings();
+            }
+        });
+
+        uiStage.addActor(settingsButton);
+    }
+
     private void initializeUpperUI() {
         VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
         VisWindow.WindowStyle upperUIStyle = new VisWindow.WindowStyle(defaultStyle);
@@ -754,7 +777,19 @@ public class GameScreen extends BaseScreen {
         VisWindow upperRightWindow = new VisWindow("", upperUIStyle);
         setupUpperUIWindow(upperRightWindow,windowCamera.viewportWidth * 3 / 4, windowCamera.viewportHeight - windowCamera.viewportHeight / 8, windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 8);
 
+        //leftWindow
+        VisLabel roundLabel = new VisLabel("Round #" + roundNumber, "outfit-medium-40px");
+        roundLabel.setAlignment(Align.center);
+        roundLabel.setFillParent(true);
+        upperLeftWindow.addActor(roundLabel);
+        //centerWindow
         Group progressBarGroup = createAvalancheProgressBarUI();
+        //rightWindow
+        VisLabel karmaScoreLabel = new VisLabel("Karma Score: " + karmaScore, "outfit-medium-20px");
+        VisLabel evilScoreLabel = new VisLabel("Evil Score: " + evilScore, "outfit-medium-20px");
+        upperRightWindow.addActor(karmaScoreLabel);
+        upperRightWindow.row();
+        upperRightWindow.addActor(evilScoreLabel);
 
         uiStage.addActor(upperLeftWindow);
         uiStage.addActor(upperCenterWindow);
@@ -781,9 +816,27 @@ public class GameScreen extends BaseScreen {
         minimizeButton.setSize(35f, 35f);
         minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth(), controlWindow.getHeight() - minimizeButton.getHeight());
 
+        VisImageButton skillButton1 = new VisImageButton("default");
+        VisImageButton skillButton2 = new VisImageButton("default");
+        VisImageButton skillButton3 = new VisImageButton("default");
+
+        float buttonMargin = 10f;
+        float buttonWidth = controlWindow.getWidth() / 3f - 2 * buttonMargin;
+        float buttonHeight = buttonWidth;
+        skillButton1.setSize(buttonWidth, buttonHeight);
+        skillButton2.setSize(buttonWidth, buttonHeight);
+        skillButton3.setSize(buttonWidth, buttonHeight);
+        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, buttonMargin * 2f);
+        skillButton2.setPosition(skillButton1.getX() + buttonWidth + buttonMargin , buttonMargin * 2f);
+        skillButton3.setPosition(skillButton2.getX() + buttonWidth + buttonMargin, buttonMargin * 2f);
+
+
         Group controlGroup = new Group();
         controlGroup.addActor(controlWindow);
         controlGroup.addActor(minimizeButton);
+        controlGroup.addActor(skillButton1);
+        controlGroup.addActor(skillButton2);
+        controlGroup.addActor(skillButton3);
 
         uiStage.addActor(controlGroup);
 
@@ -804,6 +857,10 @@ public class GameScreen extends BaseScreen {
                 }
             }
         });
+
+
+
+
     }
 
     private Group createAvalancheProgressBarUI() {
