@@ -1,6 +1,7 @@
 package lando.systems.ld50.utils;
 
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.Timer;
 
 public class Time {
 
@@ -58,4 +59,12 @@ public class Time {
         return Time.between_interval(interval, 0);
     }
 
+    public static void doAfterDelay(Callback callback, float delaySeconds) {
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                callback.call();
+            }
+        }, delaySeconds);
+    }
 }

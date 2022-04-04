@@ -87,7 +87,7 @@ public class Assets implements Disposable {
     public Sound screamMaleSound;
 
     public enum Models {
-        coords, boulder_a, house_a, house_b, snowball_a, snowball_b, yeti, sphere;
+        coords, boulder_a, house_a, house_b, snowball_a, snowball_b, tree_b, tree_d, yeti, sphere;
         public Model model;
     }
 
@@ -187,6 +187,8 @@ public class Assets implements Disposable {
             mgr.load("models/house-b.g3db", Model.class);
             mgr.load("models/snowball-a.g3db", Model.class);
             mgr.load("models/snowball-b.g3db", Model.class);
+            mgr.load("models/tree-b.g3db", Model.class);
+            mgr.load("models/tree-d.g3db", Model.class);
             mgr.load("models/yeti_00.g3db", Model.class);
         }
 
@@ -263,6 +265,8 @@ public class Assets implements Disposable {
         Models.house_b.model    = mgr.get("models/house-b.g3db", Model.class);
         Models.snowball_a.model = mgr.get("models/snowball-a.g3db", Model.class);
         Models.snowball_b.model = mgr.get("models/snowball-b.g3db", Model.class);
+        Models.tree_b.model     = mgr.get("models/tree-b.g3db", Model.class);
+        Models.tree_d.model     = mgr.get("models/tree-d.g3db", Model.class);
         Models.yeti.model       = mgr.get("models/yeti_00.g3db", Model.class);
 
         // NOTE: these are special snowflakes, not loaded via AssetsManager so must be disposed manually
