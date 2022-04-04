@@ -117,7 +117,7 @@ public class GameScreen extends BaseScreen {
     private VisTextButton nextDayButton;
     private Group skillButtonGroup;
     private float accum = 0;
-    private boolean isControlShown = false;
+    public boolean isControlShown = false;
     private Button minimizeButton;
     public int roundNumber = 1;
     public int karmaPoint = 0;
@@ -711,6 +711,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
         if (isGameOver()) return false;
+        if (isSettingShown || isControlShown) return false;
         if (landscape.highlightedTile != null) {
             landscape.highlightedTile.makeRamp();
             return true;

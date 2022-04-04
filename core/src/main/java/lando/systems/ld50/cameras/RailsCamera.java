@@ -33,6 +33,7 @@ public class RailsCamera extends InputAdapter {
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         if (gameScreen.currentCameraPhase == GameScreen.CameraPhase.avalanche) return false;
+        if (gameScreen.isSettingShown || gameScreen.isControlShown) return false;
         if (Input.Buttons.LEFT != pointer) { return false; }
         float deltaX = -Gdx.input.getDeltaX() * unitsPerPixel * 0.707f;
         float deltaY = -Gdx.input.getDeltaY() * unitsPerPixel * 0.707f;

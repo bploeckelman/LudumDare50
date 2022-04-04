@@ -58,6 +58,7 @@ public class SimpleCameraController extends InputAdapter {
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         if (gameScreen.currentCameraPhase == GameScreen.CameraPhase.avalanche) return false;
+        if (gameScreen.isSettingShown || gameScreen.isControlShown) return false;
         float deltaX = -Gdx.input.getDeltaX() * degreesPerPixel;
         float deltaY = -Gdx.input.getDeltaY() * degreesPerPixel;
         camera.direction.rotate(camera.up, deltaX);
@@ -72,6 +73,8 @@ public class SimpleCameraController extends InputAdapter {
     }
 
     public void update (float deltaTime) {
+        if (gameScreen.isSettingShown || gameScreen.isControlShown) return;
+
         if (keys.containsKey(FORWARD)) {
             tmp.set(camera.direction).nor().scl(deltaTime * velocity);
             camera.position.add(tmp);
