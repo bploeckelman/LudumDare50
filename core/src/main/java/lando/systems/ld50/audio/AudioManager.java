@@ -24,7 +24,19 @@ public class AudioManager implements Disposable {
     // none should not have a sound
     public enum Sounds {
         none,
-        chaching
+        chaching,
+        cheer,
+        click,
+        collapse,
+        explode,
+        goodKarma,
+        badKarma,
+        helicopter,
+        laser,
+        rumble,
+        screamFemale,
+        screamMale,
+        thud
     }
 
     public enum Musics {
@@ -49,6 +61,27 @@ public class AudioManager implements Disposable {
         this.tween = game.tween;
 
         putSound(Sounds.chaching, assets.chachingSound);
+        putSound(Sounds.click, assets.click1);
+        putSound(Sounds.cheer, assets.cheer1);
+        putSound(Sounds.cheer, assets.cheer2);
+        putSound(Sounds.collapse, assets.collapse1);
+        putSound(Sounds.explode, assets.explode1);
+        putSound(Sounds.explode, assets.explode2);
+        putSound(Sounds.goodKarma, assets.harp1);
+        putSound(Sounds.badKarma, assets.guitar1);
+        putSound(Sounds.helicopter, assets.helicopter1);
+        putSound(Sounds.helicopter, assets.helicopter2);
+        putSound(Sounds.laser, assets.laser1);
+        putSound(Sounds.laser, assets.laser2);
+        putSound(Sounds.rumble, assets.rumble1);
+        putSound(Sounds.rumble, assets.rumble2);
+        putSound(Sounds.rumble, assets.rumble3);
+        putSound(Sounds.rumble, assets.rumble4);
+        putSound(Sounds.screamFemale, assets.screamFemale);
+        putSound(Sounds.thud, assets.thud1);
+        putSound(Sounds.thud, assets.thud2);
+//        putSound(Sounds., assets.);
+//        putSound(Sounds., assets.);
 
         musics.put(Musics.main, assets.mainMusic);
         musics.put(Musics.mainTheme, assets.mainTheme);

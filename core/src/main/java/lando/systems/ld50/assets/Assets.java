@@ -63,6 +63,26 @@ public class Assets implements Disposable {
 
 
     public Sound chachingSound;
+    public Sound click1;
+    public Sound cheer1;
+    public Sound cheer2;
+    public Sound collapse1;
+    public Sound explode1;
+    public Sound explode2;
+    public Sound guitar1;
+    public Sound harp1;
+    public Sound helicopter1;
+    public Sound helicopter2;
+    public Sound laser1;
+    public Sound laser2;
+    public Sound rumble1;
+    public Sound rumble2;
+    public Sound rumble3;
+    public Sound rumble4;
+    public Sound thud1;
+    public Sound thud2;
+    public Sound screamFemale;
+    public Sound screamMale;
 
     public enum Models {
         coords, boulder_a, house_a, house_b, snowball_a, snowball_b, yeti, sphere;
@@ -131,6 +151,32 @@ public class Assets implements Disposable {
             mgr.load("audio/musics/music-intro.ogg", Music.class);
 
             mgr.load("audio/sounds/chaching.ogg", Sound.class);
+            mgr.load("audio/sounds/.ogg", Sound.class);
+            mgr.load("audio/sounds/cheer1.ogg", Sound.class);
+            mgr.load("audio/sounds/cheer2.ogg", Sound.class);
+            mgr.load("audio/sounds/click1.ogg", Sound.class);
+            mgr.load("audio/sounds/collapse1.ogg", Sound.class);
+            mgr.load("audio/sounds/explode1.ogg", Sound.class);
+            mgr.load("audio/sounds/explode2.ogg", Sound.class);
+            mgr.load("audio/sounds/explode3.ogg", Sound.class);
+            mgr.load("audio/sounds/explode4.ogg", Sound.class);
+            mgr.load("audio/sounds/explode5.ogg", Sound.class);
+            mgr.load("audio/sounds/guitar1.ogg", Sound.class);
+            mgr.load("audio/sounds/harp1.ogg", Sound.class);
+            mgr.load("audio/sounds/helicopter1.ogg", Sound.class);
+            mgr.load("audio/sounds/helicopter2.ogg", Sound.class);
+            mgr.load("audio/sounds/laser1.ogg", Sound.class);
+            mgr.load("audio/sounds/laser2.ogg", Sound.class);
+            mgr.load("audio/sounds/rumble1.ogg", Sound.class);
+            mgr.load("audio/sounds/rumble2.ogg", Sound.class);
+            mgr.load("audio/sounds/rumble3.ogg", Sound.class);
+            mgr.load("audio/sounds/rumble4.ogg", Sound.class);
+            mgr.load("audio/sounds/screamfemale.ogg", Sound.class);
+            mgr.load("audio/sounds/thud1.ogg", Sound.class);
+            mgr.load("audio/sounds/thud2.ogg", Sound.class);
+//            mgr.load("audio/sounds/.ogg", Sound.class);
+
+
             mgr.load("images/noise.png", Texture.class);
 
             // models
