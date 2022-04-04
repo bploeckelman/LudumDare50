@@ -32,6 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -115,6 +116,7 @@ public class GameScreen extends BaseScreen {
     private final Vector3 billboardCameraPos = new Vector3();
     private VisWindow debugWindow;
     private VisProgressBar progressBar;
+    private VisProgressBar karmaProgressBar;
     private VisSlider cameraSlider;
     private VisWindow nextDayWindow;
     private VisTextButton nextDayButton;
@@ -129,6 +131,8 @@ public class GameScreen extends BaseScreen {
     public VisLabel roundLabel;
     public VisLabel goodKarmaLabel;
     public VisLabel badKarmaLabel;
+    public VisLabel goodKarmaPointLabel;
+    public VisLabel badKarmaPointLabel;
 
     private float ambienceSoundTime;
     private Vector3 position = new Vector3();
@@ -251,10 +255,10 @@ public class GameScreen extends BaseScreen {
             roundLabel.setText("Day " + roundNumber);
         }
         if (goodKarmaLabel != null) {
-            goodKarmaLabel.setText("Good Karma: " + goodKarmaPoints);
+            goodKarmaPointLabel.setText("" + goodKarmaPoints);
         }
         if (badKarmaLabel != null) {
-            badKarmaLabel.setText("Bad Karma: " + badKarmaPoints);
+            badKarmaPointLabel.setText("" + badKarmaPoints);
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
@@ -995,21 +999,39 @@ public class GameScreen extends BaseScreen {
         //centerWindow
         Group progressBarGroup = createAvalancheProgressBarUI();
         //rightWindow
-        goodKarmaLabel = new VisLabel("Good Karma : " + goodKarmaPoints, "outfit-medium-20px");
-        badKarmaLabel = new VisLabel("Bad Point: " + badKarmaPoints, "outfit-medium-20px");
+        goodKarmaLabel = new VisLabel("Good Karma:", "outfit-medium-20px");
+        badKarmaLabel = new VisLabel("Evil Karma:", "outfit-medium-20px");
+        goodKarmaPointLabel = new VisLabel("" + goodKarmaPoints, "outfit-medium-20px-blue");
+        badKarmaPointLabel = new VisLabel("" + badKarmaPoints, "outfit-medium-20px-red");
+
 //        upperRightWindow.addActor(karmaScoreLabel);
 //        upperRightWindow.row();
 //        upperRightWindow.addActor(evilScoreLabel);
         //fuck this, it's ludumdare
-        goodKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 45f);
-        badKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 15f);
+        goodKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 60f);
+        badKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 35f);
+        goodKarmaPointLabel.setPosition(windowCamera.viewportWidth - 90f, upperRightWindow.getY() + 60f);
+        badKarmaPointLabel.setPosition(windowCamera.viewportWidth - 90f, upperRightWindow.getY() + 35f);
+
+        VisProgressBar.ProgressBarStyle verticalProgressBarStyle = skin.get("default-horizontal", VisProgressBar.ProgressBarStyle.class);
+        VisProgressBar.ProgressBarStyle karmaProgressBarStyle = new VisProgressBar.ProgressBarStyle(verticalProgressBarStyle);
+        karmaProgressBarStyle.knobBefore = new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE));
+        karmaProgressBarStyle.knobAfter = new TextureRegionDrawable(getColoredTextureRegion(Color.RED));
+
+        karmaProgressBar = new VisProgressBar(0f, 100f, .1f, false, karmaProgressBarStyle);
+        karmaProgressBar.setSize(upperRightWindow.getWidth() - 50f, 20f);
+        karmaProgressBar.setPosition(upperRightWindow.getX() + 25f, upperRightWindow.getY() + 10f);
+        karmaProgressBar.setValue(50f);
 
         uiStage.addActor(upperLeftWindow);
         uiStage.addActor(upperCenterWindow);
         uiStage.addActor(upperRightWindow);
         uiStage.addActor(goodKarmaLabel);
         uiStage.addActor(badKarmaLabel);
+        uiStage.addActor(goodKarmaPointLabel);
+        uiStage.addActor(badKarmaPointLabel);
         uiStage.addActor(progressBarGroup);
+        uiStage.addActor(karmaProgressBar);
 
     }
 
@@ -1340,6 +1362,15 @@ public class GameScreen extends BaseScreen {
         progressBar.setValue(getFirstBallProgress());
         //progressBar.setValue(getLastRowWithSnowAccum());
         cameraSlider.setValue(camera.position.z / Landscape.TILES_LONG * Landscape.TILE_WIDTH * 100f);
+        float goodPercentage;
+        if (goodKarmaPoints == 0 && badKarmaPoints == 0) {
+            goodPercentage = 50f;
+        } else if (goodKarmaPoints == 0) {
+            goodPercentage = 0f;
+        } else {
+            goodPercentage = (float) goodKarmaPoints / (goodKarmaPoints + badKarmaPoints) * 100f;
+        }
+        karmaProgressBar.setValue(goodPercentage);
     }
 
     private TextureRegion getColoredTextureRegion(Color color) {
