@@ -321,15 +321,12 @@ public class GameScreen extends BaseScreen {
 
         // Create periodic rumbles of avalanche
 
-//        game.audio.playSound(AudioManager.Sounds.rumble, 0.8f);
-
         ambienceSoundTime-= dt;
 
 
         if (ambienceSoundTime <= 2){
             game.audio.playSound(AudioManager.Sounds.rumble, 0.8f);
             ambienceSoundTime = MathUtils.random(4f, 10f);
-            System.out.println("Played sound");
         }
     }
 
