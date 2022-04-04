@@ -218,6 +218,13 @@ public class LandTile {
 
     }
 
+    public void clearSnow() {
+        ULSnowHeight = 0;
+        URSnowHeight = 0;
+        LLSnowHeight = 0;
+        LRSnowHeight = 0;
+    }
+
     public float getHeightAt(float x, float z){
         float leftHeight = p1.y * (1f-z) + p4.y *( z);
         float rightHeight = p2.y * (1f -z) + p3.y *(z);
