@@ -49,10 +49,7 @@ import lando.systems.ld50.assets.InputPrompts;
 import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.cameras.RailsCamera;
 import lando.systems.ld50.cameras.SimpleCameraController;
-import lando.systems.ld50.objects.AnimationDecal;
-import lando.systems.ld50.objects.LandTile;
-import lando.systems.ld50.objects.Landscape;
-import lando.systems.ld50.objects.Snowball;
+import lando.systems.ld50.objects.*;
 import lando.systems.ld50.particles.NoDepthCameraGroupStrategy;
 import lando.systems.ld50.particles.Particles;
 import lando.systems.ld50.particles.PhysicsDecal;
@@ -1014,10 +1011,10 @@ public class GameScreen extends BaseScreen {
 //        upperRightWindow.row();
 //        upperRightWindow.addActor(evilScoreLabel);
         //fuck this, it's ludumdare
-        goodKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 60f);
-        badKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 35f);
-        goodKarmaPointLabel.setPosition(windowCamera.viewportWidth - 90f, upperRightWindow.getY() + 60f);
-        badKarmaPointLabel.setPosition(windowCamera.viewportWidth - 90f, upperRightWindow.getY() + 35f);
+        goodKarmaLabel.setPosition(upperRightWindow.getX() + 40f, upperRightWindow.getY() + 60f);
+        badKarmaLabel.setPosition(upperRightWindow.getX() + 40f, upperRightWindow.getY() + 35f);
+        goodKarmaPointLabel.setPosition(windowCamera.viewportWidth - 80f, upperRightWindow.getY() + 60f);
+        badKarmaPointLabel.setPosition(windowCamera.viewportWidth - 80f, upperRightWindow.getY() + 35f);
 
         VisProgressBar.ProgressBarStyle verticalProgressBarStyle = skin.get("default-horizontal", VisProgressBar.ProgressBarStyle.class);
         VisProgressBar.ProgressBarStyle karmaProgressBarStyle = new VisProgressBar.ProgressBarStyle(verticalProgressBarStyle);
@@ -1029,15 +1026,25 @@ public class GameScreen extends BaseScreen {
         karmaProgressBar.setPosition(upperRightWindow.getX() + 25f, upperRightWindow.getY() + 10f);
         karmaProgressBar.setValue(50f);
 
+        VisImage yeti = new VisImage(new TextureRegionDrawable(assets.yetiIcon));
+        yeti.setPosition(karmaProgressBar.getX() + karmaProgressBar.getWidth() - 15f, karmaProgressBar.getY());
+        yeti.setSize(35f, 35f);
+
+        Scene2DAnimationActor babe = new Scene2DAnimationActor(assets.babeA);
+        babe.setPosition(karmaProgressBar.getX() - 20f, karmaProgressBar.getY());
+        babe.setSize(50f, 50f);
+
         uiStage.addActor(upperLeftWindow);
         uiStage.addActor(upperCenterWindow);
         uiStage.addActor(upperRightWindow);
+        uiStage.addActor(progressBarGroup);
+        uiStage.addActor(karmaProgressBar);
+        uiStage.addActor(yeti);
+        uiStage.addActor(babe);
         uiStage.addActor(goodKarmaLabel);
         uiStage.addActor(badKarmaLabel);
         uiStage.addActor(goodKarmaPointLabel);
         uiStage.addActor(badKarmaPointLabel);
-        uiStage.addActor(progressBarGroup);
-        uiStage.addActor(karmaProgressBar);
 
     }
 

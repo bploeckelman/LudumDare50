@@ -65,9 +65,11 @@ public class Assets implements Disposable {
     public TextureRegion plowIcon;
     public TextureRegion boulderIcon;
     public TextureRegion laserIcon;
+    public TextureRegion yetiIcon;
 
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
+    public Animation<TextureRegion> babeA;
     public SimplexNoise noise;
 
     public Music mainMusic;
@@ -333,6 +335,7 @@ public class Assets implements Disposable {
 
         cat = new Animation<>(0.1f, atlas.findRegions("pets/cat"), Animation.PlayMode.LOOP);
         dog = new Animation<>(0.1f, atlas.findRegions("pets/dog"), Animation.PlayMode.LOOP);
+        babeA = new Animation<>(0.1f, atlas.findRegions("characters/babe-a-wave"), Animation.PlayMode.LOOP);
 
         waveIcon = atlas.findRegion("icons/wave");
         settingsIcon = atlas.findRegion("icons/settings");
@@ -344,6 +347,7 @@ public class Assets implements Disposable {
         laserIcon = atlas.findRegion("icons/laser");
         plowIcon = atlas.findRegion("icons/plow");
         boulderIcon = atlas.findRegion("icons/boulder");
+        yetiIcon = atlas.findRegion("icons/yeti");
 
         // initialize particle images
         particles = new Particles();
