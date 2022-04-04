@@ -97,6 +97,7 @@ public class GameScreen extends BaseScreen {
     private VisSlider cameraSlider;
     private float accum = 0;
     private boolean isControlHidden = false;
+    private Button minimizeButton;
 
     public GameScreen() {
 //        profiler = new GLProfiler(Gdx.graphics);
@@ -261,6 +262,7 @@ public class GameScreen extends BaseScreen {
 
         updateDebugElements();
         updateProgressBarValue();
+        minimizeButton.setZIndex(minimizeButton.getZIndex() + 3);
     }
 
     Vector3 t1 = new Vector3();
@@ -575,36 +577,36 @@ public class GameScreen extends BaseScreen {
         Button.ButtonStyle customMinimizeStyle = new Button.ButtonStyle(toggleButtonStyle);
         customMinimizeStyle.checked = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_plus));
         customMinimizeStyle.up = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_minus));
-        Button button = new Button(customMinimizeStyle);
-        button.setSize(35f, 35f);
-        button.setPosition(controlWindow.getWidth() - button.getWidth(), controlWindow.getHeight() - button.getHeight());
+        minimizeButton = new Button(customMinimizeStyle);
+        minimizeButton.setSize(35f, 35f);
+        minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth(), controlWindow.getHeight() - minimizeButton.getHeight());
 
         Group controlGroup = new Group();
         controlGroup.addActor(controlWindow);
-        controlGroup.addActor(button);
+        controlGroup.addActor(minimizeButton);
 
         uiStage.addActor(controlGroup);
 
 //        MoveByAction minimizeControlAction = new MoveByAction();
-//        minimizeControlAction.setAmount(0, -controlWindow.getHeight() + button.getHeight());
+//        minimizeControlAction.setAmount(0, -controlWindow.getHeight() + minimizeButton.getHeight());
 //        MoveByAction maximizeControlAction = new MoveByAction();
-//        maximizeControlAction.setAmount(0, controlWindow.getHeight() - button.getHeight());
+//        maximizeControlAction.setAmount(0, controlWindow.getHeight() - minimizeButton.getHeight());
 
-        Action minimizeTransitionAction = Actions.moveBy(0, -controlWindow.getHeight() + button.getHeight(), 0.5f);
-        Action maximizeTransitionAction = Actions.moveBy(0, controlWindow.getHeight() - button.getHeight(), 0.5f);
+        Action minimizeTransitionAction = Actions.moveBy(0, -controlWindow.getHeight() + minimizeButton.getHeight(), 0.5f);
+        Action maximizeTransitionAction = Actions.moveBy(0, controlWindow.getHeight() - minimizeButton.getHeight(), 0.5f);
 
-        button.addListener(new ChangeListener() {
+        minimizeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (isControlHidden) {
 //                    controlWindow.addAction(maximizeControlAction);
-//                    button.addAction(maximizeTransitionAction);
+//                    minimizeButton.addAction(maximizeTransitionAction);
                     maximizeTransitionAction.reset();
                     controlGroup.addAction(maximizeTransitionAction);
                     isControlHidden = false;
                 } else {
 //                    controlWindow.addAction(minimizeControlAction);
-//                    button.addAction(minimizeTransitionAction);
+//                    minimizeButton.addAction(minimizeTransitionAction);
                     minimizeTransitionAction.reset();
                     controlGroup.addAction(minimizeTransitionAction);
                     isControlHidden = true;
