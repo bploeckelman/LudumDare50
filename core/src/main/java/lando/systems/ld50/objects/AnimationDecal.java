@@ -99,20 +99,7 @@ public class AnimationDecal {
             time += dt;
         }
 
-        if (waveTime > 0) {
-            waveTime -= dt;
-        } else {
-            updateMovement(dt);
-        }
-
-        // temp
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (!launched) { launch(); }
-        }
-
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            wave(4);
-        }
+        updateMovement(dt);
     }
 
     public void hit() {
@@ -122,8 +109,8 @@ public class AnimationDecal {
 
     private void updateMovement(float dt) {
 
-        if (isInSnow()) {
-            wave(4);
+        if (isInSnow() && !launched) {
+            waveTime += dt;
             return;
         }
 
@@ -162,13 +149,8 @@ public class AnimationDecal {
         return snow > 0.08f;
     }
 
-    public void wave(float waveTime) {
-        time = 0;
-        this.waveTime = waveTime;
-    }
-
     public Decal get() {
-        int index = (waveTime > 0) ? waveAnimation.getKeyFrameIndex(time) : regionAnimation.getKeyFrameIndex(time);
+        int index = (waveTime > 0) ? waveAnimation.getKeyFrameIndex(waveTime) : regionAnimation.getKeyFrameIndex(time);
         Decal decal = (waveTime > 0) ? waveDecals.get(index) : decals.get(index);
         decal.setScaleX(right ? directionX : -directionX);
         decal.setPosition(position);
@@ -185,13 +167,8 @@ public class AnimationDecal {
 
     public void launch() {
         launched = true;
-        moveTime = 0;
+        waveTime = moveTime = 0;
         moveTimeTotal = 5;
-        System.out.println(this.imageInfo.scream);
         Main.game.audio.playSound(this.imageInfo.scream);
-//        this.imageInfo.scream;
-
-
-
     }
 }
