@@ -571,6 +571,7 @@ public class GameScreen extends BaseScreen {
         controlWindow.setPosition(0f, 0f);
         controlWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
         controlWindow.setKeepWithinStage(false);
+        controlWindow.setMovable(false);
         //uiStage.addActor(controlWindow);
 
         Button.ButtonStyle toggleButtonStyle = skin.get("toggle", Button.ButtonStyle.class);
