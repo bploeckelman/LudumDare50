@@ -258,7 +258,7 @@ public class Particles implements Disposable {
         for (int i = 0; i < quantity; i++) {
             activeParticles.get(Layer.middle).add(Particle.initializer(particlePool.obtain())
                     .keyframe(assets.particles.sparkle)
-                    .startColor(color[0], color[1], color[2], 1)
+                    .startColor(color[0], color[1], color[1], 1)
                     .targetPos(target[0], target[1])
                     .startPos(position[0] + MathUtils.random(35, 70) * MathUtils.sinDeg(i*360f/quantity), position[1] + MathUtils.random(35, 70) * MathUtils.cosDeg(i*360f/quantity))
                     .timeToLive(MathUtils.random(0.8f, 1.4f))

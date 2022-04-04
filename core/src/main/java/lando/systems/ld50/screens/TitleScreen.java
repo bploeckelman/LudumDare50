@@ -49,7 +49,9 @@ public class TitleScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
             if (!exitingScreen) {
-                game.setScreen(new StoryScreen());
+//                game.setScreen(new StoryScreen());
+                // TODO Change this back to story screen before publishing
+                game.setScreen(new GameScreen());
                 exitingScreen = true;
             }
             }
