@@ -26,18 +26,22 @@ public class Debris extends PhysicsObject {
         this.initialRadius = radius;
         TTL = 10;
 
+        // NOTE - can't use debris models because brian is dumb
         Model model;
         int which = MathUtils.random(2);
         switch (which) {
             case 0:
-                model = Assets.Models.debris_a.model;
+//                model = Assets.Models.debris_a.model;
+                model = Assets.Models.building_a_part_a.model;
                 break;
             case 1:
-                model = Assets.Models.debris_b.model;
+//                model = Assets.Models.debris_b.model;
+                model = Assets.Models.building_a_part_b.model;
                 break;
             case 2:
             default:
-                model = Assets.Models.debris_c.model;
+//                model = Assets.Models.debris_c.model;
+                model = Assets.Models.building_a_part_c.model;
         }
 
         instance = new ModelInstance(model);

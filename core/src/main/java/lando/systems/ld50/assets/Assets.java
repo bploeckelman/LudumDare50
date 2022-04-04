@@ -66,6 +66,7 @@ public class Assets implements Disposable {
     public TextureRegion boulderIcon;
     public TextureRegion laserIcon;
     public TextureRegion yetiIcon;
+    public TextureRegion snowball;
 
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
@@ -348,6 +349,7 @@ public class Assets implements Disposable {
         plowIcon = atlas.findRegion("icons/plow");
         boulderIcon = atlas.findRegion("icons/boulder");
         yetiIcon = atlas.findRegion("icons/yeti");
+        snowball = atlas.findRegion("other/snowball");
 
         // initialize particle images
         particles = new Particles();
