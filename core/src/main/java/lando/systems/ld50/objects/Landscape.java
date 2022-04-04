@@ -39,9 +39,9 @@ public class Landscape {
         landscapeShader = Main.game.assets.landscapeShader;
         snowBalls = new Array<>();
         tiles = new LandTile[TILES_WIDE * TILES_LONG];
-        vertices = new float[MAX_NUM_VERTICES * tiles.length];
-        indices = new short[MAX_INDICES * tiles.length];
-        landscapeMesh = new Mesh(false, MAX_NUM_VERTICES * tiles.length, MAX_INDICES * tiles.length,
+        vertices = new float[MAX_NUM_VERTICES * tiles.length + 8 * MAX_NUM_VERTICES];
+        indices = new short[MAX_INDICES * tiles.length + 12];
+        landscapeMesh = new Mesh(false, MAX_NUM_VERTICES * tiles.length + 8 * MAX_NUM_VERTICES, MAX_INDICES * tiles.length + 12,
                 new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
                 new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
                 new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
@@ -53,6 +53,7 @@ public class Landscape {
             }
         }
 
+        addWings();
 
 
 //        startAvalanche();
@@ -124,6 +125,137 @@ public class Landscape {
         }
         landscapeMesh.setVertices(vertices);
         landscapeMesh.setIndices(indices);
+    }
+
+    public void addWings() {
+
+        float wingHeight = 1f;
+
+        int verIndex = (tiles.length) * MAX_NUM_VERTICES;
+        vertices[verIndex++] = -2;
+        vertices[verIndex++] = wingHeight;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 0; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = -2; // U
+        vertices[verIndex++] = 0; // V
+
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 0; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // U
+        vertices[verIndex++] = 0; // V
+
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 100;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 0; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = 0; // U
+        vertices[verIndex++] = 100; // V
+
+        vertices[verIndex++] = -2;
+        vertices[verIndex++] = wingHeight;
+        vertices[verIndex++] = 100;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 0; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = -2; // U
+        vertices[verIndex++] = 100; // V
+
+
+
+        // Right Wing
+        vertices[verIndex++] = TILES_WIDE;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 0; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = TILES_WIDE; // U
+        vertices[verIndex++] = 0; // V
+
+        vertices[verIndex++] = TILES_WIDE+2;
+        vertices[verIndex++] = wingHeight;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 0; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = TILES_WIDE+2; // U
+        vertices[verIndex++] = 0; // V
+
+
+        vertices[verIndex++] = TILES_WIDE+2;
+        vertices[verIndex++] = wingHeight;
+        vertices[verIndex++] = 100;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 0; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = TILES_WIDE+2; // U
+        vertices[verIndex++] = 100; // V
+
+        vertices[verIndex++] = TILES_WIDE;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 100;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 0; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 1; // a
+        vertices[verIndex++] = TILES_WIDE; // U
+        vertices[verIndex++] = 100; // V
+
+        int indexStartIndex = (short)(tiles.length) * 9;
+        int startIndexIndex = (tiles.length) * MAX_INDICES;
+
+        indices[startIndexIndex++] = (short)(indexStartIndex + 0);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 1);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 2);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 2);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 3);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 0);
+
+        indices[startIndexIndex++] = (short)(indexStartIndex + 4);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 5);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 6);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 6);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 7);
+        indices[startIndexIndex++] = (short)(indexStartIndex + 4);
     }
 
 

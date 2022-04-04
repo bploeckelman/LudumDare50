@@ -821,7 +821,7 @@ public class GameScreen extends BaseScreen {
         nextDayWindow.setKeepWithinStage(false);
         nextDayWindow.setMovable(false);
 
-        nextDayButton = new VisTextButton("Start Day", "outfit-medium-40px");
+        nextDayButton = new VisTextButton("End Day", "outfit-medium-40px");
         nextDayButton.setFillParent(true);
         nextDayButton.addListener(new ChangeListener() {
             @Override
