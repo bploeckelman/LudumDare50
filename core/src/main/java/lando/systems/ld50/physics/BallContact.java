@@ -37,11 +37,12 @@ public class BallContact implements Comparable, Pool.Poolable
 
             if (thing instanceof Snowball) {
                 Main.game.audio.playSound(AudioManager.Sounds.thud);
-                tile.addSnow((Snowball) thing);
             }
         }
 
-
+        if (thing instanceof Snowball) {
+            tile.addSnow((Snowball) thing);
+        }
 
 
     }
