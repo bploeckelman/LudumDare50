@@ -27,16 +27,17 @@ public class Debris extends PhysicsObject {
         TTL = 10;
 
         Model model;
-        switch (MathUtils.random(2)) {
+        int which = MathUtils.random(2);
+        switch (which) {
             case 0:
-                model = Assets.Models.building_a_part_a.model;
+                model = Assets.Models.debris_a.model;
                 break;
             case 1:
-                model = Assets.Models.building_a_part_b.model;
+                model = Assets.Models.debris_b.model;
                 break;
             case 2:
             default:
-                model = Assets.Models.building_a_part_c.model;
+                model = Assets.Models.debris_c.model;
         }
 
         instance = new ModelInstance(model);
@@ -60,8 +61,8 @@ public class Debris extends PhysicsObject {
         updateRotation(dt);
         TTL -= dt;
         radius = initialRadius * TTL/10f;
-        instance.transform.setToTranslation(position)
-                .scale(radius, radius, radius)
+        instance.transform.setToTranslationAndScaling(position.x, position.y, position.z,
+                radius, radius, radius)
                 .rotate(rotation);
 
     }

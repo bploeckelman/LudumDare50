@@ -7,12 +7,12 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
+import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
 
 public class TitleScreen extends BaseScreen {
@@ -21,7 +21,8 @@ public class TitleScreen extends BaseScreen {
     private VisTextButton creditButton;
     private VisTextButton settingsButton;
 
-    private final float BUTTON_WIDTH = 20f;
+    private final float BUTTON_WIDTH = 300f;
+    private final float BUTTON_HEIGHT = 75f;
     private final float BUTTON_PADDING = 10f;
 
     public TitleScreen() {
@@ -31,20 +32,30 @@ public class TitleScreen extends BaseScreen {
         Gdx.input.setInputProcessor(mux);
 
         game.audio.playMusic(AudioManager.Musics.introMusic);
+//        game.audio.playMusic(AudioManager.Musics.outroMusic);
     }
 
     @Override
     protected void initializeUI() {
         super.initializeUI();
 
-        rootTable = new VisTable();
-        rootTable.setWidth(uiStage.getWidth());
-        rootTable.setPosition(0, uiStage.getHeight() / 3);
-        rootTable.align(Align.center | Align.top);
-        rootTable.pad(5f);
+//        rootTable = new VisTable();
+//        rootTable.setWidth(windowCamera.viewportWidth);
+//        rootTable.setHeight(windowCamera.viewportHeight / 2f);
+//        rootTable.setPosition(0, 0f);
+//        rootTable.align(Align.center | Align.top);
+//        rootTable.pad(5f);
 
-        startGameButton = new VisTextButton("Start Game", "outfit-medium-40px");
-        startGameButton.setWidth(BUTTON_WIDTH);
+        VisTextButton.VisTextButtonStyle outfitMediumStyle = skin.get("outfit-medium-40px", VisTextButton.VisTextButtonStyle.class);
+        VisTextButton.VisTextButtonStyle titleScreenButtonStyle = new VisTextButton.VisTextButtonStyle(outfitMediumStyle);
+        titleScreenButtonStyle.up = Assets.Patch.glass.drawable;
+        titleScreenButtonStyle.down = Assets.Patch.glass_dim.drawable;
+        titleScreenButtonStyle.over = Assets.Patch.glass_dim.drawable;
+
+        startGameButton = new VisTextButton("Start Game", titleScreenButtonStyle);
+        Gdx.app.log("startbuttonwidth&height", "width: " + startGameButton.getWidth() + " & height: " + startGameButton.getHeight());
+        startGameButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        startGameButton.setPosition(windowCamera.viewportWidth / 2f - startGameButton.getWidth() / 2f, windowCamera.viewportHeight / 3f);
         startGameButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -57,7 +68,9 @@ public class TitleScreen extends BaseScreen {
             }
         });
 
-        settingsButton = new VisTextButton("Settings", "outfit-medium-40px");
+        settingsButton = new VisTextButton("Settings", titleScreenButtonStyle);
+        settingsButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        settingsButton.setPosition(windowCamera.viewportWidth / 2f - settingsButton.getWidth() / 2f, startGameButton.getY() - startGameButton.getHeight() - BUTTON_PADDING);
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -66,8 +79,9 @@ public class TitleScreen extends BaseScreen {
         });
 
 
-        creditButton = new VisTextButton("Credits", "outfit-medium-40px");
-        creditButton.setWidth(BUTTON_WIDTH);
+        creditButton = new VisTextButton("Credits", titleScreenButtonStyle);
+        creditButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        creditButton.setPosition(windowCamera.viewportWidth / 2f - creditButton.getWidth() / 2f, settingsButton.getY() - settingsButton.getHeight() - BUTTON_PADDING);
         creditButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -79,13 +93,15 @@ public class TitleScreen extends BaseScreen {
             }
         });
 
-        rootTable.add(startGameButton).padBottom(BUTTON_PADDING);
-        rootTable.row();
-        rootTable.add(settingsButton).padBottom(BUTTON_PADDING);
-        rootTable.row();
-        rootTable.add(creditButton).padBottom(BUTTON_PADDING);
+//        rootTable.add(startGameButton).padBottom(BUTTON_PADDING).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
+//        rootTable.row();
+//        rootTable.add(settingsButton).padBottom(BUTTON_PADDING).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
+//        rootTable.row();
+//        rootTable.add(creditButton).padBottom(BUTTON_PADDING).width(BUTTON_WIDTH).height(BUTTON_HEIGHT);
 
-        uiStage.addActor(rootTable);
+        uiStage.addActor(startGameButton);
+        uiStage.addActor(settingsButton);
+        uiStage.addActor(creditButton);
 
 //        settingsGroup.setZIndex(settingsGroup.getZIndex()+1);
     }

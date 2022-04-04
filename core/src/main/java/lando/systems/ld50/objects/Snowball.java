@@ -20,8 +20,12 @@ public class Snowball extends PhysicsObject {
     private final ModelInstance instance;
 
     public Array<Long> pointsGiven = new Array<>();
+    public Landscape landscape;
+    public Array<LandTile> interactedDecorations;
 
-    public Snowball(float x, float y, float z, float radius) {
+    public Snowball(float x, float y, float z, float radius, Landscape landscape) {
+        this.landscape = landscape;
+        interactedDecorations = new Array<>();
         this.velocity = new Vector3();
         this.position = new Vector3(x, y, z);
         this.radius = radius;

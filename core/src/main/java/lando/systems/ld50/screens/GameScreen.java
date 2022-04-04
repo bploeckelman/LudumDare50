@@ -59,8 +59,6 @@ import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
-import java.time.LocalDateTime;
-
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
@@ -91,13 +89,16 @@ public class GameScreen extends BaseScreen {
     private Array<ModelInstance> houseInstances;
     private Array<ModelInstance> treeInstances;
     private Array<ModelInstance> creatureInstances;
+    private Array<ModelInstance> lodgeInstances;
     private Array<AnimationDecal> decals;
 
     private Vector3 touchPos;
     private Vector3 startPos, endPos;
     private Vector3 startUp, endUp;
     private Vector3 startDir, endDir;
-    private float cameraTransitionDT = 0;
+    private float timeInTransition = 0;
+    private float transitionLength;
+    private float transitionPostDelay = 0;
 
     private Vector3 lightDir;
     public DirectionalLight light;
@@ -122,13 +123,18 @@ public class GameScreen extends BaseScreen {
     public boolean isControlShown = false;
     private Button minimizeButton;
     public int roundNumber = 1;
-    public int karmaPoint = 0;
-    public int stylePoint = 0;
+    public int goodKarmaPoints = 0;
+    public int badKarmaPoints = 0;
 
     public VisLabel roundLabel;
+    public VisLabel goodKarmaLabel;
+    public VisLabel badKarmaLabel;
 
     private float ambienceSoundTime;
     private Vector3 position = new Vector3();
+
+    public boolean gameOver;
+    public float gameOverDelay = 0;
 
     public enum Karma {GOOD, EVIL}
     public Karma currentKarmaPicked = Karma.GOOD;
@@ -136,22 +142,23 @@ public class GameScreen extends BaseScreen {
     public Skill activeSkill = Skill.NONE;
 
     public enum CameraPhase {
-        start, plan, avalanche;
+        transitionToRails, plan, transitionToAvalanche, avalanche, transitionViewLodge;
         static CameraPhase next(CameraPhase phase) {
             switch (phase) {
-                case start: return plan;
-                case plan: return avalanche;
-                case avalanche:
-                default: return start;
+                case transitionToRails: return plan;
+                case plan: return transitionToAvalanche;
+                case transitionToAvalanche: return avalanche;
+                case avalanche: return transitionViewLodge;
+                default: return transitionToRails;
             }
         }
     }
-    public CameraPhase currentCameraPhase = CameraPhase.start;
+    public CameraPhase currentCameraPhase = CameraPhase.plan;
 
     public GameScreen() {
 //        profiler = new GLProfiler(Gdx.graphics);
 //        profiler.enable();
-
+        gameOver = false;
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
         initializeCamera();
 
@@ -230,13 +237,23 @@ public class GameScreen extends BaseScreen {
         super.update(dt);
         accum += dt;
 
+        if (gameOver && landscape.snowBalls.size == 0){
+            gameOverDelay += dt;
+            if (gameOverDelay > 1.5f){
+                game.setScreen(new EpilogueScreen());
+            }
+        }
 //        setGameDayTime(accum);
         updateGameTime();
         if (roundLabel != null){
             roundLabel.setText("Day " + roundNumber);
         }
-
-        boolean gameOver = isGameOver();
+        if (goodKarmaLabel != null) {
+            goodKarmaLabel.setText("Good Karma: " + goodKarmaPoints);
+        }
+        if (badKarmaLabel != null) {
+            badKarmaLabel.setText("Bad Karma: " + badKarmaPoints);
+        }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             dumpCameraVecsToLog();
@@ -251,6 +268,10 @@ public class GameScreen extends BaseScreen {
             shaker.addDamage(0.5f);
             landscape.startAvalanche();
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
+            landscape.setGameOver();
+        }
         // toggle debug states
         if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
             boolean wasShown = Config.debug_general;
@@ -264,13 +285,13 @@ public class GameScreen extends BaseScreen {
             uiStage.addAction(transitionAction);
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && currentCameraPhase == CameraPhase.start) {
-            TransitionCamera();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && currentCameraPhase == CameraPhase.avalanche) {
-            UntransitionCamera();
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && currentCameraPhase == CameraPhase.transitionToRails) {
+//            TransitionCamera();
+//        }
+//
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && currentCameraPhase == CameraPhase.avalanche) {
+//            UntransitionCamera();
+//        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P) && landscape.highlightedTile != null) {
             landscape.highlightedTile.makeRamp();
         }
@@ -278,20 +299,21 @@ public class GameScreen extends BaseScreen {
             landscape.highlightedTile.makeDiverter(false);
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
-            startNewDay();
+        if (gameOver) {
+            landscape.setSelectedTile(-1, -1);
+        } else {
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            worldCamera.unproject(touchPos);
+            Vector2 selectedTile = getSelectedTile((int) touchPos.x, (int) touchPos.y);
+            landscape.setSelectedTile((int) selectedTile.x, (int) selectedTile.y);
         }
-
-        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        worldCamera.unproject(touchPos);
-        Vector2 selectedTile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
-        landscape.setSelectedTile((int)selectedTile.x, (int)selectedTile.y);
 
         camera.update();
         cameraController.update();
         shaker.update(dt);
 
         landscape.update(dt);
+
 
         billboardCameraPos.set(camera.position).y = 0f;
 
@@ -316,9 +338,9 @@ public class GameScreen extends BaseScreen {
         if (pickPixmap != null){
             pickPixmap.dispose();
         }
-
+/*
         // keep the camera focused on the bulk of the avalanche wave
-        if (!cameraMovementPaused && currentCameraPhase == CameraPhase.start) {
+        if (!cameraMovementPaused && currentCameraPhase == CameraPhase.transitionToRails) {
 //            float prevCameraMovementT = cameraMovementT;
 //            float currCameraMovementT = getAvalancheProgress();
 //            cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
@@ -333,7 +355,7 @@ public class GameScreen extends BaseScreen {
                 frac = 1;
                 currentCameraPhase = CameraPhase.next(currentCameraPhase);
                 cameraTransitionDT = 0;
-                if (currentCameraPhase == CameraPhase.start) {
+                if (currentCameraPhase == CameraPhase.transitionToRails) {
                     Gdx.input.setInputProcessor(inputMuxPlanPhase);
                 }
             }
@@ -355,6 +377,59 @@ public class GameScreen extends BaseScreen {
             float target = Math.max(10f, 100 * getAvalancheProgress() + 8.5f);
             camera.position.z = MathUtils.lerp(camera.position.z, target, 2*dt);
         }
+*/
+
+        switch (currentCameraPhase) {
+            case transitionViewLodge:
+                if (landscape.snowBalls.size > 0 || gameOver) {
+                    timeInTransition = MathUtils.clamp(timeInTransition, 0, transitionLength);
+                }
+
+            case transitionToAvalanche:
+            case transitionToRails:
+                timeInTransition += dt;
+                double frac = Math.min(1, timeInTransition / transitionLength);
+
+                //perform easeInOutQuad with a quadratic bezier
+                double tVal = frac < 0.5 ? 2 * frac * frac : 1 - ((-2 * frac + 2)*(-2*frac + 2)) / 2;//1-((1-frac)*(1-frac)*(1-frac));
+                t1.set(camStartPos);
+                t2.set(camMidPos);
+                t3.set(camEndPos);
+                t4.set(camStartDir);
+                t5.set(camEndDir);
+                camera.position.set(
+                        t1.scl((float)((1-tVal)*(1-tVal)))
+                                .add(t2.scl((float)(2*tVal*(1-tVal))))
+                                .add(t3.scl((float)(tVal*tVal))));
+                camera.direction.set(t4.scl((float)(1-frac)).add(t5.scl((float)frac)));
+                double hor = Math.sqrt(camera.direction.x * camera.direction.x + camera.direction.z * camera.direction.z);
+                camera.up.set((float) (-camera.direction.x * camera.direction.y / hor), (float) (hor), (float) (-camera.direction.z * camera.direction.y / hor));
+
+                if (timeInTransition > transitionLength + transitionPostDelay) {
+                    goToNextCameraPhase();
+                }
+                break;
+
+            case avalanche:
+                float target = Math.max(10f, Landscape.TILES_LONG * Landscape.TILE_WIDTH * getAvalancheProgress() + avalancheOffset);
+                camera.position.z = MathUtils.lerp(camera.position.z, target, 2*dt);
+                if (landscape.snowBalls.size == 0 || camera.position.z > avalancheOffset + 0.9 * Landscape.TILES_LONG * Landscape.TILE_WIDTH) {//TODO set avalanche percent to transition
+                    goToNextCameraPhase();
+                }
+                break;
+
+            case plan:
+                //TODO time of day stuff
+                break;
+
+
+        }
+
+        camera.update();
+        cameraController.update();
+        shaker.update(dt);
+
+
 
         updateDebugElements();
         updateProgressBarValue();
@@ -372,11 +447,71 @@ public class GameScreen extends BaseScreen {
         }
     }
 
+    private void goToNextCameraPhase() {
+        currentCameraPhase = CameraPhase.next(currentCameraPhase);
+        switch (currentCameraPhase) {
+            case transitionViewLodge:
+                if (landscape.snowBalls.size > 0) {
+                    camStartPos.set(camera.position);
+                    camMidPos.set(1f, 3.4f, camera.position.z + 10);
+                    camEndPos.set(1f, 4f, 105f);
+                    camStartDir.set(camera.direction);
+                    camEndDir.set(0.50008386f, -0.656027f, -0.5652821f);
+                    camEndDir.nor();
+
+                    transitionLength = 1.5f;
+                    transitionPostDelay = 3.5f;
+                    timeInTransition = 0;
+                    break;
+                } else { currentCameraPhase = CameraPhase.next(currentCameraPhase); }
+            case transitionToRails:
+                camStartPos.set(camera.position);
+                camMidPos.set(4f, 3.4f, camera.position.z - 5);
+                camEndPos.set(1f, 4f, 10f);
+                camStartDir.set(camera.direction);
+                camEndDir.set(0.50008386f,-0.656027f,-0.5652821f);
+                camEndDir.nor();
+
+                transitionLength = 2.5f;
+                transitionPostDelay = 0f;
+                timeInTransition = 0;
+                break;
+            case transitionToAvalanche:
+                camStartPos.set(camera.position);
+                camMidPos.set(3f, avalancheViewHeight + 0.8f, camera.position.z + 5);
+                camEndPos.set(4f, avalancheViewHeight, 10f);
+                camStartDir.set(camera.direction);
+                camEndDir.set(0f, -(MathUtils.sinDeg(avalancheViewAngleDeg) / MathUtils.cosDeg(avalancheViewAngleDeg)), -1f);
+                camEndDir.nor();
+
+                transitionLength = 2.5f;
+                transitionPostDelay = 0f;
+                timeInTransition = 0;
+                break;
+
+            case avalanche:
+                break;
+            case plan:
+                break;
+
+        }
+    }
+
+    private float avalancheOffset = 8.5f;
+    private float avalancheViewAngleDeg = 30f;
+    private float avalancheViewHeight = 2.5f;
+
     Vector3 t1 = new Vector3();
     Vector3 t2 = new Vector3();
     Vector3 t3 = new Vector3();
     Vector3 t4 = new Vector3();
     Vector3 t5 = new Vector3();
+
+    Vector3 camStartPos = new Vector3();
+    Vector3 camMidPos = new Vector3();
+    Vector3 camEndPos = new Vector3();
+    Vector3 camStartDir = new Vector3();
+    Vector3 camEndDir = new Vector3();
 
     @Override
     public void render(SpriteBatch batch) {
@@ -394,13 +529,16 @@ public class GameScreen extends BaseScreen {
         // draw world
         landscape.render(camera);
 
+        // draw models
         modelBatch.begin(camera);
         {
 //            modelBatch.render(coords, env);
             modelBatch.render(houseInstances, env);
             modelBatch.render(treeInstances, env);
             modelBatch.render(creatureInstances, env);
-            landscape.render(modelBatch, env);
+            modelBatch.render(lodgeInstances, env);
+
+            landscape.renderAvalanche(modelBatch, env);
         }
         modelBatch.end();
 
@@ -442,14 +580,13 @@ public class GameScreen extends BaseScreen {
                 .push(Tween.call((type, source) -> {
                     dayTime.setValue(buildHour);
                     landscape.startAvalanche();
-                    TransitionCamera();
+                    goToNextCameraPhase();
                 }))
                 .start(Main.game.tween);
     }
 
     public void beginBuildPhase(){
         roundNumber++;
-        UntransitionCamera();
         showNextDayWindow();
     }
 
@@ -491,7 +628,7 @@ public class GameScreen extends BaseScreen {
     }
 
     public boolean isGameOver() {
-        return false;
+        return gameOver;
     }
 
     private void initializeCamera() {
@@ -512,125 +649,104 @@ public class GameScreen extends BaseScreen {
         camera.update();
     }
 
-    Vector3 camStartPos = new Vector3();
-    Vector3 camMidPos = new Vector3();
-    Vector3 camEndPos = new Vector3();
-    Vector3 camStartDir = new Vector3();
-    Vector3 camEndDir = new Vector3();
-
-    private void TransitionCamera() {
-        Gdx.input.setInputProcessor(inputMuxAvalanchePhase);
-        currentCameraPhase = CameraPhase.plan;
-        camStartPos.set(camera.position);
-        camMidPos.set(3f, 2.75f, camera.position.z + 5);
-        camEndPos.set(4f, 2f, 10f);
-        camStartDir.set(camera.direction);
-        camEndDir.set(0f, -0.577f, -1f);
-        camEndDir.nor();
-    }
-
-    private void UntransitionCamera() {
-        currentCameraPhase = CameraPhase.start;
-        camStartPos.set(camera.position);
-        camMidPos.set(1f, 3.4f, camera.position.z + 5);
-        camEndPos.set(1f, 4f, 10f);
-        camStartDir.set(camera.direction);
-        camEndDir.set(startDir);
-        camEndDir.nor();
-    }
-
     private void loadModels() {
-        BoundingBox box = new BoundingBox();
-        float extentX, extentY, extentZ, maxExtent;
+        lodgeInstances = new Array<>();
 
+        LandTile tile;
+        ModelInstance instance;
+
+        tile = landscape.getTileAt(0, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_a.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(1, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_b.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(2, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(3, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_d.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(4, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(5, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_b.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(6, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(7, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_a.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        // fuck it, it's ludum dare (screws up normals and makes it dark relative to others)
+        instance.transform.scale(-1f, 1f, 1f);
+        lodgeInstances.add(instance);
+
+        // TODO - be more clever about how these are randomly placed so they don't cluster
         houseInstances = new Array<>();
-
-        // TODO - be more clever about how these are randomly placed
-        //   so they don't cluster
         int numHouses = 20;
         for (int i = 0; i < numHouses; i++) {
             // create the instance
-            Model model = Assets.Models.randomHouse();
-            ModelInstance instance = new ModelInstance(model);
-            instance.calculateBoundingBox(box);
-            extentX = (box.max.x - box.min.x);
-            extentY = (box.max.y - box.min.y);
-            extentZ = (box.max.z - box.min.z);
-            maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-            instance.transform
-                    .setToTranslationAndScaling(
-                            0f, 0f, 0f,
-                            1f / maxExtent,
-                            1f / maxExtent,
-                            1f / maxExtent)
-            ;
-            // get an undecorated landtile
+            instance = createUnitModelInstance(Assets.Models.randomHouse(), 0f, 0f, 0f);
+
+            // find an undecorated landtile
             int excludedRows = 2;
             int x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
             int z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
-            LandTile tile = landscape.getTileAt(x, z);
+            tile = landscape.getTileAt(x, z);
             while (tile.isDecorated()) {
                 x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
                 z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
                 tile = landscape.getTileAt(x, z);
             }
-            // decorate it
+
+            // decorate it with the instance
             tile.decorate(instance);
             houseInstances.add(instance);
         }
 
-        ModelInstance treeB = new ModelInstance(Assets.Models.tree_b.model);
-        treeB.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ) * 2f;
-        treeB.transform
-                .setToTranslationAndScaling(
-                        0.5f, 0f, 0.5f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
-//        landscape.getTileAt(2, 0).decorate(treeB);
-
-        ModelInstance treeD = new ModelInstance(Assets.Models.tree_d.model);
-        treeD.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ) * 2f;
-        treeD.transform
-                .setToTranslationAndScaling(
-                        0.5f, 0f, 0.5f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
-//        landscape.getTileAt(3, 0).decorate(treeD);
-
+        // TODO - /r/trees
         treeInstances = new Array<>();
-//        treeInstances.addAll(treeB, treeD);
 
-        ModelInstance yeti = new ModelInstance(Assets.Models.yeti.model);
-        yeti.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-        yeti.transform
-                .setToTranslationAndScaling(
-                        4f, 0f, 3f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
-
+        // TODO - place down by lodge (or maybe make it rise up from the ground or come running down with the final wave that destroys the lodge)
+        // yeti statue
         creatureInstances = new Array<>();
-        creatureInstances.add(yeti);
+        creatureInstances.add(createUnitModelInstance(Assets.Models.yeti.model, 4f, 0f, 3f));
 
         coords = new ModelInstance(Assets.Models.coords.model);
         coords.transform.setToTranslation(0f, 0f, 0f);
+    }
+
+    private final BoundingBox box = new BoundingBox();
+    private ModelInstance createUnitModelInstance(Model model, float posX, float posY, float posZ) {
+        ModelInstance instance = new ModelInstance(model);
+        instance.calculateBoundingBox(box);
+        float extentX = (box.max.x - box.min.x);
+        float extentY = (box.max.y - box.min.y);
+        float extentZ = (box.max.z - box.min.z);
+        float maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        instance.transform
+                .setToTranslationAndScaling(
+                        posX, posY, posZ,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent);
+        return instance;
     }
 
     private void loadDecals() {
@@ -717,8 +833,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
         if (isGameOver()) return false;
-        if (isSettingShown || isControlShown) return false;
-        Gdx.app.log("Active Skill", LocalDateTime.now() + " " + activeSkill.name());
+        if (isSettingShown) return false;
         if (landscape.highlightedTile != null) {
             switch (activeSkill) {
                 case RAMP:
@@ -779,6 +894,7 @@ public class GameScreen extends BaseScreen {
         if (pickColor.a == 0 || pickColor.b == 0) return hoverPos.set(-1, -1);
         int col = (int) (pickColor.r * (255f));
         int row = (int) (pickColor.g * (255f));
+        if (row < 4 || row > 96) row = -1;
         return hoverPos.set(col, row);
     }
 
@@ -815,16 +931,35 @@ public class GameScreen extends BaseScreen {
     }
 
     private void initializeSettingsControlButton() {
-        VisImageButton.VisImageButtonStyle defaultStyle = skin.get("default", VisImageButton.VisImageButtonStyle.class);
-        VisImageButton.VisImageButtonStyle settingsButtonStyle = new VisImageButton.VisImageButtonStyle(defaultStyle);
-        settingsButtonStyle.up = new TextureRegionDrawable(assets.settingsIcon);
-        settingsButtonStyle.down = new TextureRegionDrawable(assets.settingsIcon);
-        settingsButtonStyle.over = new TextureRegionDrawable(assets.settingsIcon);
+//        VisImageButton.VisImageButtonStyle defaultStyle = skin.get("default", VisImageButton.VisImageButtonStyle.class);
+//        VisImageButton.VisImageButtonStyle settingsButtonStyle = new VisImageButton.VisImageButtonStyle(defaultStyle);
+//        settingsButtonStyle.up = new TextureRegionDrawable(assets.settingsIcon);
+//        settingsButtonStyle.down = new TextureRegionDrawable(assets.settingsIcon);
+//        settingsButtonStyle.over = new TextureRegionDrawable(assets.settingsIcon);
+//
+//
+//        VisImageButton settingsButton = new VisImageButton(settingsButtonStyle);
 
+//        VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
+//        VisWindow.WindowStyle upperUIStyle = new VisWindow.WindowStyle(defaultStyle);
+//        upperUIStyle.background = Assets.Patch.glass.drawable;
+//
+//        VisWindow settingsWindow = new VisWindow("", upperUIStyle);
+//        setupUpperUIWindow(settingsWindow, 0f, 0f, windowCamera.viewportWidth / 8f, windowCamera.viewportHeight / 8f);
+//        settingsWindow.setWidth(windowCamera.viewportWidth / 8f);
+//        settingsWindow.setPosition(0f, 0f);
+        VisTextButton.VisTextButtonStyle outfitMediumStyle = skin.get("outfit-medium-20px", VisTextButton.VisTextButtonStyle.class);
+        VisTextButton.VisTextButtonStyle settingsButtonStyle = new VisTextButton.VisTextButtonStyle(outfitMediumStyle);
+        settingsButtonStyle.up = Assets.Patch.glass.drawable;
+        settingsButtonStyle.down = Assets.Patch.glass_dim.drawable;
+        settingsButtonStyle.over = Assets.Patch.glass_dim.drawable;
 
-        VisImageButton settingsButton = new VisImageButton(settingsButtonStyle);
-        settingsButton.setSize(100f, 100f);
-        settingsButton.setPosition(25f, 7f / 8f * windowCamera.viewportHeight - settingsButton.getHeight() - 25f);
+        VisTextButton settingsButton = new VisTextButton("Settings", settingsButtonStyle);
+        settingsButton.setSize(windowCamera.viewportWidth / 8f, windowCamera.viewportHeight / 8f);
+        settingsButton.setPosition(0f, 0f);
+
+        //settingsButton.setSize(50f, 50f);
+        //settingsButton.setPosition(25f, 7f / 8f * windowCamera.viewportHeight - settingsButton.getHeight() - 25f);
 
         settingsButton.addListener(new ChangeListener() {
             @Override
@@ -832,8 +967,9 @@ public class GameScreen extends BaseScreen {
                 showSettings();
             }
         });
-
         uiStage.addActor(settingsButton);
+//        settingsWindow.addActor(settingsButton);
+//        uiStage.addActor(settingsWindow);
     }
 
     private void initializeUpperUI() {
@@ -857,29 +993,29 @@ public class GameScreen extends BaseScreen {
         //centerWindow
         Group progressBarGroup = createAvalancheProgressBarUI();
         //rightWindow
-        VisLabel karmaScoreLabel = new VisLabel("Karma Point: " + karmaPoint, "outfit-medium-20px");
-        VisLabel styleScoreLabel = new VisLabel("Style Point: " + stylePoint, "outfit-medium-20px");
+        goodKarmaLabel = new VisLabel("Good Karma : " + goodKarmaPoints, "outfit-medium-20px");
+        badKarmaLabel = new VisLabel("Bad Point: " + badKarmaPoints, "outfit-medium-20px");
 //        upperRightWindow.addActor(karmaScoreLabel);
 //        upperRightWindow.row();
 //        upperRightWindow.addActor(evilScoreLabel);
-        //fuck this it's ludumdare
-        karmaScoreLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 45f);
-        styleScoreLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 15f);
+        //fuck this, it's ludumdare
+        goodKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 45f);
+        badKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 15f);
 
         uiStage.addActor(upperLeftWindow);
         uiStage.addActor(upperCenterWindow);
         uiStage.addActor(upperRightWindow);
-        uiStage.addActor(karmaScoreLabel);
-        uiStage.addActor(styleScoreLabel);
+        uiStage.addActor(goodKarmaLabel);
+        uiStage.addActor(badKarmaLabel);
         uiStage.addActor(progressBarGroup);
 
     }
 
     private void initializeNextDayButtonUI() {
         VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
-        VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
-        controlUIStyle.background = Assets.Patch.glass.drawable;
-        nextDayWindow = new VisWindow("", controlUIStyle);
+        VisWindow.WindowStyle nextDayWindowStyle = new VisWindow.WindowStyle(defaultStyle);
+        nextDayWindowStyle.background = Assets.Patch.glass.drawable;
+        nextDayWindow = new VisWindow("", nextDayWindowStyle);
         nextDayWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
         nextDayWindow.setPosition(windowCamera.viewportWidth * 3 / 4, 0f);
         nextDayWindow.setKeepWithinStage(false);
@@ -916,22 +1052,30 @@ public class GameScreen extends BaseScreen {
     private void initializeControlUI() {
         float buttonSize = 35f;
 
+//        VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
+//        VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
+//        controlUIStyle.background = Assets.Patch.glass.drawable;
+//        VisWindow controlWindow = new VisWindow("", controlUIStyle);
+//        controlWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
+//        controlWindow.setPosition(0f, -controlWindow.getHeight() + buttonSize);
+//        controlWindow.setKeepWithinStage(false);
+//        controlWindow.setMovable(false);
         VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
         VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
         controlUIStyle.background = Assets.Patch.glass.drawable;
         VisWindow controlWindow = new VisWindow("", controlUIStyle);
-        controlWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
-        controlWindow.setPosition(0f, -controlWindow.getHeight() + buttonSize);
+        controlWindow.setSize(windowCamera.viewportWidth / 8, windowCamera.viewportHeight * 5 / 8);
+        controlWindow.setPosition(0f, windowCamera.viewportHeight / 8f);
         controlWindow.setKeepWithinStage(false);
         controlWindow.setMovable(false);
 
         Button.ButtonStyle toggleButtonStyle = skin.get("toggle", Button.ButtonStyle.class);
         Button.ButtonStyle customMinimizeStyle = new Button.ButtonStyle(toggleButtonStyle);
-        customMinimizeStyle.up = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_plus));
-        customMinimizeStyle.checked = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_minus));
+        customMinimizeStyle.up = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_right_circle));
+        customMinimizeStyle.checked = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_left_circle));
         minimizeButton = new Button(customMinimizeStyle);
         minimizeButton.setSize(buttonSize, buttonSize);
-        minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth(), 0f);
+        minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth() / 2f, controlWindow.getY() + controlWindow.getHeight() / 2f);
 
         skillButtonGroup = new Group();
 
@@ -939,9 +1083,10 @@ public class GameScreen extends BaseScreen {
         VisTextButton.VisTextButtonStyle redTextButtonStyle = new VisTextButton.VisTextButtonStyle(blueTextButtonStyle);
         //blue: {focusBorder: border-dark-blue, down: button-blue-down, up: button-blue, over: button-blue-over, disabled: button, font: default-font, fontColor: white, disabledFontColor: grey },
         blueTextButtonStyle.disabled = new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE));
+        blueTextButtonStyle.disabledFontColor = Color.WHITE;
         redTextButtonStyle.checked = new TextureRegionDrawable(getColoredTextureRegion(Color.RED));
         redTextButtonStyle.disabled = new TextureRegionDrawable(getColoredTextureRegion(Color.RED));
-
+        redTextButtonStyle.disabledFontColor = Color.WHITE;
 
         VisTextButton karmaTabGood = new VisTextButton("Good", blueTextButtonStyle);
         VisTextButton karmaTabEvil = new VisTextButton("Evil", redTextButtonStyle);
@@ -993,26 +1138,27 @@ public class GameScreen extends BaseScreen {
         VisImageButton skillButton2 = new VisImageButton(plowButtonStyle);
         VisImageButton skillButton3 = new VisImageButton(heliButtonStyle);
 
-        float buttonMargin = 10f;
-        float buttonWidth = controlWindow.getWidth() / 3f - 2 * buttonMargin;
-        float buttonHeight = buttonWidth;
+        float margin = 10f;
+        karmaTabGood.setSize(controlWindow.getWidth() / 2 - 10f, 30f);
+        karmaTabGood.setPosition(controlWindow.getX() + 10f, controlWindow.getY() + controlWindow.getHeight() - karmaTabGood.getHeight() - margin);
+        karmaTabGood.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE)));
+        karmaTabGood.setChecked(true);
+        karmaTabGood.setDisabled(true);
+        karmaTabEvil.setSize(controlWindow.getWidth() / 2 - 10f, 30f);
+        karmaTabEvil.setPosition(controlWindow.getWidth() / 2 + controlWindow.getX(), controlWindow.getY() + controlWindow.getHeight() - karmaTabEvil.getHeight() - margin);
+        karmaTabEvil.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.RED)));
+
+        float buttonHeight = controlWindow.getHeight() / 4f;
+        float buttonWidth = buttonHeight;
         skillButton1.setSize(buttonWidth, buttonHeight);
         skillButton2.setSize(buttonWidth, buttonHeight);
         skillButton3.setSize(buttonWidth, buttonHeight);
-        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
-        skillButton2.setPosition(skillButton1.getX() + buttonWidth + buttonMargin , buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
-        skillButton3.setPosition(skillButton2.getX() + buttonWidth + buttonMargin, buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
+        skillButton1.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, karmaTabGood.getY() - buttonHeight - margin * 2f);
+        skillButton2.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, skillButton1.getY() - buttonHeight - margin);
+        skillButton3.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, skillButton2.getY() - buttonHeight - margin);
         skillButtonGroup.addActor(skillButton1);
         skillButtonGroup.addActor(skillButton2);
         skillButtonGroup.addActor(skillButton3);
-        karmaTabGood.setPosition(controlWindow.getX() + buttonMargin, minimizeButton.getHeight() - buttonMargin * 7f);
-        karmaTabGood.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE)));
-        karmaTabGood.setSize(controlWindow.getWidth() / 2 - buttonMargin, 30f);
-        karmaTabGood.setChecked(true);
-        karmaTabGood.setDisabled(true);
-        karmaTabEvil.setPosition(controlWindow.getWidth() / 2 + controlWindow.getX(), minimizeButton.getHeight() - buttonMargin * 7f);
-        karmaTabEvil.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.RED)));
-        karmaTabEvil.setSize(controlWindow.getWidth() / 2 - buttonMargin, 30f);
         skillButton1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -1027,6 +1173,7 @@ public class GameScreen extends BaseScreen {
                     }
                     skillButton2.setChecked(false);
                     skillButton3.setChecked(false);
+                    Gdx.app.log("Skill Click", activeSkill.name());
                 }
             }
         });
@@ -1044,6 +1191,7 @@ public class GameScreen extends BaseScreen {
                     }
                     skillButton1.setChecked(false);
                     skillButton3.setChecked(false);
+                    Gdx.app.log("Skill Click", activeSkill.name());
                 }
             }
         });
@@ -1061,6 +1209,7 @@ public class GameScreen extends BaseScreen {
                     }
                     skillButton1.setChecked(false);
                     skillButton2.setChecked(false);
+                    Gdx.app.log("Skill Click", activeSkill.name());
                 }
             }
         });
@@ -1100,7 +1249,7 @@ public class GameScreen extends BaseScreen {
                     karmaTabGood.setChecked(false);
                     karmaTabEvil.setDisabled(true);
                     //karmaTabGood.setChecked(true);
-                    currentKarmaPicked = Karma.GOOD;
+                    currentKarmaPicked = Karma.EVIL;
                     activeSkill = Skill.NONE;
                     skillButton1.setChecked(false);
                     skillButton2.setChecked(false);
@@ -1122,8 +1271,8 @@ public class GameScreen extends BaseScreen {
 
         uiStage.addActor(controlGroup);
 
-        Action minimizeTransitionAction = Actions.moveBy(0, -controlWindow.getHeight() + minimizeButton.getHeight(), 0.5f);
-        Action maximizeTransitionAction = Actions.moveBy(0, controlWindow.getHeight() - minimizeButton.getHeight(), 0.5f);
+        Action minimizeTransitionAction = Actions.moveBy(controlWindow.getWidth() - minimizeButton.getWidth() + 25f, 0f, 0.5f);
+        Action maximizeTransitionAction = Actions.moveBy(-controlWindow.getWidth() + minimizeButton.getWidth() - 25f, 0f, 0.5f);
 
         minimizeButton.addListener(new ChangeListener() {
             @Override
@@ -1139,7 +1288,7 @@ public class GameScreen extends BaseScreen {
                 }
             }
         });
-        isControlShown = false;
+        isControlShown = true;
 
     }
 
