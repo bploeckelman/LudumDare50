@@ -876,16 +876,35 @@ public class GameScreen extends BaseScreen {
     }
 
     private void initializeSettingsControlButton() {
-        VisImageButton.VisImageButtonStyle defaultStyle = skin.get("default", VisImageButton.VisImageButtonStyle.class);
-        VisImageButton.VisImageButtonStyle settingsButtonStyle = new VisImageButton.VisImageButtonStyle(defaultStyle);
-        settingsButtonStyle.up = new TextureRegionDrawable(assets.settingsIcon);
-        settingsButtonStyle.down = new TextureRegionDrawable(assets.settingsIcon);
-        settingsButtonStyle.over = new TextureRegionDrawable(assets.settingsIcon);
+//        VisImageButton.VisImageButtonStyle defaultStyle = skin.get("default", VisImageButton.VisImageButtonStyle.class);
+//        VisImageButton.VisImageButtonStyle settingsButtonStyle = new VisImageButton.VisImageButtonStyle(defaultStyle);
+//        settingsButtonStyle.up = new TextureRegionDrawable(assets.settingsIcon);
+//        settingsButtonStyle.down = new TextureRegionDrawable(assets.settingsIcon);
+//        settingsButtonStyle.over = new TextureRegionDrawable(assets.settingsIcon);
+//
+//
+//        VisImageButton settingsButton = new VisImageButton(settingsButtonStyle);
 
+//        VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
+//        VisWindow.WindowStyle upperUIStyle = new VisWindow.WindowStyle(defaultStyle);
+//        upperUIStyle.background = Assets.Patch.glass.drawable;
+//
+//        VisWindow settingsWindow = new VisWindow("", upperUIStyle);
+//        setupUpperUIWindow(settingsWindow, 0f, 0f, windowCamera.viewportWidth / 8f, windowCamera.viewportHeight / 8f);
+//        settingsWindow.setWidth(windowCamera.viewportWidth / 8f);
+//        settingsWindow.setPosition(0f, 0f);
+        VisTextButton.VisTextButtonStyle outfitMediumStyle = skin.get("outfit-medium-20px", VisTextButton.VisTextButtonStyle.class);
+        VisTextButton.VisTextButtonStyle settingsButtonStyle = new VisTextButton.VisTextButtonStyle(outfitMediumStyle);
+        settingsButtonStyle.up = Assets.Patch.glass.drawable;
+        settingsButtonStyle.down = Assets.Patch.glass_dim.drawable;
+        settingsButtonStyle.over = Assets.Patch.glass_dim.drawable;
 
-        VisImageButton settingsButton = new VisImageButton(settingsButtonStyle);
-        settingsButton.setSize(50f, 50f);
-        settingsButton.setPosition(25f, 7f / 8f * windowCamera.viewportHeight - settingsButton.getHeight() - 25f);
+        VisTextButton settingsButton = new VisTextButton("Settings", settingsButtonStyle);
+        settingsButton.setSize(windowCamera.viewportWidth / 8f, windowCamera.viewportHeight / 8f);
+        settingsButton.setPosition(0f, 0f);
+
+        //settingsButton.setSize(50f, 50f);
+        //settingsButton.setPosition(25f, 7f / 8f * windowCamera.viewportHeight - settingsButton.getHeight() - 25f);
 
         settingsButton.addListener(new ChangeListener() {
             @Override
@@ -893,8 +912,9 @@ public class GameScreen extends BaseScreen {
                 showSettings();
             }
         });
-
         uiStage.addActor(settingsButton);
+//        settingsWindow.addActor(settingsButton);
+//        uiStage.addActor(settingsWindow);
     }
 
     private void initializeUpperUI() {
@@ -923,7 +943,7 @@ public class GameScreen extends BaseScreen {
 //        upperRightWindow.addActor(karmaScoreLabel);
 //        upperRightWindow.row();
 //        upperRightWindow.addActor(evilScoreLabel);
-        //fuck this it's ludumdare
+        //fuck this, it's ludumdare
         goodKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 45f);
         badKarmaLabel.setPosition(upperRightWindow.getX() + 30f, upperRightWindow.getY() + 15f);
 

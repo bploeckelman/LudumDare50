@@ -73,6 +73,8 @@
     small: {font: small-font, fontColor: white },
     menuitem-shortcut: {font: default-font, fontColor: menuitem },
     outfit-medium-20px: {font: outfit-medium-20px, fontColor: white },
+    outfit-medium-20px-red: {font: outfit-medium-20px, fontColor: red },
+    outfit-medium-20px-blue: {font: outfit-medium-20px, fontColor: blue },
     outfit-medium-40px: {font: outfit-medium-40px, fontColor: white },
     outfit-medium-80px: {font: outfit-medium-80px, fontColor: white }
   },
