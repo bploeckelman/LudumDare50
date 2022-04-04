@@ -64,7 +64,14 @@ public class PhysicsManager {
             landscape.getTilesAround(ball.position.x, ball.position.z, neighborTiles);
             for (LandTile tile : neighborTiles){
                 testBallTile(ball, tile);
+                if (testBuilding(ball, tile)) {
+                    ball.radius = 0;
+                    tile.decoration.transform.scale(0.7f, 0.7f, 0.7f);
+                    break;
+                }
+
             }
+
 
 
         }
@@ -111,6 +118,18 @@ public class PhysicsManager {
             }
         }
 //        tile.freeTriangles();
+    }
+
+    private boolean testBuilding(Snowball ball, LandTile tile) {
+        if (ball.position.x - ball.radius / 2 > tile.x + 0.85 ||
+        ball.position.x + ball.radius / 2 < tile.x + 0.15 ||
+        ball.position.z - ball.radius / 2 > tile.z + 0.85 ||
+        ball.position.z + ball.radius / 2 < tile.z + 0.15) {
+            return false;
+        }
+        //LandTile t = landscape.tiles[(int)ball.position.x + Landscape.TILES_WIDE * (int)ball.position.z];
+        return tile.isDecorated() && ball.position.y < 0.5 + ball.radius/2;
+
     }
 
     Vector3 ab = new Vector3();

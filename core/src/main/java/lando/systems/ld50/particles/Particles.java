@@ -237,9 +237,6 @@ public class Particles implements Disposable {
 
     public void addPointsParticles(long points, float x, float y, float r, float g, float b) {
         // create a particle for each number in 'points'
-        Color startColor = Color.GOLD;
-        Color endColor = Color.BROWN;
-        float yVel = 60f;
         String pointsStr = Long.toString(points, 10);
         int size = MathUtils.clamp((int) Math.sqrt(points), 12, 30);
         for (int i = 0; i < pointsStr.length(); ++i) {
