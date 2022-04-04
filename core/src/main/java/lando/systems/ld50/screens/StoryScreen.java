@@ -25,7 +25,7 @@ public class StoryScreen extends BaseScreen {
             "Sick, right?\n\n" +
             "Rental dude was serving this \n" +
             "\"it's only a matter of time\" type energy, \n" +
-            "which tbh had kind of an ominous vibe, \n" +
+            "which honestly had kind of an ominous vibe, \n" +
             "but the price was too legit to quit\n" +
             "\n" +
             "He mentioned something about a \n" +
