@@ -1,5 +1,7 @@
 package lando.systems.ld50.objects;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -24,8 +26,6 @@ public class AnimationDecal {
 
     private float directionX;
     private boolean right = true;
-
-    float dx = 0, dz = 0;
 
     private Array<Decal> decals = new Array<>();
 
@@ -63,7 +63,7 @@ public class AnimationDecal {
     public void moveToTile(int x, int z) {
         if (setTilePosition(movePosition, x, z)) {
             right = (movePosition.x > position.x);
-            moveTimeTotal = Math.abs(movePosition.dst(initPos)) / 5;
+            moveTimeTotal = Math.abs(movePosition.dst(initPos)) / 4;
             moveTime = 0;
         } else {
             movePosition.setZero();
@@ -71,18 +71,44 @@ public class AnimationDecal {
     }
 
     public void update(float dt) {
-        time += dt;
+        if (!launched) {
+            time += dt;
+        }
+        updateMovement(dt);
+
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (!launched) { launch(); }
+        }
+    }
+
+    public boolean dead = false;
+
+    private void updateMovement(float dt) {
         if (moveTimeTotal > 0) {
             moveTime += dt;
             float lerp = MathUtils.clamp(moveTime / moveTimeTotal, 0, 1);
             float x = MathUtils.lerp(initPos.x, movePosition.x, lerp);
             float z = MathUtils.lerp(initPos.z, movePosition.z, lerp);
             float y = landscape.getHeightAt(x, z) +  imageInfo.height / 2;
+
+            if (launched) {
+                y = position.y + (dt * 2);
+                x = position.x - dt;
+                z = position.z + (dt * 2);
+                launchTime += dt;
+            }
+
             position.set(x, y, z);
 
             if (lerp == 1) {
                 moveTimeTotal = 0;
                 initPos.set(position);
+
+                if (launched) {
+                    dead = true;
+                    return;
+                }
+
                 moveToTile(MathUtils.random.nextInt(5), MathUtils.random.nextInt(8));
             }
         }
@@ -93,6 +119,20 @@ public class AnimationDecal {
         Decal decal = decals.get(index);
         decal.setScaleX(right ? directionX : -directionX);
         decal.setPosition(position);
+
+        if (launchTime > 0) {
+            decal.setRotationZ(launchTime * 540);
+        }
+
         return decal;
+    }
+
+    private boolean launched = false;
+    private float launchTime = 0;
+
+    public void launch() {
+        launched = true;
+        moveTime = 0;
+        moveTimeTotal = 5;
     }
 }

@@ -232,10 +232,17 @@ public class GameScreen extends BaseScreen {
         landscape.update(dt);
 
         billboardCameraPos.set(camera.position).y = 0f;
-        for (AnimationDecal decal : decals) {
-            //decal.lookAt(billboardCameraPos, camera.up);
-            decal.update(dt);
-            decalBatch.add(decal.get());
+
+        for (int i = decals.size - 1; i >= 0; i--) {
+            AnimationDecal decal = decals.get(i);
+            if (decal.dead) {
+                decals.removeIndex(i);
+            } else {
+                //decal.lookAt(billboardCameraPos, camera.up);
+                decal.update(dt);
+
+                decalBatch.add(decal.get());
+            }
         }
 
         PhysicsDecal.updateAllDecalParticles(dt);
