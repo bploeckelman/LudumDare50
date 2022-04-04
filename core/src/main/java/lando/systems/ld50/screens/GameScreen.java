@@ -627,10 +627,10 @@ public class GameScreen extends BaseScreen {
             if (ball.position.z > firstZ)
                 firstZ = ball.position.z;
         }
-        float progress = firstZ / (Landscape.TILES_LONG * Landscape.TILE_WIDTH);
-        if (Float.isNaN(progress) || progress > 1f) {
-            progress = 1f;
-        }
+        float progress = firstZ / (Landscape.TILES_LONG * Landscape.TILE_WIDTH) * 100f;
+//        if (Float.isNaN(progress) || progress > 1f) {
+//            progress = 1f;
+//        }
         return progress;
     }
 
