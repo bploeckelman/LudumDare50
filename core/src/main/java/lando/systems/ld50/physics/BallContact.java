@@ -43,12 +43,13 @@ public class BallContact implements Comparable, Pool.Poolable
         float separatingVelocity = calculateSeparatingVelocity();
         if (separatingVelocity > 0){
             // no impulse required
-            return;
+//            return;
         }
-        float newSeparatingVelocity = -separatingVelocity * 0.01f;
+        float newSeparatingVelocity = -separatingVelocity * 0.1f;
         float deltaVelocity = newSeparatingVelocity - separatingVelocity;
         impulseVelocity.set(contactNormal).scl(deltaVelocity);
         ball.velocity.add(impulseVelocity);
+        ball.velocity.y += 1f;
 
     }
 

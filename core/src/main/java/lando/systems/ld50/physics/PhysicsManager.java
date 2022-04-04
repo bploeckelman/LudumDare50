@@ -11,7 +11,7 @@ import lando.systems.ld50.objects.Snowball;
 public class PhysicsManager {
 
     // TODO make this the real down
-    Vector3 gravity = new Vector3(0, -7f, .5f);
+    Vector3 gravity = new Vector3(0, -7f, 1.3f);
     Landscape landscape;
     Pool<BallContact> contactPool = new Pool<BallContact>() {
         @Override

@@ -131,15 +131,21 @@ public class LandTile {
         boxMesh.render(shader, GL20.GL_TRIANGLES, 0, boxIndicesIndex);
     }
 
+    float compressAmount = .97f;
     public float addSnow(Snowball ball){
+        ULHeight *= compressAmount;
+        URHeight *= compressAmount;
+        LLHeight *= compressAmount;
+        LRHeight *= compressAmount;
+
         float speed = ball.velocity.len();
         float dx = ball.position.x % 1f;
         float dz = ball.position.z % 1f;
 
-        float ULSnowHeightDelta = Math.min(MAX_SNOW - ULSnowHeight, .001f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f - dz)));
-        float URSnowHeightDelta = Math.min(MAX_SNOW - URSnowHeight, .001f * speed * (Math.max(0, dx) + Math.max(0, 1f - dz)));
-        float LLSnowHeightDelta = Math.min(MAX_SNOW - LLSnowHeight, .001f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f)));
-        float LRSnowHeightDelta = Math.min(MAX_SNOW - LRSnowHeight, .001f * speed * (Math.max(0, dx) + Math.max(0, 1f)));
+        float ULSnowHeightDelta = Math.min(MAX_SNOW - ULSnowHeight, .003f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f - dz)));
+        float URSnowHeightDelta = Math.min(MAX_SNOW - URSnowHeight, .003f * speed * (Math.max(0, dx) + Math.max(0, 1f - dz)));
+        float LLSnowHeightDelta = Math.min(MAX_SNOW - LLSnowHeight, .003f * speed * (Math.max(0, 1f - dx) + Math.max(0, 1f)));
+        float LRSnowHeightDelta = Math.min(MAX_SNOW - LRSnowHeight, .003f * speed * (Math.max(0, dx) + Math.max(0, 1f)));
 
 
         float maxLost = Math.max(ULSnowHeightDelta, URSnowHeightDelta);
@@ -148,7 +154,7 @@ public class LandTile {
         URSnowHeight += URSnowHeightDelta;
         LLSnowHeight += LLSnowHeightDelta;
         LRSnowHeight += LRSnowHeightDelta;
-        ball.radius -= maxLost * .2f;
+        ball.radius -= maxLost * .4f;
         update(0);
         rebuildMesh();
         return maxLost;
@@ -162,6 +168,13 @@ public class LandTile {
 
     public float getAverageHeight() {
         return (ULHeight + URHeight + LLHeight + LRHeight) / 4f;
+    }
+
+    public void makeRamp() {
+        LLHeight = 1f;
+        LRHeight = 1f;
+        update(0);
+        rebuildMesh();
     }
 
     public float getHeightAt(float x, float z){

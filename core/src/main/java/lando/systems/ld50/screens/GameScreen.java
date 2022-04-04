@@ -181,6 +181,9 @@ public class GameScreen extends BaseScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && cameraPhase == 3) {
             UntransitionCamera();
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P) && landscape.highlightedTile != null) {
+            landscape.highlightedTile.makeRamp();
+        }
 
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         worldCamera.unproject(touchPos);
@@ -260,6 +263,8 @@ public class GameScreen extends BaseScreen {
     public void render(SpriteBatch batch) {
         ScreenUtils.clear(background, true);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+//        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+//        Gdx.gl.glCullFace(GL20.GL_BACK);
 
         // draw world
 //        batch.setProjectionMatrix(shaker.getCombinedMatrix());
