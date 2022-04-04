@@ -86,8 +86,10 @@ public class TitleScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
             if (!exitingScreen) {
-                game.setScreen(new EndScreen());
-                audio.playSound(AudioManager.Sounds.chaching);
+//                game.setScreen(new EndScreen());
+                game.setScreen(new EpilogueScreen());
+                audio.playSound(AudioManager.Sounds.goodKarma);
+                audio.playMusic(AudioManager.Musics.outroMusic);
                 exitingScreen = true;
             }
             }
