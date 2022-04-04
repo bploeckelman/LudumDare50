@@ -45,11 +45,13 @@ public class Assets implements Disposable {
 
     public Texture pixel;
     public Texture noiseTex;
+    public Texture nightTex;
     public TextureRegion pixelRegion;
     public ShaderProgram landscapeShader;
     public ShaderProgram ballShader;
     public ShaderProgram pickingShader;
     public ShaderProgram highlightShader;
+    public ShaderProgram backgroundShader;
 
     public TextureRegion waveIcon;
 
@@ -181,6 +183,7 @@ public class Assets implements Disposable {
 
 
             mgr.load("images/noise.png", Texture.class);
+            mgr.load("images/night.png", Texture.class);
 
             // models
             mgr.load("models/boulder-a.g3db", Model.class);
@@ -207,6 +210,8 @@ public class Assets implements Disposable {
 
         noiseTex = mgr.get("images/noise.png", Texture.class);
         noiseTex.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+
+        nightTex = mgr.get("images/night.png", Texture.class);
 
         atlas = mgr.get("sprites/sprites.atlas");
         strings = mgr.get("i18n/strings", I18NBundle.class);
@@ -325,6 +330,7 @@ public class Assets implements Disposable {
         ballShader = loadShader("shaders/ball.vert", "shaders/ball.frag");
         pickingShader = loadShader("shaders/default3d.vert", "shaders/picking.frag");
         highlightShader = loadShader("shaders/default3d.vert", "shaders/highlight.frag");
+        backgroundShader = loadShader("shaders/default.vert", "shaders/background.frag");
         initialized = true;
         return 1;
     }

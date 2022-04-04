@@ -1,5 +1,6 @@
 package lando.systems.ld50.screens;
 
+import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -34,6 +35,7 @@ import com.kotcrab.vis.ui.widget.VisProgressBar;
 import com.kotcrab.vis.ui.widget.VisSlider;
 import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
+import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
 import lando.systems.ld50.assets.InputPrompts;
@@ -92,6 +94,7 @@ public class GameScreen extends BaseScreen {
     private Vector3 lightDir;
     public DirectionalLight light;
     public Color ambientColor = new Color(.2f,.2f, .2f, 1f);
+    public MutableFloat dayTime;
 
     public FrameBuffer pickMapFBO;
     public Texture PickMapFBOTex;
@@ -121,6 +124,7 @@ public class GameScreen extends BaseScreen {
         railController = new RailsCamera(camera);
 
         lightDir = new Vector3(-1f, -.8f, -.2f);
+        dayTime = new MutableFloat(0);
 
         landscape = new Landscape(this);
 
@@ -181,6 +185,7 @@ public class GameScreen extends BaseScreen {
         accum += dt;
 
         setGameDayTime(accum);
+        updateGameTime();
 
         boolean gameOver = isGameOver();
 
@@ -328,6 +333,12 @@ public class GameScreen extends BaseScreen {
         ScreenUtils.clear(background, true);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
+        // draw background
+        batch.setProjectionMatrix(windowCamera.combined);
+        batch.begin();
+        renderBackground(batch);
+        batch.end();
+
         // draw world
 //        batch.setProjectionMatrix(shaker.getCombinedMatrix());
 //        batch.begin();
@@ -384,12 +395,17 @@ public class GameScreen extends BaseScreen {
      * @param inTime
      */
     public void setGameDayTime(float inTime) {
-        while (inTime < 0) inTime += 24;
-        float time = inTime % 24f;
+        dayTime.setValue(inTime);
+    }
+
+    private float duskTime = 0;
+    public void updateGameTime() {
+        float time = dayTime.floatValue() % 24f;
+        while (time < 0) time += 24;
         float radTime = time / 24f * MathUtils.PI2;
         light.setDirection(MathUtils.sin(radTime), MathUtils.cos(radTime), -.2f);
         light.direction.nor();
-        float duskTime = time > 12 ? 24 - time : time;
+        duskTime = time > 12 ? 24 - time : time;
         if (duskTime > 6.5){
             float dayLight = Utils.smoothStep(6.5f, 7.5f, duskTime);
             skyColor.set(.5f, .2f, 0, 1).lerp(Color.WHITE, dayLight);
@@ -399,6 +415,13 @@ public class GameScreen extends BaseScreen {
         }
         light.setColor(skyColor);
 
+    }
+
+    public void renderBackground(SpriteBatch batch) {
+        batch.setShader(Main.game.assets.backgroundShader);
+        Main.game.assets.backgroundShader.setUniformf("u_time", duskTime);
+        batch.draw(Main.game.assets.nightTex, 0, 0, windowCamera.viewportWidth, windowCamera.viewportHeight);
+        batch.setShader(null);
     }
 
     public boolean isGameOver() {
