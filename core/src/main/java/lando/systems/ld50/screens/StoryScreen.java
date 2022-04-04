@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
+//import lando.systems.ld50.Config;
 
 public class StoryScreen extends BaseScreen {
     private static float textScale = 1.0f;
@@ -15,20 +16,21 @@ public class StoryScreen extends BaseScreen {
     PerspectiveCamera perspectiveCamera;
     GlyphLayout layout;
 
-    String text = "\n\n\n\n\n\n\n\nBro, check it\n\n" +
+    String text = "\n\n\n\n\n\n\n\nBro, check it\n\n\n" +
             "Trent and Chad scored a righteous AirBnB\n" +
             "up in the mountains for Spring Break,\n" +
             "and me and the boys are going to be \n"+
             "shredding mad gnars all week long\n"+
             "\n\n" +
             "Sick, right?\n\n" +
-            "Rental dude mentioned something about \n" +
-            "heavy snowfall this season... \n" +
-            " \n" +
-            "He was serving some real \"it's only \n" +
-            "a matter of time\" type of energy, \n" +
+            "Rental dude was serving this \n" +
+            "\"it's only a matter of time\" type energy, \n" +
+            "which tbh had kind of an ominous vibe, \n" +
             "but the price was too legit to quit\n" +
-            "\n\n" +
+            "\n" +
+            "He mentioned something about a \n" +
+            "particularly heavy snowfall this season?\n" +
+            " \n" +
             "As long as we don't end up \n" +
             "having to frantically place\n" +
             "ramps and other structures\n" +
@@ -48,16 +50,17 @@ public class StoryScreen extends BaseScreen {
             "as we continue trying \n"+
             "to keep disaster at bay,\n"+
             "\n"+
-            "until the ski lodge \n"+
-            "is destroyed,\n"+
+            "until, despite all our efforts,\n"+
+            "the ski lodge is ultimately \n"+
+            "destroyed anyway,\n"+
             "\n"+
 
             "this will be the sickest\n"+
             "Spring Break ever\n\n"+
             "\n\n" +
             "I feel like we can really\n" +
-            "trust the vibes this week\n\n" +
-            "Namaste with us, bro\n\n" +
+            "trust in the flow this week, bro\n\n" +
+            "Namaste with us\n\n" +
             "\n\n";
 
     public StoryScreen() {
@@ -111,6 +114,9 @@ public class StoryScreen extends BaseScreen {
 
         batch.setProjectionMatrix(perspectiveCamera.combined);
         batch.begin();
+
+//        batch.draw(assets.backgrounds.titleImage, 0,0, Config.window_width, Config.window_height);
+
         game.assets.font.getData().setScale(textScale);
         game.assets.font.setColor(.3f, .3f, .3f, 1.0f);
         game.assets.font.draw(batch, text, 5, accum-3, worldCamera.viewportWidth, Align.center, true);

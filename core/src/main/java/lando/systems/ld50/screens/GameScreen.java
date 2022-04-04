@@ -469,9 +469,11 @@ public class GameScreen extends BaseScreen {
         if (duskTime > 6.5){
             float dayLight = Utils.smoothStep(6.5f, 7.5f, duskTime);
             skyColor.set(.5f, .2f, 0, 1).lerp(Color.WHITE, dayLight);
+//            skyColor.set(.5f, .2f, 0, 1).lerp(Color.GOLDENROD, dayLight);
         } else {
             float dayLight = Utils.smoothStep(5.5f, 6.5f, duskTime);
             skyColor.set(0,0,0,1f).lerp(.5f, .2f, 0, 1, dayLight);
+//            skyColor.set(0,0,0,1f).lerp(Color.GOLDENROD, dayLight);
         }
         light.setColor(skyColor);
 

@@ -9,9 +9,11 @@ uniform float u_time; // from 0-12-0
 varying vec2 v_texCoord;
 varying vec4 v_color;
 
-const vec3 dayTop = vec3(.95, .95, 1.);
-const vec3 dayMid = vec3(.5, .5, .8);
-const vec3 dayBot = vec3(.2, .2, .6);
+//const vec3 dayTop = vec3(.95, .95, 1.);
+const vec3 dayTop = vec3(.2, .2, .66);
+const vec3 dayMid = vec3(.5, .5, 1.);
+//const vec3 dayBot = vec3(.2, .2, .6);
+const vec3 dayBot = vec3(.96, .96, 1.);
 
 const vec3 duskTop = vec3(.6, .1, .1);
 const vec3 duskMid = vec3(.8, .4, .2);
