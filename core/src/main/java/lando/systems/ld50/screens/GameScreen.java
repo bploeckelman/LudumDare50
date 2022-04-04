@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -25,13 +24,15 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.kotcrab.vis.ui.widget.*;
+import com.kotcrab.vis.ui.widget.VisLabel;
+import com.kotcrab.vis.ui.widget.VisProgressBar;
+import com.kotcrab.vis.ui.widget.VisSlider;
+import com.kotcrab.vis.ui.widget.VisWindow;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
@@ -42,6 +43,7 @@ import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.AnimationDecal;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
+import lando.systems.ld50.particles.NoDepthCameraGroupStrategy;
 import lando.systems.ld50.particles.PhysicsDecal;
 import lando.systems.ld50.utils.Time;
 import lando.systems.ld50.utils.Utils;
@@ -71,9 +73,11 @@ public class GameScreen extends BaseScreen {
     private final Environment env;
     private final ModelBatch modelBatch;
     private final DecalBatch decalBatch;
+    private final DecalBatch particlesDecalBatch;
 
     private ModelInstance coords;
     private Array<ModelInstance> houseInstances;
+    private Array<ModelInstance> treeInstances;
     private Array<ModelInstance> creatureInstances;
     private Array<AnimationDecal> decals;
 
@@ -121,7 +125,12 @@ public class GameScreen extends BaseScreen {
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientColor));
         env.add(light = new DirectionalLight().set(0.8f, 0.8f, 0.8f, lightDir.x, lightDir.y, lightDir.z));
         modelBatch = new ModelBatch();
-        decalBatch = new DecalBatch(5000, new CameraGroupStrategy(camera));
+        decalBatch = new DecalBatch(500, new CameraGroupStrategy(camera));
+        particlesDecalBatch = new DecalBatch(5000, new NoDepthCameraGroupStrategy(camera, (o1, o2) -> {
+            // sorting hurts the framerate significantly (especially on web)
+            // and for particle effects we mostly don't care
+            return 0;
+        }));
 
         loadModels();
         loadDecals();
@@ -144,6 +153,7 @@ public class GameScreen extends BaseScreen {
         super.dispose();
         modelBatch.dispose();
         decalBatch.dispose();
+        particlesDecalBatch.dispose();
     }
 
     @Override
@@ -221,7 +231,7 @@ public class GameScreen extends BaseScreen {
         PhysicsDecal.updateAllDecalParticles(dt);
         for (PhysicsDecal decal : PhysicsDecal.instances) {
             decal.decal.lookAt(camera.position, camera.up);
-            decalBatch.add(decal.decal);
+            particlesDecalBatch.add(decal.decal);
         }
 
         if (pickPixmap != null){
@@ -282,8 +292,6 @@ public class GameScreen extends BaseScreen {
     public void render(SpriteBatch batch) {
         ScreenUtils.clear(background, true);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-//        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-//        Gdx.gl.glCullFace(GL20.GL_BACK);
 
         // draw world
 //        batch.setProjectionMatrix(shaker.getCombinedMatrix());
@@ -302,12 +310,16 @@ public class GameScreen extends BaseScreen {
         {
             modelBatch.render(coords, env);
             modelBatch.render(houseInstances, env);
+            modelBatch.render(treeInstances, env);
             modelBatch.render(creatureInstances, env);
             landscape.render(modelBatch, env);
         }
         modelBatch.end();
 
         decalBatch.flush();
+
+        particlesDecalBatch.flush();
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
         // NOTE: always draw so the 'hide' transition is visible
         uiStage.draw();
@@ -419,6 +431,7 @@ public class GameScreen extends BaseScreen {
                         1f / maxExtent,
                         1f / maxExtent)
         ;
+        landscape.getTileAt(0, 0).flattenTo(0f);
 
         ModelInstance houseB = new ModelInstance(Assets.Models.house_b.model);
         houseB.calculateBoundingBox(box);
@@ -433,9 +446,43 @@ public class GameScreen extends BaseScreen {
                         1f / maxExtent,
                         1f / maxExtent)
         ;
+        landscape.getTileAt(1, 0).flattenTo(0f);
 
         houseInstances = new Array<>();
         houseInstances.addAll(houseA, houseB);
+
+        ModelInstance treeB = new ModelInstance(Assets.Models.tree_b.model);
+        treeB.calculateBoundingBox(box);
+        extentX = (box.max.x - box.min.x);
+        extentY = (box.max.y - box.min.y);
+        extentZ = (box.max.z - box.min.z);
+        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        treeB.transform
+                .setToTranslationAndScaling(
+                        2.5f, 0f, 0.5f,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent)
+        ;
+        landscape.getTileAt(2, 0).flattenTo(0f);
+
+        ModelInstance treeD = new ModelInstance(Assets.Models.tree_d.model);
+        treeD.calculateBoundingBox(box);
+        extentX = (box.max.x - box.min.x);
+        extentY = (box.max.y - box.min.y);
+        extentZ = (box.max.z - box.min.z);
+        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        treeD.transform
+                .setToTranslationAndScaling(
+                        3.5f, 0f, 0.5f,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent)
+        ;
+        landscape.getTileAt(3, 0).flattenTo(0f);
+
+        treeInstances = new Array<>();
+        treeInstances.addAll(treeB, treeD);
 
         ModelInstance yeti = new ModelInstance(Assets.Models.yeti.model);
         yeti.calculateBoundingBox(box);
