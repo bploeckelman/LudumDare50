@@ -13,10 +13,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
@@ -232,6 +229,9 @@ public class GameScreen extends BaseScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.P) && landscape.highlightedTile != null) {
             landscape.highlightedTile.makeRamp();
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q) && landscape.highlightedTile != null) {
+            landscape.highlightedTile.makeDiverter(false);
+        }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
             startNewDay();
@@ -347,25 +347,17 @@ public class GameScreen extends BaseScreen {
         // draw background
         batch.setProjectionMatrix(windowCamera.combined);
         batch.begin();
-        renderBackground(batch);
+        {
+            renderBackground(batch);
+        }
         batch.end();
-
-        // draw world
-//        batch.setProjectionMatrix(shaker.getCombinedMatrix());
-//        batch.begin();
-//        {
-//            // draw normal (non-decal) sprites in the world
-//            // NOTE - probably not worth using in our case
-//        }
-//        batch.end();
 
         // draw world
         landscape.render(camera);
 
-        // TODO - might need to make everything draw with the model batch
         modelBatch.begin(camera);
         {
-            modelBatch.render(coords, env);
+//            modelBatch.render(coords, env);
             modelBatch.render(houseInstances, env);
             modelBatch.render(treeInstances, env);
             modelBatch.render(creatureInstances, env);
@@ -376,7 +368,6 @@ public class GameScreen extends BaseScreen {
         decalBatch.flush();
 
         particlesDecalBatch.flush();
-        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
         // NOTE: always draw so the 'hide' transition is visible
         uiStage.draw();
@@ -385,7 +376,6 @@ public class GameScreen extends BaseScreen {
         batch.setProjectionMatrix(windowCamera.combined);
         batch.begin();
         {
-            // TODO -
             //batch.draw(PickMapFBOTex, 0, 100, 100, -100);
             particles.draw(batch, Particles.Layer.foreground);
         }
@@ -510,6 +500,8 @@ public class GameScreen extends BaseScreen {
 
         houseInstances = new Array<>();
 
+        // TODO - be more clever about how these are randomly placed
+        //   so they don't cluster
         int numHouses = 20;
         for (int i = 0; i < numHouses; i++) {
             // create the instance
@@ -528,12 +520,13 @@ public class GameScreen extends BaseScreen {
                             1f / maxExtent)
             ;
             // get an undecorated landtile
+            int excludedRows = 2;
             int x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
-            int z = MathUtils.random(0, Landscape.TILES_LONG - 1);
+            int z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
             LandTile tile = landscape.getTileAt(x, z);
             while (tile.isDecorated()) {
                 x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
-                z = MathUtils.random(0, Landscape.TILES_LONG - 1);
+                z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
                 tile = landscape.getTileAt(x, z);
             }
             // decorate it

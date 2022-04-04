@@ -55,7 +55,7 @@ public class Landscape {
 
 
 
-        startAvalanche();
+//        startAvalanche();
     }
 
     public void update(float dt) {
