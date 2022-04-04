@@ -800,6 +800,7 @@ public class GameScreen extends BaseScreen {
         setupUpperUIWindow(upperCenterWindow, windowCamera.viewportWidth / 4, windowCamera.viewportHeight - windowCamera.viewportHeight / 8, windowCamera.viewportWidth / 2, windowCamera.viewportHeight / 8);
         VisWindow upperRightWindow = new VisWindow("", upperUIStyle);
         setupUpperUIWindow(upperRightWindow,windowCamera.viewportWidth * 3 / 4, windowCamera.viewportHeight - windowCamera.viewportHeight / 8, windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 8);
+        upperRightWindow.align(Align.center | Align.top);
 
         //leftWindow
         roundLabel = new VisLabel("Round #" + roundNumber, "outfit-medium-40px");
