@@ -108,8 +108,10 @@ public class GameScreen extends BaseScreen {
     private VisWindow debugWindow;
     private VisProgressBar progressBar;
     private VisSlider cameraSlider;
+    private VisWindow nextDayWindow;
+    private VisTextButton nextDayButton;
     private float accum = 0;
-    private boolean isControlHidden = false;
+    private boolean isControlShown = false;
     private Button minimizeButton;
     public int roundNumber = 1;
     public int karmaScore = 0;
@@ -393,6 +395,7 @@ public class GameScreen extends BaseScreen {
 
     public void startNewDay() {
         // TODO Make sure they can't be called a lot in a row
+        hideNextDayWindow();
         if (landscape.snowBalls.size > 0) return;
         Timeline.createSequence()
                 .push(
@@ -409,6 +412,7 @@ public class GameScreen extends BaseScreen {
 
     public void beginBuildPhase(){
         UntransitionCamera();
+        showNextDayWindow();
     }
 
     Color skyColor = new Color();
@@ -737,6 +741,7 @@ public class GameScreen extends BaseScreen {
         initializeUpperUI();
         initializeControlUI();
         initializeSettingsControlButton();
+        initializeNextDayButtonUI();
     }
 
     private void setupUpperUIWindow(VisWindow upperWindow, float x, float y, float w, float h) {
@@ -754,9 +759,9 @@ public class GameScreen extends BaseScreen {
         settingsButtonStyle.over = new TextureRegionDrawable(assets.settingsIcon);
 
 
-        VisImageButton settingsButton = new VisImageButton("default");
+        VisImageButton settingsButton = new VisImageButton(settingsButtonStyle);
         settingsButton.setSize(100f, 100f);
-        settingsButton.setPosition(50f, 7 / 8 * windowCamera.viewportHeight - settingsButton.getHeight());
+        settingsButton.setPosition(25f, 7f / 8f * windowCamera.viewportHeight - settingsButton.getHeight() - 25f);
 
         settingsButton.addListener(new ChangeListener() {
             @Override
@@ -801,23 +806,63 @@ public class GameScreen extends BaseScreen {
 
     }
 
+    private void initializeNextDayButtonUI() {
+        VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
+        VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
+        controlUIStyle.background = Assets.Patch.glass.drawable;
+        nextDayWindow = new VisWindow("", controlUIStyle);
+        nextDayWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
+        nextDayWindow.setPosition(windowCamera.viewportWidth * 3 / 4, 0f);
+        nextDayWindow.setKeepWithinStage(false);
+        nextDayWindow.setMovable(false);
+
+        nextDayButton = new VisTextButton("Start Day", "outfit-medium-40px");
+        nextDayButton.setFillParent(true);
+        nextDayButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                startNewDay();
+                nextDayButton.setDisabled(true);
+            }
+        });
+
+
+        nextDayWindow.addActor(nextDayButton);
+
+        uiStage.addActor(nextDayWindow);
+    }
+
+    private void showNextDayWindow() {
+        Action maximizeTransitionAction = Actions.moveBy(0, nextDayWindow.getHeight(), 0.5f);
+        nextDayWindow.addAction(maximizeTransitionAction);
+        nextDayButton.setDisabled(false);
+    }
+
+    private void hideNextDayWindow() {
+        Action minimizeTransitionAction = Actions.moveBy(0, -nextDayWindow.getHeight(), 0.5f);
+        nextDayWindow.addAction(minimizeTransitionAction);
+        nextDayButton.setDisabled(true);
+    }
+
     private void initializeControlUI() {
+        float buttonSize = 35f;
+
         VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
         VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
         controlUIStyle.background = Assets.Patch.glass.drawable;
         VisWindow controlWindow = new VisWindow("", controlUIStyle);
-        controlWindow.setPosition(0f, 0f);
         controlWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
+        controlWindow.setPosition(0f, -controlWindow.getHeight() + buttonSize);
         controlWindow.setKeepWithinStage(false);
         controlWindow.setMovable(false);
 
         Button.ButtonStyle toggleButtonStyle = skin.get("toggle", Button.ButtonStyle.class);
         Button.ButtonStyle customMinimizeStyle = new Button.ButtonStyle(toggleButtonStyle);
-        customMinimizeStyle.checked = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_plus));
-        customMinimizeStyle.up = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_minus));
+        customMinimizeStyle.up = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_plus));
+        customMinimizeStyle.checked = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_minus));
         minimizeButton = new Button(customMinimizeStyle);
-        minimizeButton.setSize(35f, 35f);
-        minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth(), controlWindow.getHeight() - minimizeButton.getHeight());
+        minimizeButton.setSize(buttonSize, buttonSize);
+        minimizeButton.setPosition(controlWindow.getWidth() - minimizeButton.getWidth(), 0f);
 
         VisImageButton skillButton1 = new VisImageButton("default");
         VisImageButton skillButton2 = new VisImageButton("default");
@@ -829,9 +874,9 @@ public class GameScreen extends BaseScreen {
         skillButton1.setSize(buttonWidth, buttonHeight);
         skillButton2.setSize(buttonWidth, buttonHeight);
         skillButton3.setSize(buttonWidth, buttonHeight);
-        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, buttonMargin * 2f);
-        skillButton2.setPosition(skillButton1.getX() + buttonWidth + buttonMargin , buttonMargin * 2f);
-        skillButton3.setPosition(skillButton2.getX() + buttonWidth + buttonMargin, buttonMargin * 2f);
+        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, buttonMargin * 3f - controlWindow.getHeight() + minimizeButton.getHeight());
+        skillButton2.setPosition(skillButton1.getX() + buttonWidth + buttonMargin , buttonMargin * 3f - controlWindow.getHeight() + minimizeButton.getHeight());
+        skillButton3.setPosition(skillButton2.getX() + buttonWidth + buttonMargin, buttonMargin * 3f - controlWindow.getHeight() + minimizeButton.getHeight());
 
 
         Group controlGroup = new Group();
@@ -849,20 +894,18 @@ public class GameScreen extends BaseScreen {
         minimizeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (isControlHidden) {
+                if (!isControlShown) {
                     maximizeTransitionAction.reset();
                     controlGroup.addAction(maximizeTransitionAction);
-                    isControlHidden = false;
+                    isControlShown = true;
                 } else {
                     minimizeTransitionAction.reset();
                     controlGroup.addAction(minimizeTransitionAction);
-                    isControlHidden = true;
+                    isControlShown = false;
                 }
             }
         });
-
-
-
+        isControlShown = false;
 
     }
 
@@ -872,7 +915,7 @@ public class GameScreen extends BaseScreen {
         avalancheProgressBarStyle.knob = new TextureRegionDrawable(assets.waveIcon);
         avalancheProgressBarStyle.background = new TextureRegionDrawable(getColoredTextureRegion(Color.FOREST));
         avalancheProgressBarStyle.knobBefore = new TextureRegionDrawable(getColoredTextureRegion(Color.LIGHT_GRAY));
-        progressBar = new VisProgressBar(0f, 1f, .05f, false, avalancheProgressBarStyle);
+        progressBar = new VisProgressBar(0f, 100f, .1f, false, avalancheProgressBarStyle);
         progressBar.setPosition(windowCamera.viewportWidth / 4f + 25f, windowCamera.viewportHeight * 7 / 8);
         progressBar.setValue(0f);
         progressBar.setWidth(windowCamera.viewportWidth / 2f - 50f);
@@ -883,7 +926,7 @@ public class GameScreen extends BaseScreen {
         VisSlider.SliderStyle cameraSliderStyle = new VisSlider.SliderStyle(horizontalSliderStyle);
         cameraSliderStyle.disabledKnob = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.button_light_tv));
         cameraSliderStyle.background = new TextureRegionDrawable(getColoredTextureRegion(new Color(0f, 0f, 0f, 0f)));
-        cameraSlider = new VisSlider(0f, 1f, 0.01f, false, cameraSliderStyle);
+        cameraSlider = new VisSlider(0f, 100f, 0.1f, false, cameraSliderStyle);
         cameraSlider.setPosition(windowCamera.viewportWidth / 4f + 25f, windowCamera.viewportHeight * 7 / 8);
         cameraSlider.setWidth(windowCamera.viewportWidth / 2f - 50f);
         cameraSlider.setHeight(70f);
@@ -906,7 +949,7 @@ public class GameScreen extends BaseScreen {
         //Gdx.app.log("getLastRowWithSnowAccum", " " + getLastRowWithSnowAccum());
         progressBar.setValue(getFirstBallProgress());
         //progressBar.setValue(getLastRowWithSnowAccum());
-        cameraSlider.setValue(camera.position.z / Landscape.TILES_LONG * Landscape.TILE_WIDTH);
+        cameraSlider.setValue(camera.position.z / Landscape.TILES_LONG * Landscape.TILE_WIDTH * 100f);
     }
 
     private TextureRegion getColoredTextureRegion(Color color) {
