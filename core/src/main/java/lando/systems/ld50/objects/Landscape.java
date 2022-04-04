@@ -70,6 +70,9 @@ public class Landscape {
             if (ball.position.y < -3 || ball.radius < .1f){
                 snowBalls.removeIndex(i);
             }
+            if (snowBalls.size == 0){
+                screen.beginBuildPhase();
+            }
         }
     }
 

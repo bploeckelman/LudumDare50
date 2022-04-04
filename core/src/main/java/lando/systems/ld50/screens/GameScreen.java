@@ -1,5 +1,10 @@
 package lando.systems.ld50.screens;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.equations.Linear;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -126,7 +131,7 @@ public class GameScreen extends BaseScreen {
         railController = new RailsCamera(camera);
 
         lightDir = new Vector3(-1f, -.8f, -.2f);
-        dayTime = new MutableFloat(0);
+        dayTime = new MutableFloat(10);
 
         landscape = new Landscape(this);
 
@@ -186,7 +191,7 @@ public class GameScreen extends BaseScreen {
         super.update(dt);
         accum += dt;
 
-        setGameDayTime(accum);
+//        setGameDayTime(accum);
         updateGameTime();
 
         boolean gameOver = isGameOver();
@@ -226,6 +231,10 @@ public class GameScreen extends BaseScreen {
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P) && landscape.highlightedTile != null) {
             landscape.highlightedTile.makeRamp();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
+            startNewDay();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
@@ -389,6 +398,26 @@ public class GameScreen extends BaseScreen {
         landscape.renderFBO(camera);
         pickPixmap =  Pixmap.createFromFrameBuffer(0, 0, pickMapFBO.getWidth(), pickMapFBO.getHeight());
         pickMapFBO.end();
+    }
+
+    public void startNewDay() {
+        // TODO Make sure they can't be called a lot in a row
+        if (landscape.snowBalls.size > 0) return;
+        Timeline.createSequence()
+                .push(
+                        Tween.to(dayTime, 1, 3f)
+                        .target(34f)
+                                .ease(Linear.INOUT))
+                .push(Tween.call((type, source) -> {
+                    dayTime.setValue(10);
+                    landscape.startAvalanche();
+                    TransitionCamera();
+                }))
+                .start(Main.game.tween);
+    }
+
+    public void beginBuildPhase(){
+        UntransitionCamera();
     }
 
     Color skyColor = new Color();
