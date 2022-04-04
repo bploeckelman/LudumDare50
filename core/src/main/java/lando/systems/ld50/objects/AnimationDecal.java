@@ -66,7 +66,7 @@ public class AnimationDecal {
         for (TextureRegion region : animation.getKeyFrames()) {
             Decal decal = Decal.newDecal(region, true);
             decal.setDimensions(imageInfo.width, imageInfo.height);
-            decal.setPosition(position);
+            // decal.setPosition(position);
             decals.add(decal);
         }
     }
@@ -112,6 +112,11 @@ public class AnimationDecal {
 
     private void updateMovement(float dt) {
 
+        if (isInSnow()) {
+            wave(4);
+            return;
+        }
+
         if (moveTimeTotal > 0) {
             moveTime += dt;
             float lerp = MathUtils.clamp(moveTime / moveTimeTotal, 0, 1);
@@ -137,9 +142,14 @@ public class AnimationDecal {
                     return;
                 }
 
-                moveToTile(MathUtils.random.nextInt(5), MathUtils.random.nextInt(8));
+                moveToTile(MathUtils.random.nextInt(5), MathUtils.random.nextInt(4));
             }
         }
+    }
+
+    private boolean isInSnow() {
+        float snow =  landscape.tiles[(int)position.x + (int)position.z * Landscape.TILES_WIDE].getAverageSnowHeight();
+        return snow > 0.08f;
     }
 
     public void wave(float waveTime) {

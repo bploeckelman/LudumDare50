@@ -3,8 +3,8 @@ package lando.systems.ld50.assets;
 import static lando.systems.ld50.audio.AudioManager.*;
 
 public enum ImageInfo {
-    BabeA ("characters/babe-a", "characters/babe-a-wave", 0.1f, Sounds.screamFemale, 0.5f, 0.5f, true),
-    BabeB ("characters/babe-b", "characters/babe-b-wave", 0.1f, Sounds.screamFemale, 0.5f, 0.5f, true),
+    BabeA ("characters/babe-a-walk", "characters/babe-a-wave", 0.1f, Sounds.screamFemale, 0.5f, 0.5f, true),
+    BabeB ("characters/babe-b-walk", "characters/babe-b-wave", 0.1f, Sounds.screamFemale, 0.5f, 0.5f, true),
     Dude ("characters/dude-a", null, 0.1f, Sounds.screamMale, 0.5f, 0.5f, true),
     Deer ("characters/deer-a", null, 0.1f, Sounds.none, 0.5f, 0.5f, true),
     Plow ("characters/plow-a", null, 0.1f, Sounds.none,7f, 4f, false);
