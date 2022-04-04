@@ -87,7 +87,7 @@ public class Landscape {
         }
     }
 
-    public void render(ModelBatch batch, Environment env) {
+    public void renderAvalanche(ModelBatch batch, Environment env) {
         // TODO add land tiles
         for (Snowball ball : snowBalls) {
             ball.render(batch, env);

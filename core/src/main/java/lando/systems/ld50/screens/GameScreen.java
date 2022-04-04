@@ -91,6 +91,7 @@ public class GameScreen extends BaseScreen {
     private Array<ModelInstance> houseInstances;
     private Array<ModelInstance> treeInstances;
     private Array<ModelInstance> creatureInstances;
+    private Array<ModelInstance> lodgeInstances;
     private Array<AnimationDecal> decals;
 
     private Vector3 touchPos;
@@ -510,13 +511,16 @@ public class GameScreen extends BaseScreen {
         // draw world
         landscape.render(camera);
 
+        // draw models
         modelBatch.begin(camera);
         {
 //            modelBatch.render(coords, env);
             modelBatch.render(houseInstances, env);
             modelBatch.render(treeInstances, env);
             modelBatch.render(creatureInstances, env);
-            landscape.render(modelBatch, env);
+            modelBatch.render(lodgeInstances, env);
+
+            landscape.renderAvalanche(modelBatch, env);
         }
         modelBatch.end();
 
@@ -633,31 +637,22 @@ public class GameScreen extends BaseScreen {
 
 
     private void loadModels() {
-        BoundingBox box = new BoundingBox();
-        float extentX, extentY, extentZ, maxExtent;
+        lodgeInstances = new Array<>();
+        for (int i = 0; i < Landscape.TILES_WIDE - 1; i++) {
+            LandTile tile = landscape.getTileAt(i, Landscape.TILES_LONG - 1);
+            ModelInstance instance = createUnitModelInstance(Assets.Models.lodge_a.model, 0f, 0f, 0f);
+            tile.decorate(instance, 0f);
+            lodgeInstances.add(instance);
+        }
 
+        // TODO - be more clever about how these are randomly placed so they don't cluster
         houseInstances = new Array<>();
-
-        // TODO - be more clever about how these are randomly placed
-        //   so they don't cluster
-        int numHouses = 20;
+        int numHouses = 40;
         for (int i = 0; i < numHouses; i++) {
             // create the instance
-            Model model = Assets.Models.randomHouse();
-            ModelInstance instance = new ModelInstance(model);
-            instance.calculateBoundingBox(box);
-            extentX = (box.max.x - box.min.x);
-            extentY = (box.max.y - box.min.y);
-            extentZ = (box.max.z - box.min.z);
-            maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-            instance.transform
-                    .setToTranslationAndScaling(
-                            0f, 0f, 0f,
-                            1f / maxExtent,
-                            1f / maxExtent,
-                            1f / maxExtent)
-            ;
-            // get an undecorated landtile
+            ModelInstance instance = createUnitModelInstance(Assets.Models.randomHouse(), 0f, 0f, 0f);
+
+            // find an undecorated landtile
             int excludedRows = 2;
             int x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
             int z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
@@ -667,63 +662,39 @@ public class GameScreen extends BaseScreen {
                 z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
                 tile = landscape.getTileAt(x, z);
             }
-            // decorate it
+
+            // decorate it with the instance
             tile.decorate(instance);
             houseInstances.add(instance);
         }
 
-        ModelInstance treeB = new ModelInstance(Assets.Models.tree_b.model);
-        treeB.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ) * 2f;
-        treeB.transform
-                .setToTranslationAndScaling(
-                        0.5f, 0f, 0.5f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
-//        landscape.getTileAt(2, 0).decorate(treeB);
-
-        ModelInstance treeD = new ModelInstance(Assets.Models.tree_d.model);
-        treeD.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ) * 2f;
-        treeD.transform
-                .setToTranslationAndScaling(
-                        0.5f, 0f, 0.5f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
-//        landscape.getTileAt(3, 0).decorate(treeD);
-
+        // TODO - /r/trees
         treeInstances = new Array<>();
-//        treeInstances.addAll(treeB, treeD);
 
-        ModelInstance yeti = new ModelInstance(Assets.Models.yeti.model);
-        yeti.calculateBoundingBox(box);
-        extentX = (box.max.x - box.min.x);
-        extentY = (box.max.y - box.min.y);
-        extentZ = (box.max.z - box.min.z);
-        maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
-        yeti.transform
-                .setToTranslationAndScaling(
-                        4f, 0f, 3f,
-                        1f / maxExtent,
-                        1f / maxExtent,
-                        1f / maxExtent)
-        ;
-
+        // TODO - place down by lodge (or maybe make it rise up from the ground or come running down with the final wave that destroys the lodge)
+        // yeti statue
         creatureInstances = new Array<>();
-        creatureInstances.add(yeti);
+        creatureInstances.add(createUnitModelInstance(Assets.Models.yeti.model, 4f, 0f, 3f));
 
         coords = new ModelInstance(Assets.Models.coords.model);
         coords.transform.setToTranslation(0f, 0f, 0f);
+    }
+
+    private final BoundingBox box = new BoundingBox();
+    private ModelInstance createUnitModelInstance(Model model, float posX, float posY, float posZ) {
+        ModelInstance instance = new ModelInstance(model);
+        instance.calculateBoundingBox(box);
+        float extentX = (box.max.x - box.min.x);
+        float extentY = (box.max.y - box.min.y);
+        float extentZ = (box.max.z - box.min.z);
+        float maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        instance.transform
+                .setToTranslationAndScaling(
+                        posX, posY, posZ,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent);
+        return instance;
     }
 
     private void loadDecals() {

@@ -112,8 +112,14 @@ public class Assets implements Disposable {
     public Sound houseImpact5;
 
     public enum Models {
-        coords, boulder_a, house_a, house_b, snowball_a, snowball_b, tree_b, tree_d, yeti, sphere,
-        building_a, building_a_snowed, building_a_part_a, building_a_part_b, building_a_part_c;
+        coords, boulder_a,
+        house_a, house_b,
+        snowball_a, snowball_b,
+        tree_b, tree_d,
+        yeti, sphere,
+        lodge_a,
+        building_a, building_a_snowed,
+        building_a_part_a, building_a_part_b, building_a_part_c;
         public Model model;
 
         public static Model randomHouse() {
@@ -238,6 +244,7 @@ public class Assets implements Disposable {
             mgr.load("models/tree-b.g3db", Model.class);
             mgr.load("models/tree-d.g3db", Model.class);
             mgr.load("models/yeti_00.g3db", Model.class);
+            mgr.load("models/lodge-a.g3db", Model.class);
             mgr.load("models/building-a.g3db", Model.class);
             mgr.load("models/building-a-snowed.g3db", Model.class);
             mgr.load("models/building-a-part-a.g3db", Model.class);
@@ -281,33 +288,33 @@ public class Assets implements Disposable {
         click1Sound = mgr.get("audio/sounds/click1.ogg", Sound.class);
         collapse1Sound = mgr.get("audio/sounds/collapse1.ogg", Sound.class);
         earthSound = mgr.get("audio/sounds/earth1.ogg", Sound.class);
-         explode1Sound = mgr.get("audio/sounds/explode1.ogg", Sound.class);
-         explode2Sound = mgr.get("audio/sounds/explode2.ogg", Sound.class);
-         explode3Sound = mgr.get("audio/sounds/explode3.ogg", Sound.class);
-         explode4Sound = mgr.get("audio/sounds/explode4.ogg", Sound.class);
-         guitar1Sound = mgr.get("audio/sounds/guitar1.ogg", Sound.class);
-         harp1Sound = mgr.get("audio/sounds/harp1.ogg", Sound.class);
-         helicopter1Sound = mgr.get("audio/sounds/helicopter1.ogg", Sound.class);
-         helicopter2Sound = mgr.get("audio/sounds/helicopter2.ogg", Sound.class);
-         laser1Sound = mgr.get("audio/sounds/laser1.ogg", Sound.class);
-         laser2Sound = mgr.get("audio/sounds/laser2.ogg", Sound.class);
-         rumble1Sound = mgr.get("audio/sounds/rumble1.ogg", Sound.class);
-         rumble2Sound = mgr.get("audio/sounds/rumble1.ogg", Sound.class);
-         rumble3Sound = mgr.get("audio/sounds/rumble3.ogg", Sound.class);
-         rumble4Sound = mgr.get("audio/sounds/rumble4.ogg", Sound.class);
-          screamFemaleSound = mgr.get("audio/sounds/screamfemale.ogg", Sound.class);
-          screamFemale2Sound = mgr.get("audio/sounds/screamfemale2.ogg", Sound.class);
-          screamFemale3Sound = mgr.get("audio/sounds/screamfemale3.ogg", Sound.class);
-          screamMale1Sound = mgr.get("audio/sounds/screammale1.ogg", Sound.class);
-          screamMale2Sound = mgr.get("audio/sounds/screammale2.ogg", Sound.class);
-          screamMale3Sound = mgr.get("audio/sounds/screammale3.ogg", Sound.class);
-          thud1Sound = mgr.get("audio/sounds/thud1.ogg", Sound.class);
-          thud2Sound = mgr.get("audio/sounds/thud2.ogg", Sound.class);
-          houseImpact1 = mgr.get("audio/sounds/houseImpact1.ogg", Sound.class);
-          houseImpact2 = mgr.get("audio/sounds/houseImpact2.ogg", Sound.class);
-          houseImpact3 = mgr.get("audio/sounds/houseImpact3.ogg", Sound.class);
-          houseImpact4 = mgr.get("audio/sounds/houseImpact4.ogg", Sound.class);
-          houseImpact5 = mgr.get("audio/sounds/houseImpact5.ogg", Sound.class);
+        explode1Sound = mgr.get("audio/sounds/explode1.ogg", Sound.class);
+        explode2Sound = mgr.get("audio/sounds/explode2.ogg", Sound.class);
+        explode3Sound = mgr.get("audio/sounds/explode3.ogg", Sound.class);
+        explode4Sound = mgr.get("audio/sounds/explode4.ogg", Sound.class);
+        guitar1Sound = mgr.get("audio/sounds/guitar1.ogg", Sound.class);
+        harp1Sound = mgr.get("audio/sounds/harp1.ogg", Sound.class);
+        helicopter1Sound = mgr.get("audio/sounds/helicopter1.ogg", Sound.class);
+        helicopter2Sound = mgr.get("audio/sounds/helicopter2.ogg", Sound.class);
+        laser1Sound = mgr.get("audio/sounds/laser1.ogg", Sound.class);
+        laser2Sound = mgr.get("audio/sounds/laser2.ogg", Sound.class);
+        rumble1Sound = mgr.get("audio/sounds/rumble1.ogg", Sound.class);
+        rumble2Sound = mgr.get("audio/sounds/rumble1.ogg", Sound.class);
+        rumble3Sound = mgr.get("audio/sounds/rumble3.ogg", Sound.class);
+        rumble4Sound = mgr.get("audio/sounds/rumble4.ogg", Sound.class);
+        screamFemaleSound = mgr.get("audio/sounds/screamfemale.ogg", Sound.class);
+        screamFemale2Sound = mgr.get("audio/sounds/screamfemale2.ogg", Sound.class);
+        screamFemale3Sound = mgr.get("audio/sounds/screamfemale3.ogg", Sound.class);
+        screamMale1Sound = mgr.get("audio/sounds/screammale1.ogg", Sound.class);
+        screamMale2Sound = mgr.get("audio/sounds/screammale2.ogg", Sound.class);
+        screamMale3Sound = mgr.get("audio/sounds/screammale3.ogg", Sound.class);
+        thud1Sound = mgr.get("audio/sounds/thud1.ogg", Sound.class);
+        thud2Sound = mgr.get("audio/sounds/thud2.ogg", Sound.class);
+        houseImpact1 = mgr.get("audio/sounds/houseImpact1.ogg", Sound.class);
+        houseImpact2 = mgr.get("audio/sounds/houseImpact2.ogg", Sound.class);
+        houseImpact3 = mgr.get("audio/sounds/houseImpact3.ogg", Sound.class);
+        houseImpact4 = mgr.get("audio/sounds/houseImpact4.ogg", Sound.class);
+        houseImpact5 = mgr.get("audio/sounds/houseImpact5.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);
@@ -343,6 +350,7 @@ public class Assets implements Disposable {
         Models.tree_b.model     = mgr.get("models/tree-b.g3db", Model.class);
         Models.tree_d.model     = mgr.get("models/tree-d.g3db", Model.class);
         Models.yeti.model       = mgr.get("models/yeti_00.g3db", Model.class);
+        Models.lodge_a.model    = mgr.get("models/lodge-a.g3db", Model.class);
         Models.building_a.model        = mgr.get("models/building-a.g3db", Model.class);
         Models.building_a_snowed.model = mgr.get("models/building-a-snowed.g3db", Model.class);
         Models.building_a_part_a.model = mgr.get("models/building-a-part-a.g3db", Model.class);
