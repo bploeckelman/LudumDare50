@@ -8,10 +8,9 @@ import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
-import lando.systems.ld50.audio.AudioManager;
-import lando.systems.ld50.Main;
 
 public class AnimationDecal {
 
@@ -118,7 +117,7 @@ public class AnimationDecal {
         }
 
         if (moveTimeTotal > 0) {
-            moveTime += dt;
+            moveTime += 0.4f * dt;
             float lerp = MathUtils.clamp(moveTime / moveTimeTotal, 0, 1);
             float x = MathUtils.lerp(initPos.x, movePosition.x, lerp);
             float z = MathUtils.lerp(initPos.z, movePosition.z, lerp);

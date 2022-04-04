@@ -3,11 +3,11 @@ package lando.systems.ld50.cameras;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntIntMap;
+import lando.systems.ld50.screens.GameScreen;
 
-import static com.badlogic.gdx.Input.*;
+import static com.badlogic.gdx.Input.Keys;
 
 public class SimpleCameraController extends InputAdapter {
 
@@ -24,9 +24,11 @@ public class SimpleCameraController extends InputAdapter {
     private float velocity = 5;
     private float degreesPerPixel = 0.5f;
     private final Vector3 tmp = new Vector3();
+    private final GameScreen gameScreen;
 
-    public SimpleCameraController(Camera camera) {
+    public SimpleCameraController(Camera camera, GameScreen gameScreen) {
         this.camera = camera;
+        this.gameScreen = gameScreen;
     }
 
     @Override
@@ -55,6 +57,7 @@ public class SimpleCameraController extends InputAdapter {
 
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
+        if (gameScreen.currentCameraPhase == GameScreen.CameraPhase.avalanche) return false;
         float deltaX = -Gdx.input.getDeltaX() * degreesPerPixel;
         float deltaY = -Gdx.input.getDeltaY() * degreesPerPixel;
         camera.direction.rotate(camera.up, deltaX);

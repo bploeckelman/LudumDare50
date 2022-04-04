@@ -83,7 +83,7 @@ public class PhysicsDecal implements Pool.Poolable {
     public void update(float dt) {
         ttl -= dt;
         position.add(velocity.x * dt, velocity.y * dt, velocity.z * dt);
-        decal.setColor(decal.getColor().r, decal.getColor().g, decal.getColor().b, ttl);
+//        decal.setColor(decal.getColor().r, decal.getColor().g, decal.getColor().b, ttl);
         decal.setPosition(position);
         switch (pathing) {
             case GravityHighDrag:

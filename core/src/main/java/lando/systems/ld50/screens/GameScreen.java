@@ -4,6 +4,7 @@ import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.primitives.MutableFloat;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -77,7 +78,7 @@ public class GameScreen extends BaseScreen {
     private final SimpleCameraController cameraController;
     private final Landscape landscape;
     private final RailsCamera railController;
-    private final InputMultiplexer muxP1, muxPX;
+    private final InputMultiplexer inputMuxPlanPhase, inputMuxAvalanchePhase;
 
     private final Environment env;
     private final ModelBatch modelBatch;
@@ -94,7 +95,6 @@ public class GameScreen extends BaseScreen {
     private Vector3 startPos, endPos;
     private Vector3 startUp, endUp;
     private Vector3 startDir, endDir;
-    private int cameraPhase = 1;
     private float cameraTransitionDT = 0;
 
     private Vector3 lightDir;
@@ -131,6 +131,19 @@ public class GameScreen extends BaseScreen {
     public enum KARMA_SWITCH {GOOD, EVIL}
     public KARMA_SWITCH currentKarmaPicked = KARMA_SWITCH.GOOD;
 
+    public enum CameraPhase {
+        start, plan, avalanche;
+        static CameraPhase next(CameraPhase phase) {
+            switch (phase) {
+                case start: return plan;
+                case plan: return avalanche;
+                case avalanche:
+                default: return start;
+            }
+        }
+    }
+    public CameraPhase currentCameraPhase = CameraPhase.start;
+
     public GameScreen() {
 //        profiler = new GLProfiler(Gdx.graphics);
 //        profiler.enable();
@@ -138,9 +151,9 @@ public class GameScreen extends BaseScreen {
         camera = new PerspectiveCamera(70f, Config.window_width, Config.window_height);
         initializeCamera();
 
-        cameraController = new SimpleCameraController(camera);
         shaker = new ScreenShakeCameraController(camera);
-        railController = new RailsCamera(camera);
+        cameraController = new SimpleCameraController(camera, this);
+        railController = new RailsCamera(camera, this);
 
         lightDir = new Vector3(-1f, -.8f, -.2f);
         dayTime = new MutableFloat(buildHour);
@@ -152,11 +165,15 @@ public class GameScreen extends BaseScreen {
         env.add(light = new DirectionalLight().set(0.8f, 0.8f, 0.8f, lightDir.x, lightDir.y, lightDir.z));
         modelBatch = new ModelBatch();
         decalBatch = new DecalBatch(500, new CameraGroupStrategy(camera));
-        particlesDecalBatch = new DecalBatch(5000, new NoDepthCameraGroupStrategy(camera, (o1, o2) -> {
-            // sorting hurts the framerate significantly (especially on web)
-            // and for particle effects we mostly don't care
-            return 0;
-        }));
+        if (Gdx.app.getType() == Application.ApplicationType.WebGL) {
+            particlesDecalBatch = new DecalBatch(5000, new NoDepthCameraGroupStrategy(camera, (o1, o2) -> {
+                // sorting hurts the framerate significantly (especially on web)
+                // and for particle effects we mostly don't care
+                return 0;
+            }));
+        } else { // desktop
+            particlesDecalBatch = new DecalBatch(5000, new CameraGroupStrategy(camera));
+        }
 
         loadModels();
         loadDecals();
@@ -166,10 +183,9 @@ public class GameScreen extends BaseScreen {
         pickMapFBO =  new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth() / PICKMAP_SCALE, Gdx.graphics.getHeight() / PICKMAP_SCALE, true);
         PickMapFBOTex = pickMapFBO.getColorBufferTexture();
 
-        muxP1 = new InputMultiplexer(uiStage, this, railController, cameraController);
-        muxPX = new InputMultiplexer(uiStage, this, cameraController);
-        Gdx.input.setInputProcessor(muxP1);
-
+        inputMuxPlanPhase = new InputMultiplexer(uiStage, this, railController, cameraController);
+        inputMuxAvalanchePhase = new InputMultiplexer(uiStage, this, cameraController);
+        Gdx.input.setInputProcessor(inputMuxPlanPhase);
 
         game.audio.playMusic(AudioManager.Musics.mainTheme);
 //        game.audio.musics.get(AudioManager.Musics.mainTheme).setVolume(0.1F);
@@ -178,7 +194,6 @@ public class GameScreen extends BaseScreen {
 
         game.audio.playSound(AudioManager.Sounds.rumble, 0.8F);
 //        game.audio.playSound(AudioManager.Sounds.chaching);
-
     }
 
     public void addHouseModelInstance(ModelInstance instance) {
@@ -203,7 +218,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void transitionCompleted() {
         super.transitionCompleted();
-        Gdx.input.setInputProcessor(muxP1);
+        Gdx.input.setInputProcessor(inputMuxPlanPhase);
     }
 
     @Override
@@ -245,11 +260,11 @@ public class GameScreen extends BaseScreen {
             uiStage.addAction(transitionAction);
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && cameraPhase == 1) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) && currentCameraPhase == CameraPhase.start) {
             TransitionCamera();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && cameraPhase == 3) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && currentCameraPhase == CameraPhase.avalanche) {
             UntransitionCamera();
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.P) && landscape.highlightedTile != null) {
@@ -263,16 +278,10 @@ public class GameScreen extends BaseScreen {
             startNewDay();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
-            particles.addPointsParticles((int)MathUtils.random(40, 800), Gdx.input.getX(),camera.viewportHeight - Gdx.input.getY(), 0.86f, 1f, 0f);
-            particles.addParticleBurstCollect(16, new float[]{0f, 1f, 0.2f},
-                    new float[]{Gdx.input.getX(), camera.viewportHeight - Gdx.input.getY()}, new float[]{20f, 20f});
-        }
-
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         worldCamera.unproject(touchPos);
-        Vector2 tile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
-        landscape.setSelectedTile((int)tile.x, (int)tile.y);
+        Vector2 selectedTile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
+        landscape.setSelectedTile((int)selectedTile.x, (int)selectedTile.y);
 
         camera.update();
         cameraController.update();
@@ -305,7 +314,7 @@ public class GameScreen extends BaseScreen {
         }
 
         // keep the camera focused on the bulk of the avalanche wave
-        if (!cameraMovementPaused && cameraPhase == 1) {
+        if (!cameraMovementPaused && currentCameraPhase == CameraPhase.start) {
 //            float prevCameraMovementT = cameraMovementT;
 //            float currCameraMovementT = getAvalancheProgress();
 //            cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
@@ -313,15 +322,15 @@ public class GameScreen extends BaseScreen {
 //                    MathUtils.lerp(startPos.x, endPos.x, cameraMovementT),
 //                    MathUtils.lerp(startPos.y, endPos.y, cameraMovementT),
 //                    MathUtils.lerp(startPos.z, endPos.z, cameraMovementT));
-        } else if (cameraPhase % 2 == 0) {
+        } else if (currentCameraPhase == CameraPhase.plan) {
             cameraTransitionDT += dt;
             double frac = cameraTransitionDT / 2.5;
             if (frac >= 1) {
                 frac = 1;
-                cameraPhase++;
+                currentCameraPhase = CameraPhase.next(currentCameraPhase);
                 cameraTransitionDT = 0;
-                if (cameraPhase == 1) {
-                    Gdx.input.setInputProcessor(muxP1);
+                if (currentCameraPhase == CameraPhase.start) {
+                    Gdx.input.setInputProcessor(inputMuxPlanPhase);
                 }
             }
             double tVal = frac < 0.5 ? 2 * frac * frac : 1 - ((-2 * frac + 2)*(-2*frac + 2)) / 2;//1-((1-frac)*(1-frac)*(1-frac));
@@ -338,7 +347,7 @@ public class GameScreen extends BaseScreen {
             double hor = Math.sqrt(camera.direction.x * camera.direction.x + camera.direction.z * camera.direction.z);
             camera.up.set((float) (-camera.direction.x * camera.direction.y / hor), (float) (hor), (float) (-camera.direction.z * camera.direction.y / hor));
 
-        } else if (cameraPhase == 3) {
+        } else if (currentCameraPhase == CameraPhase.avalanche) {
             float target = Math.max(10f, 100 * getAvalancheProgress() + 8.5f);
             camera.position.z = MathUtils.lerp(camera.position.z, target, 2*dt);
         }
@@ -504,8 +513,8 @@ public class GameScreen extends BaseScreen {
     Vector3 camEndDir = new Vector3();
 
     private void TransitionCamera() {
-        Gdx.input.setInputProcessor(muxPX);
-        cameraPhase = 2;
+        Gdx.input.setInputProcessor(inputMuxAvalanchePhase);
+        currentCameraPhase = CameraPhase.plan;
         camStartPos.set(camera.position);
         camMidPos.set(3f, 2.75f, camera.position.z + 5);
         camEndPos.set(4f, 2f, 10f);
@@ -515,7 +524,7 @@ public class GameScreen extends BaseScreen {
     }
 
     private void UntransitionCamera() {
-        cameraPhase = 0;
+        currentCameraPhase = CameraPhase.start;
         camStartPos.set(camera.position);
         camMidPos.set(1f, 3.4f, camera.position.z + 5);
         camEndPos.set(1f, 4f, 10f);
@@ -660,8 +669,8 @@ public class GameScreen extends BaseScreen {
     }
 
     private int getLastRowWithSnowAccum() {
-        int maxRow = landscape.TILES_LONG;
-        int maxCol = landscape.TILES_WIDE;
+        int maxRow = Landscape.TILES_LONG;
+        int maxCol = Landscape.TILES_WIDE;
         float rowAverageSnow = 0f;
         float rowAccumSnow = 0f;
         int lastRowWithMoreThanHalfSnow = 0;
@@ -702,7 +711,10 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
         if (isGameOver()) return false;
-        // ...
+        if (landscape.highlightedTile != null) {
+            landscape.highlightedTile.makeRamp();
+            return true;
+        }
         return super.touchUp(screenX, screenY, pointer, button);
     }
 

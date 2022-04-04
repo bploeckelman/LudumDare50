@@ -1,16 +1,13 @@
 package lando.systems.ld50.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Align;
-//import lando.systems.ld50.audio.AudioManager;
-import lando.systems.ld50.Config;
-import lando.systems.ld50.Main;
-import lando.systems.ld50.audio.AudioManager;
 
 public class StoryScreen extends BaseScreen {
     private static float textScale = 1.0f;
@@ -92,6 +89,9 @@ public class StoryScreen extends BaseScreen {
             launchGame();
         }
         if (accum >= layout.height) {
+            launchGame();
+        }
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
             launchGame();
         }
     }
