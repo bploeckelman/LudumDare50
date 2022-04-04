@@ -649,32 +649,66 @@ public class GameScreen extends BaseScreen {
         camera.update();
     }
 
-
-
-
-
-
     private void loadModels() {
         lodgeInstances = new Array<>();
-        for (int i = 0; i < Landscape.TILES_WIDE - 1; i++) {
-            LandTile tile = landscape.getTileAt(i, Landscape.TILES_LONG - 1);
-            ModelInstance instance = createUnitModelInstance(Assets.Models.lodge_a.model, 0f, 0f, 0f);
-            tile.decorate(instance, 0f);
-            lodgeInstances.add(instance);
-        }
+
+        LandTile tile;
+        ModelInstance instance;
+
+        tile = landscape.getTileAt(0, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_a.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(1, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_b.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(2, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(3, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_d.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(4, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(5, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_b.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(6, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        lodgeInstances.add(instance);
+
+        tile = landscape.getTileAt(7, Landscape.TILES_LONG - 1);
+        instance = createUnitModelInstance(Assets.Models.lodge_a.model, 0f, 0f, 0f);
+        tile.decorate(instance, 0f);
+        // fuck it, it's ludum dare (screws up normals and makes it dark relative to others)
+        instance.transform.scale(-1f, 1f, 1f);
+        lodgeInstances.add(instance);
 
         // TODO - be more clever about how these are randomly placed so they don't cluster
         houseInstances = new Array<>();
         int numHouses = 20;
         for (int i = 0; i < numHouses; i++) {
             // create the instance
-            ModelInstance instance = createUnitModelInstance(Assets.Models.randomHouse(), 0f, 0f, 0f);
+            instance = createUnitModelInstance(Assets.Models.randomHouse(), 0f, 0f, 0f);
 
             // find an undecorated landtile
             int excludedRows = 2;
             int x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
             int z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);
-            LandTile tile = landscape.getTileAt(x, z);
+            tile = landscape.getTileAt(x, z);
             while (tile.isDecorated()) {
                 x = MathUtils.random(0, Landscape.TILES_WIDE - 1);
                 z = MathUtils.random(excludedRows, Landscape.TILES_LONG - 1 - excludedRows);

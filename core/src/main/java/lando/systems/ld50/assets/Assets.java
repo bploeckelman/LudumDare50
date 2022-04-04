@@ -117,7 +117,9 @@ public class Assets implements Disposable {
         snowball_a, snowball_b,
         tree_b, tree_d,
         yeti, sphere,
-        lodge_a,
+        lodge_a, lodge_b, lodge_c, lodge_d,
+        lodge_a_snowed, lodge_b_snowed, lodge_c_snowed, lodge_d_snowed,
+        debris_a, debris_b, debris_c,
         building_a, building_a_snowed,
         building_a_part_a, building_a_part_b, building_a_part_c;
         public Model model;
@@ -245,6 +247,16 @@ public class Assets implements Disposable {
             mgr.load("models/tree-d.g3db", Model.class);
             mgr.load("models/yeti_00.g3db", Model.class);
             mgr.load("models/lodge-a.g3db", Model.class);
+            mgr.load("models/lodge-b.g3db", Model.class);
+            mgr.load("models/lodge-c.g3db", Model.class);
+            mgr.load("models/lodge-d.g3db", Model.class);
+            mgr.load("models/lodge-a-snowed.g3db", Model.class);
+            mgr.load("models/lodge-b-snowed.g3db", Model.class);
+            mgr.load("models/lodge-c-snowed.g3db", Model.class);
+            mgr.load("models/lodge-d-snowed.g3db", Model.class);
+            mgr.load("models/debris-a.g3db", Model.class);
+            mgr.load("models/debris-b.g3db", Model.class);
+            mgr.load("models/debris-c.g3db", Model.class);
             mgr.load("models/building-a.g3db", Model.class);
             mgr.load("models/building-a-snowed.g3db", Model.class);
             mgr.load("models/building-a-part-a.g3db", Model.class);
@@ -342,15 +354,25 @@ public class Assets implements Disposable {
         particles.dollar  = atlas.findRegion("particles/dollars");
 
         // initialize models
-        Models.boulder_a.model  = mgr.get("models/boulder-a.g3db", Model.class);
-        Models.house_a.model    = mgr.get("models/house-a.g3db", Model.class);
-        Models.house_b.model    = mgr.get("models/house-b.g3db", Model.class);
-        Models.snowball_a.model = mgr.get("models/snowball-a.g3db", Model.class);
-        Models.snowball_b.model = mgr.get("models/snowball-b.g3db", Model.class);
-        Models.tree_b.model     = mgr.get("models/tree-b.g3db", Model.class);
-        Models.tree_d.model     = mgr.get("models/tree-d.g3db", Model.class);
-        Models.yeti.model       = mgr.get("models/yeti_00.g3db", Model.class);
-        Models.lodge_a.model    = mgr.get("models/lodge-a.g3db", Model.class);
+        Models.boulder_a.model         = mgr.get("models/boulder-a.g3db", Model.class);
+        Models.house_a.model           = mgr.get("models/house-a.g3db", Model.class);
+        Models.house_b.model           = mgr.get("models/house-b.g3db", Model.class);
+        Models.snowball_a.model        = mgr.get("models/snowball-a.g3db", Model.class);
+        Models.snowball_b.model        = mgr.get("models/snowball-b.g3db", Model.class);
+        Models.tree_b.model            = mgr.get("models/tree-b.g3db", Model.class);
+        Models.tree_d.model            = mgr.get("models/tree-d.g3db", Model.class);
+        Models.yeti.model              = mgr.get("models/yeti_00.g3db", Model.class);
+        Models.lodge_a.model           = mgr.get("models/lodge-a.g3db", Model.class);
+        Models.lodge_b.model           = mgr.get("models/lodge-b.g3db", Model.class);
+        Models.lodge_c.model           = mgr.get("models/lodge-c.g3db", Model.class);
+        Models.lodge_d.model           = mgr.get("models/lodge-d.g3db", Model.class);
+        Models.lodge_a_snowed.model    = mgr.get("models/lodge-a-snowed.g3db", Model.class);
+        Models.lodge_b_snowed.model    = mgr.get("models/lodge-b-snowed.g3db", Model.class);
+        Models.lodge_c_snowed.model    = mgr.get("models/lodge-c-snowed.g3db", Model.class);
+        Models.lodge_d_snowed.model    = mgr.get("models/lodge-d-snowed.g3db", Model.class);
+        Models.debris_a.model          = mgr.get("models/debris-a.g3db", Model.class);
+        Models.debris_b.model          = mgr.get("models/debris-b.g3db", Model.class);
+        Models.debris_c.model          = mgr.get("models/debris-c.g3db", Model.class);
         Models.building_a.model        = mgr.get("models/building-a.g3db", Model.class);
         Models.building_a_snowed.model = mgr.get("models/building-a-snowed.g3db", Model.class);
         Models.building_a_part_a.model = mgr.get("models/building-a-part-a.g3db", Model.class);
