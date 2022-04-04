@@ -637,6 +637,30 @@ public class GameScreen extends BaseScreen {
         batch.setShader(null);
     }
 
+    public void addBadKarmaPoints(int points, LandTile tile) {
+        Vector3 coords = new Vector3(tile.x+0.5f, 0.5f, tile.z+0.5f);
+        camera.project(coords);
+
+        badKarmaPoints += points;
+        particles.addPointsParticles(points, coords.x, coords.y, 0.9f, 0.1f, 0.1f);
+        particles.addParticleBurstCollect(16,
+                new float[]{1f, 0.1f, 0.1f},
+                new float[]{coords.x, coords.y},
+                new float[]{Config.window_width - MathUtils.random(40f, 100f), Config.window_height - MathUtils.random(20f, 50f)});
+    }
+
+    public void addGoodKarmaPoints(int points, LandTile tile) {
+        Vector3 coords = new Vector3(tile.x+0.5f, 0.5f, tile.z+0.5f);
+        camera.project(coords);
+
+        goodKarmaPoints += points;
+        particles.addPointsParticles(points, coords.x, coords.y, 0.1f, 0.8f, 0.1f);
+        particles.addParticleBurstCollect(6,
+                new float[]{0.2f, 0.9f, 0.1f},
+                new float[]{coords.x, coords.y},
+                new float[]{Config.window_width - MathUtils.random(40f, 100f), Config.window_height - MathUtils.random(20f, 50f)});
+    }
+
     public boolean isGameOver() {
         return gameOver;
     }

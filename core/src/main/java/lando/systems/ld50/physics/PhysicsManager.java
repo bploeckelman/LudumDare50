@@ -259,26 +259,14 @@ public class PhysicsManager {
         boolean hitBuilding = tile.isDecorationDestructable && isBallLowEnoughToHit && isBallInBoundsX && isBallInBoundsZ;
 
         if (isBallInBoundsX && isBallInBoundsZ){
-            Vector3 coords = new Vector3(tile.x+0.5f, 0.5f, tile.z+0.5f);
-            landscape.screen.camera.project(coords);
+
 
             if (isBallLowEnoughToHit){
                 // spawn bad karma particles
-                int badKarma = 93;
-                landscape.screen.badKarmaPoints += 93;
-                landscape.screen.particles.addPointsParticles(93, coords.x, coords.y, 0.9f, 0.1f, 0.1f);
-                landscape.screen.particles.addParticleBurstCollect(16,
-                        new float[]{1f, 0.1f, 0.1f},
-                        new float[]{coords.x, coords.y},
-                        new float[]{Config.window_width - MathUtils.random(40f, 100f), Config.window_height - MathUtils.random(20f, 50f)});
+                landscape.screen.addBadKarmaPoints(93, tile);
             } else {
                 // Spawn good particles
-                landscape.screen.goodKarmaPoints += 137;
-                    landscape.screen.particles.addPointsParticles(137, coords.x, coords.y, 0.1f, 0.8f, 0.1f);
-                    landscape.screen.particles.addParticleBurstCollect(6,
-                            new float[]{0.2f, 0.9f, 0.1f},
-                            new float[]{coords.x, coords.y},
-                            new float[]{Config.window_width - MathUtils.random(40f, 100f), Config.window_height - MathUtils.random(20f, 50f)});
+                landscape.screen.addGoodKarmaPoints(137, tile);
             }
             ball.interactedDecorations.add(tile);
         }
