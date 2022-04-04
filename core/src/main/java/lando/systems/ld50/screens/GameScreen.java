@@ -56,7 +56,7 @@ public class GameScreen extends BaseScreen {
         // TODO - add stats vars
     }
 
-    private final GLProfiler profiler;
+//    private GLProfiler profiler;
 
     private final Color background = Color.SKY.cpy();
     private final PerspectiveCamera camera;
