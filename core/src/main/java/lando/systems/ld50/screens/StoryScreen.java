@@ -79,7 +79,7 @@ public class StoryScreen extends BaseScreen {
         game.assets.font.getData().setScale(textScale);
         layout.setText(game.assets.font, text, Color.WHITE, worldCamera.viewportWidth, Align.center, true);
 
-        game.assets.font.getData().setScale(1.125f);
+        game.assets.font.getData().setScale(1.0f);
 //        game.audio.playMusic(AudioManager.Musics.introMusic);
 
         perspectiveCamera = new PerspectiveCamera(90, 1280, 800);
