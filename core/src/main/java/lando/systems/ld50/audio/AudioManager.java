@@ -84,16 +84,20 @@ public class AudioManager implements Disposable {
         putSound(Sounds.screamFemale, assets.screamFemaleSound);
         putSound(Sounds.screamFemale, assets.screamFemale2Sound);
         putSound(Sounds.screamFemale, assets.screamFemale3Sound);
-        putSound(Sounds.screamMale, assets.screamMale1Sound);
-        putSound(Sounds.screamMale, assets.screamMale2Sound);
-        putSound(Sounds.screamMale, assets.screamMale3Sound);
+        putSound(Sounds.screamFemale, assets.screamMale1Sound);
+        putSound(Sounds.screamFemale, assets.screamMale2Sound);
+        putSound(Sounds.screamFemale, assets.screamMale3Sound);
         putSound(Sounds.thud, assets.thud1Sound);
         putSound(Sounds.thud, assets.thud2Sound);
         putSound(Sounds.houseImpact, assets.houseImpact1);
         putSound(Sounds.houseImpact, assets.houseImpact2);
         putSound(Sounds.houseImpact, assets.houseImpact3);
-        putSound(Sounds.houseImpact, assets.houseImpact4);
-        putSound(Sounds.houseImpact, assets.houseImpact5);
+//        putSound(Sounds.houseImpact, assets.houseImpact4);
+//        putSound(Sounds.houseImpact, assets.houseImpact5);
+        putSound(Sounds.houseImpact, assets.explode1Sound);
+        putSound(Sounds.houseImpact, assets.explode2Sound);
+        putSound(Sounds.houseImpact, assets.explode3Sound);
+        putSound(Sounds.houseImpact, assets.explode4Sound);
 //        putSound(Sounds., assets.);
 //        putSound(Sounds., assets.);
 
