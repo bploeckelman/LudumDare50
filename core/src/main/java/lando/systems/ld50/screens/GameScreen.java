@@ -59,6 +59,8 @@ import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
+import java.time.LocalDateTime;
+
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
@@ -128,8 +130,10 @@ public class GameScreen extends BaseScreen {
     private float ambienceSoundTime;
     private Vector3 position = new Vector3();
 
-    public enum KARMA_SWITCH {GOOD, EVIL}
-    public KARMA_SWITCH currentKarmaPicked = KARMA_SWITCH.GOOD;
+    public enum Karma {GOOD, EVIL}
+    public Karma currentKarmaPicked = Karma.GOOD;
+    public enum Skill {NONE, PLOW, RAMP, DIVERTER, BOULDER, LASER, HELI}
+    public Skill activeSkill = Skill.NONE;
 
     public enum CameraPhase {
         start, plan, avalanche;
@@ -714,8 +718,27 @@ public class GameScreen extends BaseScreen {
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
         if (isGameOver()) return false;
         if (isSettingShown || isControlShown) return false;
+        Gdx.app.log("Active Skill", LocalDateTime.now() + " " + activeSkill.name());
         if (landscape.highlightedTile != null) {
-            landscape.highlightedTile.makeRamp();
+            switch (activeSkill) {
+                case RAMP:
+                    landscape.highlightedTile.makeRamp();
+                    break;
+                case PLOW:
+                    break;
+                case HELI:
+                    break;
+                case DIVERTER:
+                    landscape.highlightedTile.makeDiverter(true);
+                    break;
+                case BOULDER:
+                    break;
+                case LASER:
+                    break;
+                case NONE:
+                default:
+                    break;
+            }
             return true;
         }
         return super.touchUp(screenX, screenY, pointer, button);
@@ -922,9 +945,53 @@ public class GameScreen extends BaseScreen {
 
         VisTextButton karmaTabGood = new VisTextButton("Good", blueTextButtonStyle);
         VisTextButton karmaTabEvil = new VisTextButton("Evil", redTextButtonStyle);
-        VisImageButton skillButton1 = new VisImageButton("default");
-        VisImageButton skillButton2 = new VisImageButton("default");
-        VisImageButton skillButton3 = new VisImageButton("default");
+
+        VisImageButton.VisImageButtonStyle toggleImageButtonStyle = skin.get("toggle", VisImageButton.VisImageButtonStyle.class);
+        VisImageButton.VisImageButtonStyle rampButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
+        rampButtonStyle.up = new TextureRegionDrawable(assets.rampIcon);
+        rampButtonStyle.checked = new TextureRegionDrawable(assets.rampIcon);
+        rampButtonStyle.over = new TextureRegionDrawable(assets.rampIcon);
+        rampButtonStyle.down = new TextureRegionDrawable(assets.rampIcon);
+        rampButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
+
+        VisImageButton.VisImageButtonStyle diverterButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
+        diverterButtonStyle.up = new TextureRegionDrawable(assets.diverterIcon);
+        diverterButtonStyle.checked = new TextureRegionDrawable(assets.diverterIcon);
+        diverterButtonStyle.over = new TextureRegionDrawable(assets.diverterIcon);
+        diverterButtonStyle.down = new TextureRegionDrawable(assets.diverterIcon);
+        diverterButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
+
+        VisImageButton.VisImageButtonStyle boulderButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
+        boulderButtonStyle.up = new TextureRegionDrawable(assets.boulderIcon);
+        boulderButtonStyle.checked = new TextureRegionDrawable(assets.boulderIcon);
+        boulderButtonStyle.over = new TextureRegionDrawable(assets.boulderIcon);
+        boulderButtonStyle.down = new TextureRegionDrawable(assets.boulderIcon);
+        boulderButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
+
+        VisImageButton.VisImageButtonStyle laserButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
+        laserButtonStyle.up = new TextureRegionDrawable(assets.laserIcon);
+        laserButtonStyle.checked = new TextureRegionDrawable(assets.laserIcon);
+        laserButtonStyle.over = new TextureRegionDrawable(assets.laserIcon);
+        laserButtonStyle.down = new TextureRegionDrawable(assets.laserIcon);
+        laserButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
+
+        VisImageButton.VisImageButtonStyle plowButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
+        plowButtonStyle.up = new TextureRegionDrawable(assets.plowIcon);
+        plowButtonStyle.checked = new TextureRegionDrawable(assets.plowIcon);
+        plowButtonStyle.over = new TextureRegionDrawable(assets.plowIcon);
+        plowButtonStyle.down = new TextureRegionDrawable(assets.plowIcon);
+        plowButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
+
+        VisImageButton.VisImageButtonStyle heliButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
+        heliButtonStyle.up = new TextureRegionDrawable(assets.heliIcon);
+        heliButtonStyle.checked = new TextureRegionDrawable(assets.heliIcon);
+        heliButtonStyle.over = new TextureRegionDrawable(assets.heliIcon);
+        heliButtonStyle.down = new TextureRegionDrawable(assets.heliIcon);
+        heliButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
+
+        VisImageButton skillButton1 = new VisImageButton(rampButtonStyle);
+        VisImageButton skillButton2 = new VisImageButton(plowButtonStyle);
+        VisImageButton skillButton3 = new VisImageButton(heliButtonStyle);
 
         float buttonMargin = 10f;
         float buttonWidth = controlWindow.getWidth() / 3f - 2 * buttonMargin;
@@ -946,6 +1013,58 @@ public class GameScreen extends BaseScreen {
         karmaTabEvil.setPosition(controlWindow.getWidth() / 2 + controlWindow.getX(), minimizeButton.getHeight() - buttonMargin * 7f);
         karmaTabEvil.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.RED)));
         karmaTabEvil.setSize(controlWindow.getWidth() / 2 - buttonMargin, 30f);
+        skillButton1.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (skillButton1.isChecked()) {
+                    switch (currentKarmaPicked) {
+                        case GOOD:
+                            activeSkill = Skill.RAMP;
+                            break;
+                        case EVIL:
+                            activeSkill = Skill.DIVERTER;
+                            break;
+                    }
+                    skillButton2.setChecked(false);
+                    skillButton3.setChecked(false);
+                }
+            }
+        });
+        skillButton2.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (skillButton2.isChecked()) {
+                    switch (currentKarmaPicked) {
+                        case GOOD:
+                            activeSkill = Skill.PLOW;
+                            break;
+                        case EVIL:
+                            activeSkill = Skill.BOULDER;
+                            break;
+                    }
+                    skillButton1.setChecked(false);
+                    skillButton3.setChecked(false);
+                }
+            }
+        });
+        skillButton3.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (skillButton3.isChecked()) {
+                    switch (currentKarmaPicked) {
+                        case GOOD:
+                            activeSkill = Skill.HELI;
+                            break;
+                        case EVIL:
+                            activeSkill = Skill.LASER;
+                            break;
+                    }
+                    skillButton1.setChecked(false);
+                    skillButton2.setChecked(false);
+                }
+            }
+        });
+
         karmaTabGood.addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -958,7 +1077,14 @@ public class GameScreen extends BaseScreen {
                     karmaTabEvil.setChecked(false);
                     karmaTabGood.setDisabled(true);
                     //karmaTabGood.setChecked(true);
-                    currentKarmaPicked = KARMA_SWITCH.GOOD;
+                    currentKarmaPicked = Karma.GOOD;
+                    activeSkill = Skill.NONE;
+                    skillButton1.setChecked(false);
+                    skillButton2.setChecked(false);
+                    skillButton3.setChecked(false);
+                    skillButton1.setStyle(rampButtonStyle);
+                    skillButton2.setStyle(plowButtonStyle);
+                    skillButton3.setStyle(heliButtonStyle);
                 }
             }
         });
@@ -974,35 +1100,20 @@ public class GameScreen extends BaseScreen {
                     karmaTabGood.setChecked(false);
                     karmaTabEvil.setDisabled(true);
                     //karmaTabGood.setChecked(true);
-                    currentKarmaPicked = KARMA_SWITCH.GOOD;
+                    currentKarmaPicked = Karma.GOOD;
+                    activeSkill = Skill.NONE;
+                    skillButton1.setChecked(false);
+                    skillButton2.setChecked(false);
+                    skillButton3.setChecked(false);
+                    skillButton1.setStyle(diverterButtonStyle);
+                    skillButton2.setStyle(boulderButtonStyle);
+                    skillButton3.setStyle(laserButtonStyle);
                 }
             }
         });
-//        karmaTabGood.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                if (karmaTabGood.isDisabled()) {
-//                    karmaTabEvil.setDisabled(false);
-//                    karmaTabEvil.setChecked(false);
-//                    karmaTabGood.setDisabled(true);
-//                    //karmaTabGood.setChecked(true);
-//                    currentKarmaPicked = KARMA_SWITCH.GOOD;
-//                }
-//            }
-//        });
-//        karmaTabEvil.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                karmaTabGood.setDisabled(false);
-//                karmaTabGood.setChecked(false);
-//                karmaTabEvil.setDisabled(true);
-//                //karmaTabEvil.setChecked(true);
-//                currentKarmaPicked = KARMA_SWITCH.EVIL;
-//            }
-//        });
+
         skillButtonGroup.addActor(karmaTabGood);
         skillButtonGroup.addActor(karmaTabEvil);
-
 
         Group controlGroup = new Group();
         controlGroup.addActor(controlWindow);
