@@ -717,7 +717,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
         if (isGameOver()) return false;
-        if (isSettingShown || isControlShown) return false;
+        if (isSettingShown) return false;
         Gdx.app.log("Active Skill", LocalDateTime.now() + " " + activeSkill.name());
         if (landscape.highlightedTile != null) {
             switch (activeSkill) {
@@ -1027,6 +1027,7 @@ public class GameScreen extends BaseScreen {
                     }
                     skillButton2.setChecked(false);
                     skillButton3.setChecked(false);
+                    Gdx.app.log("Skill Click", activeSkill.name());
                 }
             }
         });
@@ -1044,6 +1045,7 @@ public class GameScreen extends BaseScreen {
                     }
                     skillButton1.setChecked(false);
                     skillButton3.setChecked(false);
+                    Gdx.app.log("Skill Click", activeSkill.name());
                 }
             }
         });
@@ -1061,6 +1063,7 @@ public class GameScreen extends BaseScreen {
                     }
                     skillButton1.setChecked(false);
                     skillButton2.setChecked(false);
+                    Gdx.app.log("Skill Click", activeSkill.name());
                 }
             }
         });
@@ -1100,7 +1103,7 @@ public class GameScreen extends BaseScreen {
                     karmaTabGood.setChecked(false);
                     karmaTabEvil.setDisabled(true);
                     //karmaTabGood.setChecked(true);
-                    currentKarmaPicked = Karma.GOOD;
+                    currentKarmaPicked = Karma.EVIL;
                     activeSkill = Skill.NONE;
                     skillButton1.setChecked(false);
                     skillButton2.setChecked(false);
