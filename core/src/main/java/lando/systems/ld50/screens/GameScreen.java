@@ -37,6 +37,7 @@ import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
 import lando.systems.ld50.assets.InputPrompts;
 import lando.systems.ld50.audio.AudioManager;
+import lando.systems.ld50.cameras.RailsCamera;
 import lando.systems.ld50.cameras.SimpleCameraController;
 import lando.systems.ld50.objects.AnimationDecal;
 import lando.systems.ld50.objects.Landscape;
@@ -64,6 +65,8 @@ public class GameScreen extends BaseScreen {
     private final ScreenShakeCameraController shaker;
     private final SimpleCameraController cameraController;
     private final Landscape landscape;
+    private final RailsCamera railController;
+    private final InputMultiplexer muxP1, muxPX;
 
     private final Environment env;
     private final ModelBatch modelBatch;
@@ -108,6 +111,7 @@ public class GameScreen extends BaseScreen {
 
         cameraController = new SimpleCameraController(camera);
         shaker = new ScreenShakeCameraController(camera);
+        railController = new RailsCamera(camera);
 
         lightDir = new Vector3(-1f, -.8f, -.2f);
 
@@ -127,8 +131,9 @@ public class GameScreen extends BaseScreen {
         pickMapFBO =  new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth() / PICKMAP_SCALE, Gdx.graphics.getHeight() / PICKMAP_SCALE, true);
         PickMapFBOTex = pickMapFBO.getColorBufferTexture();
 
-        InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
-        Gdx.input.setInputProcessor(mux);
+        muxP1 = new InputMultiplexer(uiStage, this, railController, cameraController);
+        muxPX = new InputMultiplexer(uiStage, this, cameraController);
+        Gdx.input.setInputProcessor(muxP1);
 
         game.audio.playMusic(AudioManager.Musics.mainTheme);
         game.audio.musics.get(AudioManager.Musics.mainTheme).setVolume(0.3F);
@@ -144,8 +149,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void transitionCompleted() {
         super.transitionCompleted();
-        InputMultiplexer mux = new InputMultiplexer(uiStage, this, cameraController);
-        Gdx.input.setInputProcessor(mux);
+        Gdx.input.setInputProcessor(muxP1);
     }
 
     StringBuilder str = new StringBuilder();
@@ -226,13 +230,13 @@ public class GameScreen extends BaseScreen {
 
         // keep the camera focused on the bulk of the avalanche wave
         if (!cameraMovementPaused && cameraPhase == 1) {
-            float prevCameraMovementT = cameraMovementT;
-            float currCameraMovementT = getAvalancheProgress();
-            cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
-            camera.position.set(
-                    MathUtils.lerp(startPos.x, endPos.x, cameraMovementT),
-                    MathUtils.lerp(startPos.y, endPos.y, cameraMovementT),
-                    MathUtils.lerp(startPos.z, endPos.z, cameraMovementT));
+//            float prevCameraMovementT = cameraMovementT;
+//            float currCameraMovementT = getAvalancheProgress();
+//            cameraMovementT = MathUtils.lerp(prevCameraMovementT, currCameraMovementT, dt);
+//            camera.position.set(
+//                    MathUtils.lerp(startPos.x, endPos.x, cameraMovementT),
+//                    MathUtils.lerp(startPos.y, endPos.y, cameraMovementT),
+//                    MathUtils.lerp(startPos.z, endPos.z, cameraMovementT));
         } else if (cameraPhase % 2 == 0) {
             cameraTransitionDT += dt;
             double frac = cameraTransitionDT / 2.5;
@@ -240,6 +244,9 @@ public class GameScreen extends BaseScreen {
                 frac = 1;
                 cameraPhase++;
                 cameraTransitionDT = 0;
+                if (cameraPhase == 1) {
+                    Gdx.input.setInputProcessor(muxP1);
+                }
             }
             double tVal = frac < 0.5 ? 2 * frac * frac : 1 - ((-2 * frac + 2)*(-2*frac + 2)) / 2;//1-((1-frac)*(1-frac)*(1-frac));
             t1.set(camStartPos);
@@ -375,6 +382,7 @@ public class GameScreen extends BaseScreen {
     Vector3 camEndDir = new Vector3();
 
     private void TransitionCamera() {
+        Gdx.input.setInputProcessor(muxPX);
         cameraPhase = 2;
         camStartPos.set(camera.position);
         camMidPos.set(3f, 2f, camera.position.z + 5);
