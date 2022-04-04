@@ -10,6 +10,6 @@ varying vec4 v_color;
 varying vec3 v_pos;
 
 void main() {
-    gl_FragColor = vec4(v_color.g/256., v_color.b/256., 1. , 1.);
+    gl_FragColor = vec4(v_color.g/256., v_color.b/256., v_color.a , 1.);
 
 }

@@ -753,7 +753,7 @@ public class GameScreen extends BaseScreen {
         int x = screenX;
         int y = screenY;
         pickColor.set(pickPixmap.getPixel(x/PICKMAP_SCALE, y/PICKMAP_SCALE));
-        if (pickColor.a == 0) return hoverPos.set(-1, -1);
+        if (pickColor.a == 0 || pickColor.b == 0) return hoverPos.set(-1, -1);
         int col = (int) (pickColor.r * (255f));
         int row = (int) (pickColor.g * (255f));
         return hoverPos.set(col, row);
