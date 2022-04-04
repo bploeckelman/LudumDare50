@@ -103,15 +103,17 @@ public class Assets implements Disposable {
     public Sound houseImpact5;
 
     public enum Models {
-        coords, boulder_a, house_a, house_b, snowball_a, snowball_b, tree_b, tree_d, yeti, sphere;
+        coords, boulder_a, house_a, house_b, snowball_a, snowball_b, tree_b, tree_d, yeti, sphere,
+        building_a, building_a_snowed, building_a_part_a, building_a_part_b, building_a_part_c;
         public Model model;
 
         public static Model randomHouse() {
-            int which = MathUtils.random(0, 1);
+            int which = MathUtils.random(0, 2);
             switch (which) {
                 default:
                 case 0: return house_a.model;
                 case 1: return house_b.model;
+                case 2: return building_a.model;
             }
         }
     }
@@ -227,6 +229,11 @@ public class Assets implements Disposable {
             mgr.load("models/tree-b.g3db", Model.class);
             mgr.load("models/tree-d.g3db", Model.class);
             mgr.load("models/yeti_00.g3db", Model.class);
+            mgr.load("models/building-a.g3db", Model.class);
+            mgr.load("models/building-a-snowed.g3db", Model.class);
+            mgr.load("models/building-a-part-a.g3db", Model.class);
+            mgr.load("models/building-a-part-b.g3db", Model.class);
+            mgr.load("models/building-a-part-c.g3db", Model.class);
         }
 
         if (load == Load.SYNC) {
@@ -319,6 +326,11 @@ public class Assets implements Disposable {
         Models.tree_b.model     = mgr.get("models/tree-b.g3db", Model.class);
         Models.tree_d.model     = mgr.get("models/tree-d.g3db", Model.class);
         Models.yeti.model       = mgr.get("models/yeti_00.g3db", Model.class);
+        Models.building_a.model        = mgr.get("models/building-a.g3db", Model.class);
+        Models.building_a_snowed.model = mgr.get("models/building-a-snowed.g3db", Model.class);
+        Models.building_a_part_a.model = mgr.get("models/building-a-part-a.g3db", Model.class);
+        Models.building_a_part_b.model = mgr.get("models/building-a-part-b.g3db", Model.class);
+        Models.building_a_part_c.model = mgr.get("models/building-a-part-c.g3db", Model.class);
 
         // NOTE: these are special snowflakes, not loaded via AssetsManager so must be disposed manually
         ModelBuilder builder = new ModelBuilder();
