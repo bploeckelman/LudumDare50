@@ -337,8 +337,7 @@ public class GameScreen extends BaseScreen {
             }
         }
 
-        for (int i = decals.size - 1; i >= 0; i--) {
-            Decal decal = decalsStatic.get(i);
+        for (Decal decal : decalsStatic) {
             decalBatch.add(decal);
         }
         PhysicsDecal.updateAllDecalParticles(dt);
