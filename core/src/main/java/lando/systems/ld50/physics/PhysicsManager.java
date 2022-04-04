@@ -54,10 +54,7 @@ public class PhysicsManager {
                 //ball.position.add(ball.velocity.x * 0.1f, 0, 0);
             }
 
-            // Keep from falling through floor
-            if (ball.position.x > 0 && ball.position.z >0 && ball.position.x < totWidth && ball.position.z < totalLength && ball.position.y - ball.radius < 0){
-                ball.position.y = ball.radius;
-            }
+
 
             // Test if ball goes through floor
 
@@ -66,10 +63,21 @@ public class PhysicsManager {
                 testBallTile(ball, tile);
                 if (testBuilding(ball, tile)) {
                     ball.radius = 0;
+                    // TODO: Remove Decoration
                     tile.decoration.transform.scale(0.7f, 0.7f, 0.7f);
                     break;
                 }
 
+            }
+
+//            // Keep from falling through floor
+//            if (ball.position.x > 0 && ball.position.z >0 && ball.position.x < totWidth && ball.position.z < totalLength && ball.position.y - ball.radius < 0){
+//                ball.position.y = ball.radius;
+//            }
+
+            float height = ball.position.y - ball.radius - landscape.getHeightAt(ball.position.x, ball.position.z);
+            if (ball.position.x > 0 && ball.position.z >0 && ball.position.x < totWidth && ball.position.z < totalLength && height < 0){
+                ball.position.y += -height;
             }
 
 

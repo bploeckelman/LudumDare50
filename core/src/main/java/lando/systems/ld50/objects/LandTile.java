@@ -192,18 +192,22 @@ public class LandTile {
 
     public void makeDiverter(boolean left){
         if (left){
-            LRHeight = 1f;
+            LRHeight = 1.5f;
+//            URHeight = 1f;
+            LLHeight = .49f;
         } else {
-            LLHeight = 1f;
+            LLHeight = 1.5f;
+//            ULHeight = 1f;
+            LRHeight = .49f;
         }
         update(0);
         rebuildMesh();
     }
 
     public float getHeightAt(float x, float z){
-        float leftHeight = p1.y * z + p4.y *(1f - z);
-        float rightHeight = p2.y * z + p3.y *(1f - z);
-        return leftHeight * x + rightHeight * (1f - x);
+        float leftHeight = p1.y * (1f-z) + p4.y *( z);
+        float rightHeight = p2.y * (1f -z) + p3.y *(z);
+        return leftHeight * (1f -x) + rightHeight * ( x);
     }
 
 
