@@ -794,7 +794,7 @@ public class GameScreen extends BaseScreen {
 
         int numPeople = 24;
         for (int i = 0; i < numPeople; i++) {
-            LandTile tile = getUndecoratedTile(6);
+            LandTile tile = getUndecoratedTile(12);
 
             decals.add(getRandomPerson(tile.intX, tile.intZ));
         }
