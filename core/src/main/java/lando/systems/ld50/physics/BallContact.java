@@ -35,9 +35,11 @@ public class BallContact implements Comparable, Pool.Poolable
         if (tile.LRHeight > .5f && tile.LLHeight > .5f) {
             // Hit a ramp.
 
-            Main.game.audio.playSound(AudioManager.Sounds.thud);
+//            Main.game.audio.playSound(AudioManager.Sounds.thud);
 
         }
+        Main.game.audio.playSound(AudioManager.Sounds.thud);
+
         tile.addSnow(ball);
 
     }

@@ -28,6 +28,7 @@ public class AudioManager implements Disposable {
         cheer,
         click,
         collapse,
+        earth,
         explode,
         goodKarma,
         badKarma,
@@ -63,6 +64,7 @@ public class AudioManager implements Disposable {
 
         putSound(Sounds.chaching, assets.chachingSound);
         putSound(Sounds.click, assets.click1Sound);
+        putSound(Sounds.earth, assets.earthSound);
         putSound(Sounds.cheer, assets.cheer1Sound);
         putSound(Sounds.cheer, assets.cheer2Sound);
         putSound(Sounds.collapse, assets.collapse1Sound);
@@ -80,6 +82,10 @@ public class AudioManager implements Disposable {
         putSound(Sounds.rumble, assets.rumble4Sound);
         putSound(Sounds.screamFemale, assets.screamFemaleSound);
         putSound(Sounds.screamFemale, assets.screamFemale2Sound);
+        putSound(Sounds.screamFemale, assets.screamFemale3Sound);
+        putSound(Sounds.screamMale, assets.screamMale1Sound);
+        putSound(Sounds.screamMale, assets.screamMale2Sound);
+        putSound(Sounds.screamMale, assets.screamMale3Sound);
         putSound(Sounds.thud, assets.thud1Sound);
         putSound(Sounds.thud, assets.thud2Sound);
         putSound(Sounds.houseImpact, assets.houseImpact1);

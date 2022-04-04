@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import lando.systems.ld50.Main;
+import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.physics.Triangle;
 import lando.systems.ld50.utils.screenshake.SimplexNoise;
 
@@ -187,7 +188,10 @@ public class LandTile {
         LLHeight = 1f;
         LRHeight = 1f;
         update(0);
+        Main.game.audio.playSound(AudioManager.Sounds.earth, 0.5F);
+
         rebuildMesh();
+
     }
 
     public void makeDiverter(boolean left){
@@ -201,7 +205,10 @@ public class LandTile {
             LRHeight = .49f;
         }
         update(0);
+
+        Main.game.audio.playSound(AudioManager.Sounds.earth, 0.5F);
         rebuildMesh();
+
     }
 
     public float getHeightAt(float x, float z){

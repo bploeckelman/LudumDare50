@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
+import lando.systems.ld50.audio.AudioManager;
+import lando.systems.ld50.Main;
 
 public class AnimationDecal {
 
@@ -165,5 +167,11 @@ public class AnimationDecal {
         launched = true;
         moveTime = 0;
         moveTimeTotal = 5;
+        System.out.println(this.imageInfo.scream);
+        Main.game.audio.playSound(this.imageInfo.scream);
+//        this.imageInfo.scream;
+
+
+
     }
 }

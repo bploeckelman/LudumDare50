@@ -72,6 +72,7 @@ public class Assets implements Disposable {
     public Sound cheer1Sound;
     public Sound cheer2Sound;
     public Sound collapse1Sound;
+    public Sound earthSound;
     public Sound explode1Sound;
     public Sound explode2Sound;
     public Sound explode3Sound;
@@ -90,7 +91,10 @@ public class Assets implements Disposable {
     public Sound thud2Sound;
     public Sound screamFemaleSound;
     public Sound screamFemale2Sound;
-    public Sound screamMaleSound;
+    public Sound screamFemale3Sound;
+    public Sound screamMale1Sound;
+    public Sound screamMale2Sound;
+    public Sound screamMale3Sound;
     public Sound houseImpact1;
     public Sound houseImpact2;
     public Sound houseImpact3;
@@ -177,6 +181,7 @@ public class Assets implements Disposable {
             mgr.load("audio/sounds/cheer1.ogg", Sound.class);
             mgr.load("audio/sounds/cheer2.ogg", Sound.class);
             mgr.load("audio/sounds/click1.ogg", Sound.class);
+            mgr.load("audio/sounds/earth1.ogg", Sound.class);
             mgr.load("audio/sounds/collapse1.ogg", Sound.class);
             mgr.load("audio/sounds/explode1.ogg", Sound.class);
             mgr.load("audio/sounds/explode2.ogg", Sound.class);
@@ -195,6 +200,10 @@ public class Assets implements Disposable {
             mgr.load("audio/sounds/rumble4.ogg", Sound.class);
             mgr.load("audio/sounds/screamfemale.ogg", Sound.class);
             mgr.load("audio/sounds/screamfemale2.ogg", Sound.class);
+            mgr.load("audio/sounds/screamfemale3.ogg", Sound.class);
+            mgr.load("audio/sounds/screammale1.ogg", Sound.class);
+            mgr.load("audio/sounds/screammale2.ogg", Sound.class);
+            mgr.load("audio/sounds/screammale3.ogg", Sound.class);
             mgr.load("audio/sounds/thud1.ogg", Sound.class);
             mgr.load("audio/sounds/thud2.ogg", Sound.class);
             mgr.load("audio/sounds/houseImpact1.ogg", Sound.class);
@@ -253,6 +262,7 @@ public class Assets implements Disposable {
         chachingSound = mgr.get("audio/sounds/chaching.ogg", Sound.class);
         click1Sound = mgr.get("audio/sounds/click1.ogg", Sound.class);
         collapse1Sound = mgr.get("audio/sounds/collapse1.ogg", Sound.class);
+        earthSound = mgr.get("audio/sounds/earth1.ogg", Sound.class);
          explode1Sound = mgr.get("audio/sounds/explode1.ogg", Sound.class);
          explode2Sound = mgr.get("audio/sounds/explode2.ogg", Sound.class);
          explode3Sound = mgr.get("audio/sounds/explode3.ogg", Sound.class);
@@ -269,6 +279,10 @@ public class Assets implements Disposable {
          rumble4Sound = mgr.get("audio/sounds/rumble4.ogg", Sound.class);
           screamFemaleSound = mgr.get("audio/sounds/screamfemale.ogg", Sound.class);
           screamFemale2Sound = mgr.get("audio/sounds/screamfemale2.ogg", Sound.class);
+          screamFemale3Sound = mgr.get("audio/sounds/screamfemale3.ogg", Sound.class);
+          screamMale1Sound = mgr.get("audio/sounds/screammale1.ogg", Sound.class);
+          screamMale2Sound = mgr.get("audio/sounds/screammale2.ogg", Sound.class);
+          screamMale3Sound = mgr.get("audio/sounds/screammale3.ogg", Sound.class);
           thud1Sound = mgr.get("audio/sounds/thud1.ogg", Sound.class);
           thud2Sound = mgr.get("audio/sounds/thud2.ogg", Sound.class);
           houseImpact1 = mgr.get("audio/sounds/houseImpact1.ogg", Sound.class);
