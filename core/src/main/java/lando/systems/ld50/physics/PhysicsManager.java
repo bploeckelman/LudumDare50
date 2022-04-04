@@ -43,6 +43,7 @@ public class PhysicsManager {
 
     float scale = 1f;
     public void update(float dt){
+        if (dt == 0) return;
 //        if (true) return;
         // TODO: Remove this stuff for release
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)){
