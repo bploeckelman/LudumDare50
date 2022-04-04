@@ -4,9 +4,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.objects.LandTile;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
+import lando.systems.ld50.Main;
 
 public class PhysicsManager {
 
@@ -65,6 +67,7 @@ public class PhysicsManager {
                     ball.radius = 0;
                     // TODO: Remove Decoration
                     tile.decoration.transform.scale(0.7f, 0.7f, 0.7f);
+                    Main.game.audio.playSound(AudioManager.Sounds.houseImpact, 0.3F);
                     break;
                 }
 

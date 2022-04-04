@@ -89,7 +89,13 @@ public class Assets implements Disposable {
     public Sound thud1Sound;
     public Sound thud2Sound;
     public Sound screamFemaleSound;
+    public Sound screamFemale2Sound;
     public Sound screamMaleSound;
+    public Sound houseImpact1;
+    public Sound houseImpact2;
+    public Sound houseImpact3;
+    public Sound houseImpact4;
+    public Sound houseImpact5;
 
     public enum Models {
         coords, boulder_a, house_a, house_b, snowball_a, snowball_b, tree_b, tree_d, yeti, sphere;
@@ -188,8 +194,14 @@ public class Assets implements Disposable {
             mgr.load("audio/sounds/rumble3.ogg", Sound.class);
             mgr.load("audio/sounds/rumble4.ogg", Sound.class);
             mgr.load("audio/sounds/screamfemale.ogg", Sound.class);
+            mgr.load("audio/sounds/screamfemale2.ogg", Sound.class);
             mgr.load("audio/sounds/thud1.ogg", Sound.class);
             mgr.load("audio/sounds/thud2.ogg", Sound.class);
+            mgr.load("audio/sounds/houseImpact1.ogg", Sound.class);
+            mgr.load("audio/sounds/houseImpact2.ogg", Sound.class);
+            mgr.load("audio/sounds/houseImpact3.ogg", Sound.class);
+            mgr.load("audio/sounds/houseImpact4.ogg", Sound.class);
+            mgr.load("audio/sounds/houseImpact5.ogg", Sound.class);
 //            mgr.load("audio/sounds/.ogg", Sound.class);
 
 
@@ -256,9 +268,14 @@ public class Assets implements Disposable {
          rumble3Sound = mgr.get("audio/sounds/rumble3.ogg", Sound.class);
          rumble4Sound = mgr.get("audio/sounds/rumble4.ogg", Sound.class);
           screamFemaleSound = mgr.get("audio/sounds/screamfemale.ogg", Sound.class);
+          screamFemale2Sound = mgr.get("audio/sounds/screamfemale2.ogg", Sound.class);
           thud1Sound = mgr.get("audio/sounds/thud1.ogg", Sound.class);
           thud2Sound = mgr.get("audio/sounds/thud2.ogg", Sound.class);
-//          = mgr.get("audio/sounds/.ogg", Sound.class);
+          houseImpact1 = mgr.get("audio/sounds/houseImpact1.ogg", Sound.class);
+          houseImpact2 = mgr.get("audio/sounds/houseImpact2.ogg", Sound.class);
+          houseImpact3 = mgr.get("audio/sounds/houseImpact3.ogg", Sound.class);
+          houseImpact4 = mgr.get("audio/sounds/houseImpact4.ogg", Sound.class);
+          houseImpact5 = mgr.get("audio/sounds/houseImpact5.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);
