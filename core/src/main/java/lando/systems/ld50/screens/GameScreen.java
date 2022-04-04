@@ -102,6 +102,8 @@ public class GameScreen extends BaseScreen {
     private boolean isControlHidden = false;
     private Button minimizeButton;
 
+    private float ambienceSoundTime;
+
     public GameScreen() {
 //        profiler = new GLProfiler(Gdx.graphics);
 //        profiler.enable();
@@ -135,8 +137,16 @@ public class GameScreen extends BaseScreen {
         muxPX = new InputMultiplexer(uiStage, this, cameraController);
         Gdx.input.setInputProcessor(muxP1);
 
+
         game.audio.playMusic(AudioManager.Musics.mainTheme);
-        game.audio.musics.get(AudioManager.Musics.mainTheme).setVolume(0.3F);
+//        game.audio.musics.get(AudioManager.Musics.mainTheme).setVolume(0.1F);
+
+        ambienceSoundTime = MathUtils.random(5f, 10f);
+
+        game.audio.playSound(AudioManager.Sounds.rumble, 0.8F);
+//        game.audio.playSound(AudioManager.Sounds.chaching);
+        System.out.println("Fired sound on GameScreen launch");
+
     }
 
     @Override
@@ -270,6 +280,19 @@ public class GameScreen extends BaseScreen {
         updateDebugElements();
         updateProgressBarValue();
         minimizeButton.setZIndex(minimizeButton.getZIndex() + 3);
+
+        // Create periodic rumbles of avalanche
+
+//        game.audio.playSound(AudioManager.Sounds.rumble, 0.8f);
+
+        ambienceSoundTime-= dt;
+
+
+        if (ambienceSoundTime <= 2){
+            game.audio.playSound(AudioManager.Sounds.rumble, 0.8f);
+            ambienceSoundTime = MathUtils.random(4f, 10f);
+            System.out.println("Played sound");
+        }
     }
 
     Vector3 t1 = new Vector3();

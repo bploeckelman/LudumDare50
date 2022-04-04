@@ -63,26 +63,28 @@ public class Assets implements Disposable {
 
 
     public Sound chachingSound;
-    public Sound click1;
-    public Sound cheer1;
-    public Sound cheer2;
-    public Sound collapse1;
-    public Sound explode1;
-    public Sound explode2;
-    public Sound guitar1;
-    public Sound harp1;
-    public Sound helicopter1;
-    public Sound helicopter2;
-    public Sound laser1;
-    public Sound laser2;
-    public Sound rumble1;
-    public Sound rumble2;
-    public Sound rumble3;
-    public Sound rumble4;
-    public Sound thud1;
-    public Sound thud2;
-    public Sound screamFemale;
-    public Sound screamMale;
+    public Sound click1Sound;
+    public Sound cheer1Sound;
+    public Sound cheer2Sound;
+    public Sound collapse1Sound;
+    public Sound explode1Sound;
+    public Sound explode2Sound;
+    public Sound explode3Sound;
+    public Sound explode4Sound;
+    public Sound guitar1Sound;
+    public Sound harp1Sound;
+    public Sound helicopter1Sound;
+    public Sound helicopter2Sound;
+    public Sound laser1Sound;
+    public Sound laser2Sound;
+    public Sound rumble1Sound;
+    public Sound rumble2Sound;
+    public Sound rumble3Sound;
+    public Sound rumble4Sound;
+    public Sound thud1Sound;
+    public Sound thud2Sound;
+    public Sound screamFemaleSound;
+    public Sound screamMaleSound;
 
     public enum Models {
         coords, boulder_a, house_a, house_b, snowball_a, snowball_b, yeti, sphere;
@@ -218,6 +220,29 @@ public class Assets implements Disposable {
         introMusic = mgr.get("audio/musics/music-intro.ogg", Music.class);
 
         chachingSound = mgr.get("audio/sounds/chaching.ogg", Sound.class);
+        click1Sound = mgr.get("audio/sounds/click1.ogg", Sound.class);
+        collapse1Sound = mgr.get("audio/sounds/collapse1.ogg", Sound.class);
+         explode1Sound = mgr.get("audio/sounds/explode1.ogg", Sound.class);
+         explode2Sound = mgr.get("audio/sounds/explode2.ogg", Sound.class);
+         explode3Sound = mgr.get("audio/sounds/explode3.ogg", Sound.class);
+         explode4Sound = mgr.get("audio/sounds/explode4.ogg", Sound.class);
+         guitar1Sound = mgr.get("audio/sounds/guitar1.ogg", Sound.class);
+         harp1Sound = mgr.get("audio/sounds/harp1.ogg", Sound.class);
+         helicopter1Sound = mgr.get("audio/sounds/helicopter1.ogg", Sound.class);
+         helicopter2Sound = mgr.get("audio/sounds/helicopter2.ogg", Sound.class);
+         laser1Sound = mgr.get("audio/sounds/laser1.ogg", Sound.class);
+         laser2Sound = mgr.get("audio/sounds/laser2.ogg", Sound.class);
+         rumble1Sound = mgr.get("audio/sounds/rumble1.ogg", Sound.class);
+         rumble2Sound = mgr.get("audio/sounds/rumble1.ogg", Sound.class);
+         rumble3Sound = mgr.get("audio/sounds/rumble3.ogg", Sound.class);
+         rumble4Sound = mgr.get("audio/sounds/rumble4.ogg", Sound.class);
+          screamFemaleSound = mgr.get("audio/sounds/screamfemale.ogg", Sound.class);
+          thud1Sound = mgr.get("audio/sounds/thud1.ogg", Sound.class);
+          thud2Sound = mgr.get("audio/sounds/thud2.ogg", Sound.class);
+//          = mgr.get("audio/sounds/.ogg", Sound.class);
+//          = mgr.get("audio/sounds/.ogg", Sound.class);
+//          = mgr.get("audio/sounds/.ogg", Sound.class);
+//          = mgr.get("audio/sounds/.ogg", Sound.class);
 
         cat = new Animation<>(0.1f, atlas.findRegions("pets/cat"), Animation.PlayMode.LOOP);
         dog = new Animation<>(0.1f, atlas.findRegions("pets/dog"), Animation.PlayMode.LOOP);

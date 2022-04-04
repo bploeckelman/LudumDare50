@@ -61,25 +61,25 @@ public class AudioManager implements Disposable {
         this.tween = game.tween;
 
         putSound(Sounds.chaching, assets.chachingSound);
-        putSound(Sounds.click, assets.click1);
-        putSound(Sounds.cheer, assets.cheer1);
-        putSound(Sounds.cheer, assets.cheer2);
-        putSound(Sounds.collapse, assets.collapse1);
-        putSound(Sounds.explode, assets.explode1);
-        putSound(Sounds.explode, assets.explode2);
-        putSound(Sounds.goodKarma, assets.harp1);
-        putSound(Sounds.badKarma, assets.guitar1);
-        putSound(Sounds.helicopter, assets.helicopter1);
-        putSound(Sounds.helicopter, assets.helicopter2);
-        putSound(Sounds.laser, assets.laser1);
-        putSound(Sounds.laser, assets.laser2);
-        putSound(Sounds.rumble, assets.rumble1);
-        putSound(Sounds.rumble, assets.rumble2);
-        putSound(Sounds.rumble, assets.rumble3);
-        putSound(Sounds.rumble, assets.rumble4);
-        putSound(Sounds.screamFemale, assets.screamFemale);
-        putSound(Sounds.thud, assets.thud1);
-        putSound(Sounds.thud, assets.thud2);
+        putSound(Sounds.click, assets.click1Sound);
+        putSound(Sounds.cheer, assets.cheer1Sound);
+        putSound(Sounds.cheer, assets.cheer2Sound);
+        putSound(Sounds.collapse, assets.collapse1Sound);
+        putSound(Sounds.explode, assets.explode1Sound);
+        putSound(Sounds.explode, assets.explode2Sound);
+        putSound(Sounds.goodKarma, assets.harp1Sound);
+        putSound(Sounds.badKarma, assets.guitar1Sound);
+        putSound(Sounds.helicopter, assets.helicopter1Sound);
+        putSound(Sounds.helicopter, assets.helicopter2Sound);
+        putSound(Sounds.laser, assets.laser1Sound);
+        putSound(Sounds.laser, assets.laser2Sound);
+        putSound(Sounds.rumble, assets.rumble1Sound);
+        putSound(Sounds.rumble, assets.rumble2Sound);
+        putSound(Sounds.rumble, assets.rumble3Sound);
+        putSound(Sounds.rumble, assets.rumble4Sound);
+        putSound(Sounds.screamFemale, assets.screamFemaleSound);
+        putSound(Sounds.thud, assets.thud1Sound);
+        putSound(Sounds.thud, assets.thud2Sound);
 //        putSound(Sounds., assets.);
 //        putSound(Sounds., assets.);
 
@@ -87,7 +87,7 @@ public class AudioManager implements Disposable {
         musics.put(Musics.mainTheme, assets.mainTheme);
         musics.put(Musics.introMusic, assets.introMusic);
 
-        musicVolume = new MutableFloat(.5f);
+        musicVolume = new MutableFloat(.5f); // PETE CHANGE
         soundVolume = new MutableFloat(.5f);
 
         isMusicMuted = false;

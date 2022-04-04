@@ -29,7 +29,8 @@ public class TitleScreen extends BaseScreen {
         //   so that it's set correctly in desktop mode where there's no transition
         InputMultiplexer mux = new InputMultiplexer(uiStage, this);
         Gdx.input.setInputProcessor(mux);
-        game.audio.playMusic(AudioManager.Musics.introMusic);
+
+//        game.audio.playMusic(AudioManager.Musics.introMusic);
     }
 
     @Override
