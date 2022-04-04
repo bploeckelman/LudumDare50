@@ -818,6 +818,7 @@ public class GameScreen extends BaseScreen {
 
         AnimationDecal person = new AnimationDecal(assets, personInfo, landscape, x, z);
         person.autoMove = true;
+        person.isPerson = true;
         person.moveToTile(landscape.getRandomX(), z);
         return person;
     }
@@ -902,6 +903,7 @@ public class GameScreen extends BaseScreen {
                     landscape.highlightedTile.makeRamp();
                     break;
                 case PLOW:
+                    addPlow(landscape);
                     break;
                 case HELI:
                     break;
@@ -911,6 +913,7 @@ public class GameScreen extends BaseScreen {
                 case BOULDER:
                     break;
                 case LASER:
+                    killPerson(landscape.highlightedTile);
                     break;
                 case NONE:
                 default:
@@ -958,6 +961,22 @@ public class GameScreen extends BaseScreen {
         int row = (int) (pickColor.g * (255f));
         if (row < 4 || row > 96) row = -1;
         return hoverPos.set(col, row);
+    }
+
+    private boolean isPlowing = false;
+    private void addPlow(Landscape landscape) {
+        if (isPlowing) { return; }
+
+        // add plow
+    }
+
+    private void killPerson(LandTile selectedTile) {
+        for (AnimationDecal animationDecal : decals) {
+            if (animationDecal.isPerson && animationDecal.isOn(selectedTile)) {
+                // TODO: LAZER MOTHER FUCKER
+                animationDecal.hit();
+            }
+        }
     }
 
     private static class DebugElements {

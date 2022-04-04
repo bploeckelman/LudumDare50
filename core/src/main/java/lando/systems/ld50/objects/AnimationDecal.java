@@ -41,6 +41,7 @@ public class AnimationDecal {
     private Array<Decal> waveDecals = new Array<>();
 
     public boolean autoMove = false;
+    public boolean isPerson = false;
 
 //    public AnimationDecal(ImageInfo imageInfo, int x, int z) {
 //        this(Main.game.getScreen().assets, imageInfo, ((GameScreen) Main.game.getScreen()).landscape, x, z);
@@ -182,5 +183,11 @@ public class AnimationDecal {
         waveTime = moveTime = 0;
         moveTimeTotal = 5;
         Main.game.audio.playSound(this.imageInfo.scream, 0.35F);
+    }
+
+    public boolean isOn(LandTile tile) {
+        int x = tile.intX;
+        int z = tile.intZ;
+        return (position.x >= x && position.x <= x + tile.width && position.z >= z && position.z <= z + tile.width);
     }
 }
