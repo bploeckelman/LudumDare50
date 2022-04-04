@@ -216,12 +216,15 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         closeSettingsButton.setPosition(settingsPaneBoundsHidden.x + settingsPaneBoundsHidden.width - closeSettingsButton.getWidth(), settingsPaneBoundsHidden.y + settingsPaneBoundsHidden.height - closeSettingsButton.getHeight());
         closeSettingsButton.setClip(false);
 
+        float showDuration = 0.2f;
+        float hideDuration = 0.1f;
+
         hideCloseSettingsButtonAction = new MoveToAction();
         hideCloseSettingsButtonAction.setPosition(settingsPaneBoundsHidden.x + settingsPaneBoundsHidden.width - closeSettingsButton.getWidth(), settingsPaneBoundsHidden.y + settingsPaneBoundsHidden.getHeight() - closeSettingsButton.getHeight());;
-        hideCloseSettingsButtonAction.setDuration(.5f);
+        hideCloseSettingsButtonAction.setDuration(hideDuration);
         showCloseSettingsButtonAction = new MoveToAction();
         showCloseSettingsButtonAction.setPosition(settingsPaneBoundsVisible.x + settingsPaneBoundsVisible.width - closeSettingsButton.getWidth(), settingsPaneBoundsVisible.y + settingsPaneBoundsVisible.getHeight() - closeSettingsButton.getHeight());
-        showCloseSettingsButtonAction.setDuration(.5f);
+        showCloseSettingsButtonAction.setDuration(showDuration);
 
         closeSettingsButton.addListener(new ChangeListener() {
             @Override
@@ -235,12 +238,12 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
 
         hideSettingsPaneAction = new MoveToAction();
         hideSettingsPaneAction.setPosition(settingsPaneBoundsHidden.x, settingsPaneBoundsHidden.y);
-        hideSettingsPaneAction.setDuration(.5f);
+        hideSettingsPaneAction.setDuration(hideDuration);
         //hideSettingsPaneAction.setActor(settingsWindow);
 
         showSettingsPaneAction = new MoveToAction();
         showSettingsPaneAction.setPosition(settingsPaneBoundsVisible.x, settingsPaneBoundsVisible.y);
-        showSettingsPaneAction.setDuration(.5f);
+        showSettingsPaneAction.setDuration(showDuration);
         //showSettingsPaneAction.setActor(settingsWindow);
         //greyOutWindow.addActor(settingsWindow);
         uiStage.addActor(greyOutWindow);
