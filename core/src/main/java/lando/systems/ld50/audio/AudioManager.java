@@ -164,6 +164,7 @@ public class AudioManager implements Disposable {
     }
 
     public long playSound(Sounds soundOption, float volume) {
+        volume = volume * soundVolume.floatValue();
         if (isSoundMuted || soundOption == Sounds.none) return -1;
 
         SoundContainer soundCont = sounds.get(soundOption);
@@ -177,6 +178,7 @@ public class AudioManager implements Disposable {
     }
 
     public long playSound(Sounds soundOption, float volume, float pitch, float pan) {
+        volume = volume * soundVolume.floatValue();
         if (isSoundMuted || soundOption == Sounds.none) return -1;
 
         SoundContainer soundCont = sounds.get(soundOption);

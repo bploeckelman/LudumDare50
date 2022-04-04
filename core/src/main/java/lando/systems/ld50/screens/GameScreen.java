@@ -1295,55 +1295,82 @@ public class GameScreen extends BaseScreen {
         skillButton1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (skillButton1.isChecked()) {
-                    switch (currentKarmaPicked) {
-                        case GOOD:
+                switch (currentKarmaPicked) {
+                    case GOOD:
+                        if (activeSkill == Skill.RAMP) {
+                            activeSkill = Skill.NONE;
+                            skillButton1.setFocusBorderEnabled(false);
+                        } else {
+                            skillButton1.setFocusBorderEnabled(true);
                             activeSkill = Skill.RAMP;
-                            break;
-                        case EVIL:
+                        }
+                        break;
+                    case EVIL:
+                        if (activeSkill == Skill.DIVERTER) {
+                            activeSkill = Skill.NONE;
+                            skillButton1.setFocusBorderEnabled(false);
+                        } else {
+                            skillButton1.setFocusBorderEnabled(true);
                             activeSkill = Skill.DIVERTER;
-                            break;
-                    }
-                    skillButton2.setChecked(false);
-                    skillButton3.setChecked(false);
-                    Gdx.app.log("Skill Click", activeSkill.name());
+                        }
+                        break;
                 }
+                skillButton2.setChecked(false);
+                skillButton3.setChecked(false);
             }
         });
         skillButton2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (skillButton2.isChecked()) {
-                    switch (currentKarmaPicked) {
-                        case GOOD:
+                switch (currentKarmaPicked) {
+                    case GOOD:
+                        if (activeSkill == Skill.PLOW) {
+                            activeSkill = Skill.NONE;
+                            skillButton2.setFocusBorderEnabled(false);
+                        } else {
+                            skillButton2.setFocusBorderEnabled(true);
                             activeSkill = Skill.PLOW;
-                            break;
-                        case EVIL:
+                        }
+                        break;
+                    case EVIL:
+                        if (activeSkill == Skill.BOULDER) {
+                            activeSkill = Skill.NONE;
+                            skillButton2.setFocusBorderEnabled(false);
+                        } else {
+                            skillButton2.setFocusBorderEnabled(true);
                             activeSkill = Skill.BOULDER;
-                            break;
-                    }
-                    skillButton1.setChecked(false);
-                    skillButton3.setChecked(false);
-                    Gdx.app.log("Skill Click", activeSkill.name());
+                        }
+                        break;
                 }
+                skillButton1.setChecked(false);
+                skillButton3.setChecked(false);
             }
         });
         skillButton3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (skillButton3.isChecked()) {
-                    switch (currentKarmaPicked) {
-                        case GOOD:
+                switch (currentKarmaPicked) {
+                    case GOOD:
+                        if (activeSkill == Skill.HELI) {
+                            activeSkill = Skill.NONE;
+                            skillButton3.setFocusBorderEnabled(false);
+                        } else {
+                            skillButton3.setFocusBorderEnabled(true);
                             activeSkill = Skill.HELI;
-                            break;
-                        case EVIL:
+                        }
+                        break;
+                    case EVIL:
+                        if (activeSkill == Skill.LASER) {
+                            activeSkill = Skill.NONE;
+                            skillButton3.setFocusBorderEnabled(false);
+                        } else {
+                            skillButton3.setFocusBorderEnabled(true);
                             activeSkill = Skill.LASER;
-                            break;
-                    }
-                    skillButton1.setChecked(false);
-                    skillButton2.setChecked(false);
-                    Gdx.app.log("Skill Click", activeSkill.name());
+                        }
+                        break;
                 }
+                skillButton1.setChecked(false);
+                skillButton2.setChecked(false);
             }
         });
 
