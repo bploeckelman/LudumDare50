@@ -252,6 +252,7 @@ public class Particles implements Disposable {
                     .startSize(size * 0.55f, size)
                     .velocity(0, 40)
                     .startPos(x - ((pointsStr.length()-1) * size) * 0.3f + (i * size) * 0.6f, y)
+                    .timeToLive(2.5f)
                     .init());
         }
     }
