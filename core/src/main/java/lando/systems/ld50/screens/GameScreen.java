@@ -23,14 +23,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.kotcrab.vis.ui.widget.VisLabel;
-import com.kotcrab.vis.ui.widget.VisProgressBar;
-import com.kotcrab.vis.ui.widget.VisSlider;
-import com.kotcrab.vis.ui.widget.VisWindow;
+import com.kotcrab.vis.ui.widget.*;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
@@ -95,6 +96,7 @@ public class GameScreen extends BaseScreen {
     private VisProgressBar progressBar;
     private VisSlider cameraSlider;
     private float accum = 0;
+    private boolean isControlHidden = false;
 
     public GameScreen() {
 //        profiler = new GLProfiler(Gdx.graphics);
@@ -551,7 +553,7 @@ public class GameScreen extends BaseScreen {
 
     private void initializeGameUI() {
         initializeAvalancheProgressBarUI();
-        //initializeControlUI();
+        initializeControlUI();
     }
 
     private void initializeScoreUI() {
@@ -560,10 +562,65 @@ public class GameScreen extends BaseScreen {
     }
 
     private void initializeControlUI() {
-        VisWindow controlWindow = new VisWindow("", "default");
+        VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
+        VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
+        controlUIStyle.background = Assets.Patch.metal.drawable;
+        VisWindow controlWindow = new VisWindow("", controlUIStyle);
         controlWindow.setPosition(0f, 0f);
-        controlWindow.setSize(camera.viewportWidth / 4, camera.viewportHeight / 4);
-        uiStage.addActor(controlWindow);
+        controlWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
+        controlWindow.setKeepWithinStage(false);
+        //uiStage.addActor(controlWindow);
+
+        Button.ButtonStyle toggleButtonStyle = skin.get("toggle", Button.ButtonStyle.class);
+        Button.ButtonStyle customMinimizeStyle = new Button.ButtonStyle(toggleButtonStyle);
+        customMinimizeStyle.checked = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_plus));
+        customMinimizeStyle.up = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.light_big_minus));
+        Button button = new Button(customMinimizeStyle);
+        button.setSize(35f, 35f);
+        button.setPosition(controlWindow.getWidth() - button.getWidth(), controlWindow.getHeight() - button.getHeight());
+
+        Group controlGroup = new Group();
+        controlGroup.addActor(controlWindow);
+        controlGroup.addActor(button);
+
+        uiStage.addActor(controlGroup);
+
+//        MoveByAction minimizeControlAction = new MoveByAction();
+//        minimizeControlAction.setAmount(0, -controlWindow.getHeight() + button.getHeight());
+//        MoveByAction maximizeControlAction = new MoveByAction();
+//        maximizeControlAction.setAmount(0, controlWindow.getHeight() - button.getHeight());
+
+        Action minimizeTransitionAction = Actions.moveBy(0, -controlWindow.getHeight() + button.getHeight(), 0.5f);
+        Action maximizeTransitionAction = Actions.moveBy(0, controlWindow.getHeight() - button.getHeight(), 0.5f);
+
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (isControlHidden) {
+//                    controlWindow.addAction(maximizeControlAction);
+//                    button.addAction(maximizeTransitionAction);
+                    maximizeTransitionAction.reset();
+                    controlGroup.addAction(maximizeTransitionAction);
+                    isControlHidden = false;
+                } else {
+//                    controlWindow.addAction(minimizeControlAction);
+//                    button.addAction(minimizeTransitionAction);
+                    minimizeTransitionAction.reset();
+                    controlGroup.addAction(minimizeTransitionAction);
+                    isControlHidden = true;
+                }
+            }
+        });
+        //uiStage.addActor(button);
+//        VisImageButton minimizeControlUIButton = new VisImageButton("close");
+//        minimizeControlUIButton.setSize(35f, 35f);
+//        minimizeControlUIButton.setPosition(controlWindow.getWidth() - minimizeControlUIButton.getWidth(), controlWindow.getHeight() - minimizeControlUIButton.getHeight());
+//        uiStage.addActor(minimizeControlUIButton);
+
+//        VisLabel minimizeLabel = new VisLabel("Minimize", "outfit-medium-20px");
+//        minimizeLabel.setHeight(minimizeControlUIButton.getHeight());
+//        minimizeLabel.setPosition(minimizeControlUIButton.getX() - minimizeControlUIButton.getWidth() - 75f, minimizeControlUIButton.getY());
+//        uiStage.addActor(minimizeLabel);
     }
 
     private void initializeAvalancheProgressBarUI() {
