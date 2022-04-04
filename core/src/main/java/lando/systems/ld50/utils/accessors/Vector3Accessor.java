@@ -12,7 +12,8 @@ public class Vector3Accessor implements TweenAccessor<Vector3> {
     public static final int Y = 2;
     public static final int Z = 3;
     public static final int XY = 4;
-    public static final int XYZ = 5;
+    public static final int XZ = 5;
+    public static final int XYZ = 6;
 
     @Override
     public int getValues(Vector3 target, int tweenType, float[] returnValues) {
@@ -23,6 +24,10 @@ public class Vector3Accessor implements TweenAccessor<Vector3> {
             case XY:
                 returnValues[0] = target.x;
                 returnValues[1] = target.y;
+                return 2;
+            case XZ:
+                returnValues[0] = target.x;
+                returnValues[1] = target.z;
                 return 2;
             case XYZ:
                 returnValues[0] = target.x;
@@ -42,6 +47,10 @@ public class Vector3Accessor implements TweenAccessor<Vector3> {
             case XY:
                 target.x = newValues[0];
                 target.y = newValues[1];
+                break;
+            case XZ:
+                target.x = newValues[0];
+                target.z = newValues[1];
                 break;
             case XYZ:
                 target.x = newValues[0];

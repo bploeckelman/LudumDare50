@@ -1,5 +1,7 @@
 package lando.systems.ld50.objects;
 
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -8,8 +10,10 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
+import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.physics.PhysicsManager;
 import lando.systems.ld50.screens.GameScreen;
+import lando.systems.ld50.utils.accessors.Vector3Accessor;
 
 import static lando.systems.ld50.objects.LandTile.*;
 
@@ -328,7 +332,16 @@ public class Landscape {
     public void setGameOver(){
         if (screen.gameOver) return; // only call once
         screen.gameOver = true;
-        int numRows = 5;
+        screen.creatureInstances.add(screen.yetiModel);
+        screen.yetiPosition.set(4.5f, 0, 85f);
+        Timeline.createParallel()
+                .push(Tween.to(screen.yetiPosition, Vector3Accessor.XZ, 2f)
+                        .target(4.5f, 93f))
+                .push(Tween.to(screen.yetiPosition, Vector3Accessor.Y, .4f)
+                        .target(.5f)
+                        .repeatYoyo(40, 0))
+                .start(Main.game.tween);
+        int numRows = 6;
         for (int j = 0; j < numRows; j++) {
             for (int i = 0; i < TILES_WIDE * 3; i++) {
                 Snowball s = new Snowball(i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f), 1.f, 85.5f - j, .3f + MathUtils.random(-0.06f, 0.12f), this);
