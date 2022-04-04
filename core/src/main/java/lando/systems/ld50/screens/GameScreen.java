@@ -887,7 +887,7 @@ public class GameScreen extends BaseScreen {
 
 
         VisImageButton settingsButton = new VisImageButton(settingsButtonStyle);
-        settingsButton.setSize(100f, 100f);
+        settingsButton.setSize(50f, 50f);
         settingsButton.setPosition(25f, 7f / 8f * windowCamera.viewportHeight - settingsButton.getHeight() - 25f);
 
         settingsButton.addListener(new ChangeListener() {
@@ -941,9 +941,9 @@ public class GameScreen extends BaseScreen {
 
     private void initializeNextDayButtonUI() {
         VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
-        VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
-        controlUIStyle.background = Assets.Patch.glass.drawable;
-        nextDayWindow = new VisWindow("", controlUIStyle);
+        VisWindow.WindowStyle nextDayWindowStyle = new VisWindow.WindowStyle(defaultStyle);
+        nextDayWindowStyle.background = Assets.Patch.glass.drawable;
+        nextDayWindow = new VisWindow("", nextDayWindowStyle);
         nextDayWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
         nextDayWindow.setPosition(windowCamera.viewportWidth * 3 / 4, 0f);
         nextDayWindow.setKeepWithinStage(false);
@@ -980,12 +980,20 @@ public class GameScreen extends BaseScreen {
     private void initializeControlUI() {
         float buttonSize = 35f;
 
+//        VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
+//        VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
+//        controlUIStyle.background = Assets.Patch.glass.drawable;
+//        VisWindow controlWindow = new VisWindow("", controlUIStyle);
+//        controlWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
+//        controlWindow.setPosition(0f, -controlWindow.getHeight() + buttonSize);
+//        controlWindow.setKeepWithinStage(false);
+//        controlWindow.setMovable(false);
         VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
         VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
         controlUIStyle.background = Assets.Patch.glass.drawable;
         VisWindow controlWindow = new VisWindow("", controlUIStyle);
-        controlWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
-        controlWindow.setPosition(0f, -controlWindow.getHeight() + buttonSize);
+        controlWindow.setSize(windowCamera.viewportWidth / 8, windowCamera.viewportHeight * 5 / 8);
+        controlWindow.setPosition(0f, windowCamera.viewportHeight / 8f);
         controlWindow.setKeepWithinStage(false);
         controlWindow.setMovable(false);
 
@@ -1003,9 +1011,10 @@ public class GameScreen extends BaseScreen {
         VisTextButton.VisTextButtonStyle redTextButtonStyle = new VisTextButton.VisTextButtonStyle(blueTextButtonStyle);
         //blue: {focusBorder: border-dark-blue, down: button-blue-down, up: button-blue, over: button-blue-over, disabled: button, font: default-font, fontColor: white, disabledFontColor: grey },
         blueTextButtonStyle.disabled = new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE));
+        blueTextButtonStyle.disabledFontColor = Color.WHITE;
         redTextButtonStyle.checked = new TextureRegionDrawable(getColoredTextureRegion(Color.RED));
         redTextButtonStyle.disabled = new TextureRegionDrawable(getColoredTextureRegion(Color.RED));
-
+        redTextButtonStyle.disabledFontColor = Color.WHITE;
 
         VisTextButton karmaTabGood = new VisTextButton("Good", blueTextButtonStyle);
         VisTextButton karmaTabEvil = new VisTextButton("Evil", redTextButtonStyle);
@@ -1063,13 +1072,13 @@ public class GameScreen extends BaseScreen {
         skillButton1.setSize(buttonWidth, buttonHeight);
         skillButton2.setSize(buttonWidth, buttonHeight);
         skillButton3.setSize(buttonWidth, buttonHeight);
-        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
-        skillButton2.setPosition(skillButton1.getX() + buttonWidth + buttonMargin , buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
-        skillButton3.setPosition(skillButton2.getX() + buttonWidth + buttonMargin, buttonMargin * 2f - controlWindow.getHeight() + minimizeButton.getHeight());
+        skillButton1.setPosition(controlWindow.getX() + buttonMargin * 2f, controlWindow.getY() + karmaTabGood.getHeight() - buttonMargin);
+        skillButton2.setPosition(controlWindow.getX() + buttonMargin * 2f , skillButton1.getY() - buttonMargin);
+        skillButton3.setPosition(controlWindow.getX() + buttonMargin * 2f, skillButton2.getY() - karmaTabGood.getHeight() - buttonMargin);
         skillButtonGroup.addActor(skillButton1);
         skillButtonGroup.addActor(skillButton2);
         skillButtonGroup.addActor(skillButton3);
-        karmaTabGood.setPosition(controlWindow.getX() + buttonMargin, minimizeButton.getHeight() - buttonMargin * 7f);
+        karmaTabGood.setPosition(controlWindow.getX() + buttonMargin, controlWindow.getY() - buttonMargin * 7f);
         karmaTabGood.setBackground(new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE)));
         karmaTabGood.setSize(controlWindow.getWidth() / 2 - buttonMargin, 30f);
         karmaTabGood.setChecked(true);
