@@ -857,9 +857,11 @@ public class GameScreen extends BaseScreen {
     private final Vector3 touchStart = new Vector3();
     private final Vector3 touchDrag = new Vector3();
 
+
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         if (isGameOver()) return false;
+        touchStart.set(screenX, screenY, 0);
         // ...
         return super.touchDown(screenX, screenY, pointer, button);
     }
@@ -868,7 +870,9 @@ public class GameScreen extends BaseScreen {
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
         if (isGameOver()) return false;
         if (isSettingShown) return false;
-        if (landscape.highlightedTile != null) {
+        touchDrag.set(screenX, screenY, 0);
+        if (touchStart.dst(touchDrag) > 5) { return false; }
+        if (landscape.highlightedTile != null && !landscape.highlightedTile.isDecorated()) {
             switch (activeSkill) {
                 case RAMP:
                     landscape.highlightedTile.makeRamp();
