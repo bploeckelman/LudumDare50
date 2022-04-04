@@ -2,6 +2,7 @@ package lando.systems.ld50.physics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -164,9 +165,25 @@ public class PhysicsManager {
         ball.position.z + ball.radius / 2 < tile.z + 0.15) {
             return false;
         }
+        if (!tile.isDecorated() || tile.decoration == null) { return false; }
         //LandTile t = landscape.tiles[(int)ball.position.x + Landscape.TILES_WIDE * (int)ball.position.z];
-        return tile.isDecorated() && ball.position.y < 0.5 + ball.radius/2;
+        boolean result = tile.isDecorated() && ball.position.y < 0.5 + ball.radius/2;
+            Vector3 coords = new Vector3(tile.x+0.5f, 0.5f, tile.z+0.5f);
+            landscape.screen.camera.project(coords);
+        if (result) {
 
+            landscape.screen.particles.addPointsParticles(200, coords.x, coords.y, 0.9f, 0.1f, 0.1f);
+            landscape.screen.particles.addParticleBurstCollect(16, new float[]{1f, 0.1f, 0.1f},
+                    new float[]{coords.x, coords.y}, new float[]{20f, 20f});
+        } else {
+            if (!ball.pointsGiven.contains((long) (1000*tile.x + tile.z), false)) {
+                landscape.screen.particles.addPointsParticles(75, coords.x, coords.y, 0.1f, 0.8f, 0.1f);
+                landscape.screen.particles.addParticleBurstCollect(6, new float[]{0.2f, 0.9f, 0.1f},
+                        new float[]{coords.x, coords.y}, new float[]{20f, 20f});
+                ball.pointsGiven.add((long) (1000 * tile.x + tile.z));
+            }
+        }
+        return result;
     }
 
     Vector3 ab = new Vector3();

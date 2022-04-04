@@ -27,7 +27,7 @@ public class Landscape {
 
     private final ShaderProgram landscapeShader;
     private final ShaderProgram ballShader;
-    GameScreen screen;
+    public GameScreen screen;
     public LandTile highlightedTile;
     Mesh landscapeMesh;
     private float[] vertices;

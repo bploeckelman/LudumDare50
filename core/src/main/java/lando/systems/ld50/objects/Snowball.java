@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.particles.PhysicsDecal;
@@ -17,6 +18,8 @@ public class Snowball extends PhysicsObject {
     private static final BoundingBox box = new BoundingBox();
 
     private final ModelInstance instance;
+
+    public Array<Long> pointsGiven = new Array<>();
 
     public Snowball(float x, float y, float z, float radius) {
         this.velocity = new Vector3();
