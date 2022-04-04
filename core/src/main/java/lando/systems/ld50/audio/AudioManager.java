@@ -45,6 +45,7 @@ public class AudioManager implements Disposable {
         none,
         main,
         introMusic,
+        outroMusic,
         mainTheme
     }
 
@@ -99,6 +100,7 @@ public class AudioManager implements Disposable {
         musics.put(Musics.main, assets.mainMusic);
         musics.put(Musics.mainTheme, assets.mainTheme);
         musics.put(Musics.introMusic, assets.introMusic);
+        musics.put(Musics.outroMusic, assets.outroMusic);
 
         musicVolume = new MutableFloat(.5f); 
         soundVolume = new MutableFloat(.5f);

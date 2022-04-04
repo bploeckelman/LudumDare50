@@ -65,6 +65,7 @@ public class Assets implements Disposable {
     public Music mainMusic;
     public Music mainTheme;
     public Music introMusic;
+    public Music outroMusic;
 
     public Animation<TextureRegion>[] numberParticles = new Animation[10];
 
@@ -178,9 +179,9 @@ public class Assets implements Disposable {
             mgr.load("audio/musics/main.mp3", Music.class);
             mgr.load("audio/musics/music-maintheme.ogg", Music.class);
             mgr.load("audio/musics/music-intro.ogg", Music.class);
+            mgr.load("audio/musics/music-outro.ogg", Music.class);
 
             mgr.load("audio/sounds/chaching.ogg", Sound.class);
-//            mgr.load("audio/sounds/.ogg", Sound.class);
             mgr.load("audio/sounds/cheer1.ogg", Sound.class);
             mgr.load("audio/sounds/cheer2.ogg", Sound.class);
             mgr.load("audio/sounds/click1.ogg", Sound.class);
@@ -266,6 +267,7 @@ public class Assets implements Disposable {
         mainMusic = mgr.get("audio/musics/main.mp3", Music.class);
         mainTheme = mgr.get("audio/musics/music-maintheme.ogg", Music.class);
         introMusic = mgr.get("audio/musics/music-intro.ogg", Music.class);
+        outroMusic = mgr.get("audio/musics/music-outro.ogg", Music.class);
 
         chachingSound = mgr.get("audio/sounds/chaching.ogg", Sound.class);
         click1Sound = mgr.get("audio/sounds/click1.ogg", Sound.class);

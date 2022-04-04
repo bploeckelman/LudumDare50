@@ -32,13 +32,13 @@ public class BallContact implements Comparable, Pool.Poolable
     public void resolve(float dt){
         resolveVelocity(dt);
         resolveInterpenetration(dt);
-        if (tile.LRHeight > .5f && tile.LLHeight > .5f) {
+        if (tile.LRHeight > .3f && tile.LLHeight > .5f) {
             // Hit a ramp.
 
-//            Main.game.audio.playSound(AudioManager.Sounds.thud);
+            Main.game.audio.playSound(AudioManager.Sounds.thud);
 
         }
-        Main.game.audio.playSound(AudioManager.Sounds.thud);
+//        Main.game.audio.playSound(AudioManager.Sounds.thud, 0.1F);
 
         tile.addSnow(ball);
 

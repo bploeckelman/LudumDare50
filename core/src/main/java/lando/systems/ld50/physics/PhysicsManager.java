@@ -79,7 +79,7 @@ public class PhysicsManager {
                     tile.decoration.transform.scl(0.7f);
                     //temp solutions
                     if (tile.decoration.transform.getScaleX() < 0.1) { tile.decoration.transform.scl(0f); tile.decoration = null; }
-                    Main.game.audio.playSound(AudioManager.Sounds.houseImpact, 0.3F);
+                    Main.game.audio.playSound(AudioManager.Sounds.houseImpact, 0.6F);
                     break;
                 }
 
