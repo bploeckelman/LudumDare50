@@ -37,13 +37,13 @@ public class StoryScreen extends BaseScreen {
             "ramps and other structures\n" +
             "around the mountainside,\n" +
             "\n"+
-            "in a desperate attempt \n" +
-            "to divert the flow of\n" +
-            "an unrelenting and ultimately\n"+
+//            "in a desperate attempt \n" +
+            "to divert the flow of an\n" +
+//            "an unrelenting and ultimately\n"+
             "unavoidable avalanche,\n"+
             "\n"+
             "to temporarily stave off\n" +
-            "the destruction of houses \n"+
+            "the destruction of houses, \n\n"+
             "whose debris we then use\n"+
             "to build additional structures,\n"+
             "\n"+
@@ -52,7 +52,7 @@ public class StoryScreen extends BaseScreen {
             "to keep disaster at bay,\n"+
             "\n"+
             "until the ski lodge \n"+
-            "is unavoidably destroyed,\n"+
+            "is destroyed,\n"+
             "\n"+
 
             "this will be the sickest\n"+
@@ -75,7 +75,7 @@ public class StoryScreen extends BaseScreen {
         perspectiveCamera = new PerspectiveCamera(90, 1280, 800);
         perspectiveCamera.far=10000;
         perspectiveCamera.position.set(640, 0, 500);
-        perspectiveCamera.lookAt(640, 400, 0);
+        perspectiveCamera.lookAt(640, 00, 0);
         perspectiveCamera.update();
 
     }
@@ -86,7 +86,7 @@ public class StoryScreen extends BaseScreen {
         if (Gdx.input.isTouched()){
             speedMultiplier = 10f;
         }
-        accum += 75*dt * speedMultiplier;
+        accum += 45*dt * speedMultiplier;
 //        accum = MathUtils.clamp(accum, 0, layout.height);
         if (accum > layout.height && Gdx.input.justTouched()) {
             launchGame();
@@ -113,8 +113,8 @@ public class StoryScreen extends BaseScreen {
         batch.begin();
         game.assets.font.getData().setScale(textScale);
         game.assets.font.setColor(.3f, .3f, .3f, 1.0f);
-        game.assets.font.draw(batch, text, 5, accum-5, worldCamera.viewportWidth, Align.center, true);
-        game.assets.font.setColor(Color.YELLOW);
+        game.assets.font.draw(batch, text, 5, accum-3, worldCamera.viewportWidth, Align.center, true);
+        game.assets.font.setColor(Color.WHITE);
         game.assets.font.draw(batch, text, 0, accum, worldCamera.viewportWidth, Align.center, true);
         game.assets.font.getData().setScale(1.0f);
 //        batch.draw(textTexture, 0, 0, 1024, layout.height);
