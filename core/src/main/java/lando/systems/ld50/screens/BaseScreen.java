@@ -33,6 +33,7 @@ import lando.systems.ld50.Config;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
+import lando.systems.ld50.particles.Particles;
 
 public abstract class BaseScreen implements InputProcessor, ControllerListener, Disposable {
 
@@ -56,7 +57,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
 
 
     public boolean exitingScreen;
-//    public Particles particles;
+    public Particles particles;
     public AudioManager audio;
     public OrthographicCamera worldCamera;
     public OrthographicCamera windowCamera;
@@ -70,7 +71,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         this.tween = game.tween;
         this.batch = assets.batch;
         this.audio = game.audio;
-//        this.particles = new Particles(game.assets);
+        this.particles = new Particles(game.assets);
         this.pointerPos = new Vector3();
 
         this.exitingScreen = false;
@@ -234,6 +235,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         worldCamera.update();
         windowCamera.update();
         uiStage.act(dt);
+        particles.update(dt);
         // keep close settings button on top of settings window at all times
         closeSettingsButton.setZIndex(closeSettingsButton.getZIndex() + 3);
 

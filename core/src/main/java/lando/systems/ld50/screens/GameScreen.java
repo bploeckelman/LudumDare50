@@ -44,6 +44,7 @@ import lando.systems.ld50.objects.AnimationDecal;
 import lando.systems.ld50.objects.Landscape;
 import lando.systems.ld50.objects.Snowball;
 import lando.systems.ld50.particles.NoDepthCameraGroupStrategy;
+import lando.systems.ld50.particles.Particles;
 import lando.systems.ld50.particles.PhysicsDecal;
 import lando.systems.ld50.utils.Time;
 import lando.systems.ld50.utils.Utils;
@@ -220,6 +221,10 @@ public class GameScreen extends BaseScreen {
             landscape.highlightedTile.makeRamp();
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+            particles.addPointsParticles((int)MathUtils.random(40, 800), Gdx.input.getX(), Gdx.input.getY(), 0.86f, 1f, 0f);
+        }
+
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         worldCamera.unproject(touchPos);
         Vector2 tile = getSelectedTile((int)touchPos.x, (int)touchPos.y);
@@ -354,14 +359,15 @@ public class GameScreen extends BaseScreen {
         // NOTE: always draw so the 'hide' transition is visible
         uiStage.draw();
 
-        // draw non Scene2D ui stuff (if there is any)
-//        batch.setProjectionMatrix(windowCamera.combined);
-//        batch.begin();
-//        {
-//            // TODO -
-//            batch.draw(PickMapFBOTex, 0, 100, 100, -100);
-//        }
-//        batch.end();
+        //draw non Scene2D ui stuff (if there is any)
+        batch.setProjectionMatrix(windowCamera.combined);
+        batch.begin();
+        {
+            // TODO -
+            //batch.draw(PickMapFBOTex, 0, 100, 100, -100);
+            particles.draw(batch, Particles.Layer.foreground);
+        }
+        batch.end();
     }
 
     public void renderFrameBuffers(SpriteBatch batch) {

@@ -61,6 +61,7 @@ public class Assets implements Disposable {
     public Music mainTheme;
     public Music introMusic;
 
+    public Animation<TextureRegion>[] numberParticles = new Animation[10];
 
     public Sound chachingSound;
     public Sound click1Sound;
@@ -286,6 +287,10 @@ public class Assets implements Disposable {
         Patch.glass_dim.ninePatch    = new NinePatch(atlas.findRegion("ninepatch/glass-dim"), 8, 8, 8, 8);
         Patch.glass_active.ninePatch = new NinePatch(atlas.findRegion("ninepatch/glass-active"), 8, 8, 8, 8);
         Patch.metal.ninePatch        = new NinePatch(atlas.findRegion("ninepatch/metal"), 12, 12, 12, 12);
+
+        for (int i = 0; i <= 9; ++i) {
+            numberParticles[i] = new Animation<>(0.1f, atlas.findRegions("particles/font-points-" + i));
+        }
 
         Patch.debug.drawable        = new NinePatchDrawable(Patch.debug.ninePatch);
         Patch.panel.drawable        = new NinePatchDrawable(Patch.panel.ninePatch);
