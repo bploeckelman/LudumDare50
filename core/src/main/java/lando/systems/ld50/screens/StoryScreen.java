@@ -5,9 +5,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
+import lando.systems.ld50.assets.Assets;
+
 //import lando.systems.ld50.Config;
 
 public class StoryScreen extends BaseScreen {
@@ -15,6 +20,11 @@ public class StoryScreen extends BaseScreen {
     float accum = 0;
     PerspectiveCamera perspectiveCamera;
     GlyphLayout layout;
+
+    Rectangle skipRect;
+    Rectangle speedRect;
+    boolean hoverSkip;
+    boolean hoverSpeed;
 
     String text = "\n\n\n\n\n\n\n\nBro, check it\n\n\n" +
             "Trent and Chad scored a righteous AirBnB\n" +
@@ -77,13 +87,30 @@ public class StoryScreen extends BaseScreen {
         perspectiveCamera.position.set(640, 0, 500);
         perspectiveCamera.lookAt(640, 00, 0);
         perspectiveCamera.update();
+        skipRect = new Rectangle(windowCamera.viewportWidth - 150, 20, 130, 50);
+        speedRect = new Rectangle(windowCamera.viewportWidth - 150, 90, 130, 50);
 
     }
 
+    Vector3 screenPos = new Vector3();
     public void update(float dt) {
         float speedMultiplier = 1.0f;
 
-        if (Gdx.input.isTouched()){
+        screenPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        windowCamera.unproject(screenPos);
+
+        hoverSkip = false;
+        hoverSpeed = false;
+
+        if (skipRect.contains(screenPos.x, screenPos.y)){
+            hoverSkip = true;
+        }
+        if (speedRect.contains(screenPos.x, screenPos.y)){
+            hoverSpeed = true;
+        }
+
+
+        if (Gdx.input.isTouched() && hoverSpeed){
             speedMultiplier = 10f;
         }
         accum += 75*dt * speedMultiplier;
@@ -94,7 +121,7 @@ public class StoryScreen extends BaseScreen {
         if (accum >= layout.height) {
             launchGame();
         }
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+        if (Gdx.input.isTouched() && hoverSkip) {
             launchGame();
         }
     }
@@ -125,6 +152,29 @@ public class StoryScreen extends BaseScreen {
         game.assets.font.getData().setScale(1.0f);
 //        batch.draw(textTexture, 0, 0, 1024, layout.height);
         batch.end();
+
+        batch.setProjectionMatrix(windowCamera.combined);
+        batch.begin();
+
+        BitmapFont font = assets.font;
+        if (hoverSkip){
+            Assets.Patch.glass_active.ninePatch.draw(batch, skipRect.x, skipRect.y, skipRect.width, skipRect.height);
+        } else {
+            Assets.Patch.glass_dim.ninePatch.draw(batch, skipRect.x, skipRect.y, skipRect.width, skipRect.height);
+        }
+        assets.layout.setText(font, "Skip", Color.WHITE, skipRect.width, Align.center, false);
+        font.draw(batch, assets.layout, skipRect.x, skipRect.y + (skipRect.height + assets.layout.height)/2f);
+
+        if (hoverSpeed){
+            Assets.Patch.glass_active.ninePatch.draw(batch, speedRect.x, speedRect.y, speedRect.width, speedRect.height);
+        } else {
+            Assets.Patch.glass_dim.ninePatch.draw(batch, speedRect.x, speedRect.y, speedRect.width, speedRect.height);
+        }
+        assets.layout.setText(font, "10x", Color.WHITE, speedRect.width, Align.center, false);
+        font.draw(batch, assets.layout, speedRect.x, speedRect.y + (speedRect.height + assets.layout.height)/2f);
+
+        batch.end();
+
 
     }
 }
