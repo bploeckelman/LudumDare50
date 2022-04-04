@@ -170,7 +170,6 @@ public class GameScreen extends BaseScreen {
 
         game.audio.playSound(AudioManager.Sounds.rumble, 0.8F);
 //        game.audio.playSound(AudioManager.Sounds.chaching);
-        System.out.println("Fired sound on GameScreen launch");
 
     }
 

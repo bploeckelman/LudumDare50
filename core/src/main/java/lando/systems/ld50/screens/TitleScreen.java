@@ -30,7 +30,7 @@ public class TitleScreen extends BaseScreen {
         InputMultiplexer mux = new InputMultiplexer(uiStage, this);
         Gdx.input.setInputProcessor(mux);
 
-//        game.audio.playMusic(AudioManager.Musics.introMusic);
+        game.audio.playMusic(AudioManager.Musics.introMusic);
     }
 
     @Override

@@ -85,6 +85,8 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
         this.windowCamera.setToOrtho(false, Config.window_width, Config.window_height);
         this.windowCamera.update();
 
+        game.audio.playMusic(AudioManager.Musics.mainTheme);
+
         initializeUI();
     }
 
