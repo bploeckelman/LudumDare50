@@ -55,7 +55,7 @@ public class Snowball {
         instance.transform.setToTranslation(position)
                 .scale(radius, radius, radius);
 
-        int numParticles = 1;
+        int numParticles = 2;
         for (int i = 0; i < numParticles; i++) {
             float scale = radius * MathUtils.random(2f, 4f);
             PhysicsDecal.addDecalParticle(
@@ -63,10 +63,10 @@ public class Snowball {
                     position.x + MathUtils.random(-radius, radius),
                     position.y + MathUtils.random(-radius, radius),
                     position.z + .5f,
-                    scale * 2.5f * MathUtils.sin(MathUtils.random(360f)),
-                    scale * 0.2f,
-                    scale * 2.5f * MathUtils.cos(MathUtils.random(360f)),
-                    1.25f,
+                    scale * 6.5f * MathUtils.sin(MathUtils.random(360f)),
+                    scale * 0.2f + MathUtils.random(.7f),
+                    scale * 6.5f * MathUtils.cos(MathUtils.random(360f)),
+                    1.25f + MathUtils.random(.5f),
                     PhysicsDecal.Phys.GravityHighDrag);
         }
     }

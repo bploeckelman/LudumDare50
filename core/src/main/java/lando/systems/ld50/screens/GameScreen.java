@@ -5,6 +5,7 @@ import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Linear;
+import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -55,6 +56,8 @@ import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
+import java.math.RoundingMode;
+
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
@@ -97,6 +100,7 @@ public class GameScreen extends BaseScreen {
     public DirectionalLight light;
     public Color ambientColor = new Color(.2f,.2f, .2f, 1f);
     public MutableFloat dayTime;
+    public float buildHour = 9f;
 
     public FrameBuffer pickMapFBO;
     public Texture PickMapFBOTex;
@@ -131,7 +135,7 @@ public class GameScreen extends BaseScreen {
         railController = new RailsCamera(camera);
 
         lightDir = new Vector3(-1f, -.8f, -.2f);
-        dayTime = new MutableFloat(10);
+        dayTime = new MutableFloat(buildHour);
 
         landscape = new Landscape(this);
 
@@ -399,11 +403,11 @@ public class GameScreen extends BaseScreen {
         if (landscape.snowBalls.size > 0) return;
         Timeline.createSequence()
                 .push(
-                        Tween.to(dayTime, 1, 3f)
-                        .target(34f)
-                                .ease(Linear.INOUT))
+                        Tween.to(dayTime, 1, 5f)
+                        .target(24f + buildHour)
+                                .ease(Quad.INOUT))
                 .push(Tween.call((type, source) -> {
-                    dayTime.setValue(10);
+                    dayTime.setValue(buildHour);
                     landscape.startAvalanche();
                     TransitionCamera();
                 }))
@@ -411,6 +415,7 @@ public class GameScreen extends BaseScreen {
     }
 
     public void beginBuildPhase(){
+        roundNumber++;
         UntransitionCamera();
         showNextDayWindow();
     }

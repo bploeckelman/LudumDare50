@@ -1,5 +1,7 @@
 package lando.systems.ld50.physics;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -31,9 +33,17 @@ public class PhysicsManager {
         neighborTiles = new Array<>();
     }
 
+    float scale = 1f;
     public void update(float dt){
 //        if (true) return;
-        solve(MathUtils.clamp(dt,.001f, .015f));
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.T)){
+            scale = .25f;
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Y)){
+            scale = .5f;
+        }
+        solve(MathUtils.clamp(dt*scale,.0001f, .015f));
     }
 
 

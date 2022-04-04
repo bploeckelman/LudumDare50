@@ -145,7 +145,7 @@ public class LandTile {
         boxMesh.render(shader, GL20.GL_TRIANGLES, 0, boxIndicesIndex);
     }
 
-    float compressAmount = .97f;
+    float compressAmount = .96f;
     public float addSnow(Snowball ball){
         ULHeight *= compressAmount;
         URHeight *= compressAmount;
