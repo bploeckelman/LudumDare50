@@ -60,7 +60,7 @@ public class PhysicsManager {
         // Snowballs
         for (Snowball ball : landscape.snowBalls){
             ball.velocity.add(gravity.x * dt, gravity.y * dt, gravity.z * dt);
-            ball.velocity.clamp(0, 4);
+            ball.velocity.clamp(0, 5);
             ball.position.add(ball.velocity.x * dt, ball.velocity.y * dt, ball.velocity.z * dt);
 
             // Test if ball falls off side and correct
@@ -168,7 +168,7 @@ public class PhysicsManager {
         // Debris
         for (Debris debris : landscape.debris) {
             debris.velocity.add(gravity.x * dt, gravity.y * dt, gravity.z * dt);
-            debris.velocity.clamp(0, 5);
+            debris.velocity.clamp(0, 5.5f);
             debris.position.add(debris.velocity.x * dt, debris.velocity.y * dt, debris.velocity.z * dt);
 
             // Test if debris falls off side and correct
@@ -253,9 +253,11 @@ public class PhysicsManager {
 //            return false;
 //        }
 
+        boolean isBallInBoundsX = ball.position.x > tile.x - ball.radius/2 && ball.position.x < tile.x + 1f + ball.radius/2;
+        boolean isBallInBoundsZ = ball.position.z > tile.z - ball.radius/2 && ball.position.z < tile.z + 1f + ball.radius/2;
         boolean isBallLowEnoughToHit = ball.position.y < 0.5 + ball.radius / 2;
 
-        return tile.isDecorationDestructable && isBallLowEnoughToHit;
+        return tile.isDecorationDestructable && isBallLowEnoughToHit && isBallInBoundsX && isBallInBoundsZ;
 //>>>>>>> e88e15f... Destroy buildings, add particle effect and replace with broken building model
     }
 
