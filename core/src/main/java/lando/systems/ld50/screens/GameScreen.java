@@ -924,7 +924,7 @@ public class GameScreen extends BaseScreen {
 
         VisSlider.SliderStyle horizontalSliderStyle = skin.get("default-horizontal", VisSlider.SliderStyle.class);
         VisSlider.SliderStyle cameraSliderStyle = new VisSlider.SliderStyle(horizontalSliderStyle);
-        cameraSliderStyle.disabledKnob = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.button_light_tv));
+        cameraSliderStyle.disabledKnob = new TextureRegionDrawable(assets.videoCameraIcon);
         cameraSliderStyle.background = new TextureRegionDrawable(getColoredTextureRegion(new Color(0f, 0f, 0f, 0f)));
         cameraSlider = new VisSlider(0f, 100f, 0.1f, false, cameraSliderStyle);
         cameraSlider.setPosition(windowCamera.viewportWidth / 4f + 25f, windowCamera.viewportHeight * 7 / 8);
