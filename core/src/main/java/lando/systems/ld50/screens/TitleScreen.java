@@ -60,6 +60,7 @@ public class TitleScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
             if (!exitingScreen) {
+                audio.playSound(AudioManager.Sounds.badKarma);
                 game.setScreen(new StoryScreen());
                 // TODO Change this back to story screen before publishing
 //                game.setScreen(new GameScreen());
@@ -150,6 +151,7 @@ public class TitleScreen extends BaseScreen {
 
     @Override
     public boolean buttonUp (Controller controller, int buttonIndex) {
+        audio.playSound(AudioManager.Sounds.goodKarma);
         game.setScreen(new GameScreen());
         return true;
     }

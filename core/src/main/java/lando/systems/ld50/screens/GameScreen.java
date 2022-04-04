@@ -247,6 +247,7 @@ public class GameScreen extends BaseScreen {
                 exitingScreen = true;
                 Main.Transition.set(assets, Assets.Transition.heart);
                 game.setScreen(new EpilogueScreen());
+                game.audio.playMusic(AudioManager.Musics.outroMusic);
             }
         }
 //        setGameDayTime(accum);

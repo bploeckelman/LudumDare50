@@ -169,6 +169,6 @@ public class AnimationDecal {
         launched = true;
         waveTime = moveTime = 0;
         moveTimeTotal = 5;
-        Main.game.audio.playSound(this.imageInfo.scream);
+        Main.game.audio.playSound(this.imageInfo.scream, 0.35F);
     }
 }
