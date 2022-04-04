@@ -475,4 +475,8 @@ public class LandTile {
         triangles.clear();
     }
 
+    public float getAverageSnowHeight() {
+        return (ULSnowHeight + LLSnowHeight + URSnowHeight + LRSnowHeight) / 4f;
+    }
+
 }

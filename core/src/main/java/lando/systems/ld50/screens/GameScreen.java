@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.kotcrab.vis.ui.widget.VisLabel;
@@ -613,6 +614,45 @@ public class GameScreen extends BaseScreen {
         return progress;
     }
 
+    private float getFirstBallProgress() {
+        float firstZ = 0f;
+        for (Snowball ball : landscape.snowBalls) {
+            if (ball.position.z > firstZ)
+                firstZ = ball.position.z;
+        }
+        float progress = firstZ / (Landscape.TILES_LONG * Landscape.TILE_WIDTH);
+        if (Float.isNaN(progress) || progress > 1f) {
+            progress = 1f;
+        }
+        return progress;
+    }
+
+    private int getLastRowWithSnowAccum() {
+        int maxRow = landscape.TILES_LONG;
+        int maxCol = landscape.TILES_WIDE;
+        float rowAverageSnow = 0f;
+        float rowAccumSnow = 0f;
+        int lastRowWithMoreThanHalfSnow = 0;
+
+        //ignore first 5 rows since they can have no snow (I think they should have snow by default)
+        for (int x = 3; x < maxRow; x++) {
+            rowAccumSnow = 0f;
+            for (int y = 0; y < maxCol; y++) {
+                float averageSnowHeight = landscape.tiles[x + maxCol * y].getAverageSnowHeight();
+                rowAccumSnow += averageSnowHeight;
+            }
+            rowAverageSnow = rowAccumSnow / maxCol;
+            if (rowAverageSnow >= 0.04f) {
+                Gdx.app.log("row average snow", "" + rowAccumSnow);
+                lastRowWithMoreThanHalfSnow = x;
+                continue;
+            } else {
+                return lastRowWithMoreThanHalfSnow;
+            }
+        }
+        return lastRowWithMoreThanHalfSnow;
+    }
+
     // ------------------------------------------------------------------------
     // InputAdapter overrides
     // ------------------------------------------------------------------------
@@ -691,25 +731,47 @@ public class GameScreen extends BaseScreen {
     }
 
     private void initializeGameUI() {
-        initializeAvalancheProgressBarUI();
+        initializeUpperUI();
         initializeControlUI();
     }
 
-    private void initializeScoreUI() {
-        VisLabel scoreLabel = new VisLabel("Score: ");
-        VisLabel karmaPoint = new VisLabel("Karma: ");
+    private void setupUpperUIWindow(VisWindow upperWindow, float x, float y, float w, float h) {
+        upperWindow.setPosition(x, y);
+        upperWindow.setSize(w, h);
+        upperWindow.setKeepWithinStage(false);
+        upperWindow.setMovable(false);
+    }
+    
+    private void initializeUpperUI() {
+        VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
+        VisWindow.WindowStyle upperUIStyle = new VisWindow.WindowStyle(defaultStyle);
+        upperUIStyle.background = Assets.Patch.glass.drawable;
+        
+        VisWindow upperLeftWindow = new VisWindow("", upperUIStyle);
+        setupUpperUIWindow(upperLeftWindow, 0f, windowCamera.viewportHeight - windowCamera.viewportHeight / 8, windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 8);
+        VisWindow upperCenterWindow = new VisWindow("", upperUIStyle);
+        setupUpperUIWindow(upperCenterWindow, windowCamera.viewportWidth / 4, windowCamera.viewportHeight - windowCamera.viewportHeight / 8, windowCamera.viewportWidth / 2, windowCamera.viewportHeight / 8);
+        VisWindow upperRightWindow = new VisWindow("", upperUIStyle);
+        setupUpperUIWindow(upperRightWindow,windowCamera.viewportWidth * 3 / 4, windowCamera.viewportHeight - windowCamera.viewportHeight / 8, windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 8);
+
+        Group progressBarGroup = createAvalancheProgressBarUI();
+
+        uiStage.addActor(upperLeftWindow);
+        uiStage.addActor(upperCenterWindow);
+        uiStage.addActor(upperRightWindow);
+        uiStage.addActor(progressBarGroup);
+
     }
 
     private void initializeControlUI() {
         VisWindow.WindowStyle defaultStyle = skin.get("default", VisWindow.WindowStyle.class);
         VisWindow.WindowStyle controlUIStyle = new VisWindow.WindowStyle(defaultStyle);
-        controlUIStyle.background = Assets.Patch.metal.drawable;
+        controlUIStyle.background = Assets.Patch.glass.drawable;
         VisWindow controlWindow = new VisWindow("", controlUIStyle);
         controlWindow.setPosition(0f, 0f);
         controlWindow.setSize(windowCamera.viewportWidth / 4, windowCamera.viewportHeight / 4);
         controlWindow.setKeepWithinStage(false);
         controlWindow.setMovable(false);
-        //uiStage.addActor(controlWindow);
 
         Button.ButtonStyle toggleButtonStyle = skin.get("toggle", Button.ButtonStyle.class);
         Button.ButtonStyle customMinimizeStyle = new Button.ButtonStyle(toggleButtonStyle);
@@ -725,11 +787,6 @@ public class GameScreen extends BaseScreen {
 
         uiStage.addActor(controlGroup);
 
-//        MoveByAction minimizeControlAction = new MoveByAction();
-//        minimizeControlAction.setAmount(0, -controlWindow.getHeight() + minimizeButton.getHeight());
-//        MoveByAction maximizeControlAction = new MoveByAction();
-//        maximizeControlAction.setAmount(0, controlWindow.getHeight() - minimizeButton.getHeight());
-
         Action minimizeTransitionAction = Actions.moveBy(0, -controlWindow.getHeight() + minimizeButton.getHeight(), 0.5f);
         Action maximizeTransitionAction = Actions.moveBy(0, controlWindow.getHeight() - minimizeButton.getHeight(), 0.5f);
 
@@ -737,58 +794,58 @@ public class GameScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (isControlHidden) {
-//                    controlWindow.addAction(maximizeControlAction);
-//                    minimizeButton.addAction(maximizeTransitionAction);
                     maximizeTransitionAction.reset();
                     controlGroup.addAction(maximizeTransitionAction);
                     isControlHidden = false;
                 } else {
-//                    controlWindow.addAction(minimizeControlAction);
-//                    minimizeButton.addAction(minimizeTransitionAction);
                     minimizeTransitionAction.reset();
                     controlGroup.addAction(minimizeTransitionAction);
                     isControlHidden = true;
                 }
             }
         });
-        //uiStage.addActor(button);
-//        VisImageButton minimizeControlUIButton = new VisImageButton("close");
-//        minimizeControlUIButton.setSize(35f, 35f);
-//        minimizeControlUIButton.setPosition(controlWindow.getWidth() - minimizeControlUIButton.getWidth(), controlWindow.getHeight() - minimizeControlUIButton.getHeight());
-//        uiStage.addActor(minimizeControlUIButton);
-
-//        VisLabel minimizeLabel = new VisLabel("Minimize", "outfit-medium-20px");
-//        minimizeLabel.setHeight(minimizeControlUIButton.getHeight());
-//        minimizeLabel.setPosition(minimizeControlUIButton.getX() - minimizeControlUIButton.getWidth() - 75f, minimizeControlUIButton.getY());
-//        uiStage.addActor(minimizeLabel);
     }
 
-    private void initializeAvalancheProgressBarUI() {
+    private Group createAvalancheProgressBarUI() {
         VisProgressBar.ProgressBarStyle horizontalProgressBarStyle = skin.get("default-horizontal", VisProgressBar.ProgressBarStyle.class);
         VisProgressBar.ProgressBarStyle avalancheProgressBarStyle = new VisProgressBar.ProgressBarStyle(horizontalProgressBarStyle);
         avalancheProgressBarStyle.knob = new TextureRegionDrawable(assets.waveIcon);
         avalancheProgressBarStyle.background = new TextureRegionDrawable(getColoredTextureRegion(Color.FOREST));
         avalancheProgressBarStyle.knobBefore = new TextureRegionDrawable(getColoredTextureRegion(Color.LIGHT_GRAY));
-        progressBar = new VisProgressBar(0f, 1f, 0.01f, false, avalancheProgressBarStyle);
-        progressBar.setPosition(windowCamera.viewportWidth / 4f, windowCamera.viewportHeight - 50f);
+        progressBar = new VisProgressBar(0f, 1f, .05f, false, avalancheProgressBarStyle);
+        progressBar.setPosition(windowCamera.viewportWidth / 4f + 25f, windowCamera.viewportHeight * 7 / 8);
         progressBar.setValue(0f);
-        progressBar.setWidth(windowCamera.viewportWidth / 2f);
+        progressBar.setWidth(windowCamera.viewportWidth / 2f - 50f);
         progressBar.setHeight(70f);
         uiStage.addActor(progressBar);
 
         VisSlider.SliderStyle horizontalSliderStyle = skin.get("default-horizontal", VisSlider.SliderStyle.class);
         VisSlider.SliderStyle cameraSliderStyle = new VisSlider.SliderStyle(horizontalSliderStyle);
-        cameraSliderStyle.knob = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.button_light_tv));
+        cameraSliderStyle.disabledKnob = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.button_light_tv));
         cameraSliderStyle.background = new TextureRegionDrawable(getColoredTextureRegion(new Color(0f, 0f, 0f, 0f)));
         cameraSlider = new VisSlider(0f, 1f, 0.01f, false, cameraSliderStyle);
-        cameraSlider.setPosition(windowCamera.viewportWidth / 4f, windowCamera.viewportHeight - 50f);
-        cameraSlider.setWidth(windowCamera.viewportWidth / 2f);
+        cameraSlider.setPosition(windowCamera.viewportWidth / 4f + 25f, windowCamera.viewportHeight * 7 / 8);
+        cameraSlider.setWidth(windowCamera.viewportWidth / 2f - 50f);
         cameraSlider.setHeight(70f);
+        cameraSlider.setDisabled(true);
         uiStage.addActor(cameraSlider);
+
+        VisLabel label = new VisLabel("Avalanche Progress", "outfit-medium-40px");
+        label.setAlignment(Align.center);
+        label.setPosition(windowCamera.viewportWidth / 4f + 25f, windowCamera.viewportHeight - 45f);
+        label.setWidth(windowCamera.viewportWidth / 2f);
+
+        Group progressBarGroup = new Group();
+        progressBarGroup.addActor(progressBar);
+        progressBarGroup.addActor(cameraSlider);
+        progressBarGroup.addActor(label);
+        return progressBarGroup;
     }
 
     private void updateProgressBarValue() {
-        progressBar.setValue(getAvalancheProgress());
+        Gdx.app.log("getLastRowWithSnowAccum", " " + getLastRowWithSnowAccum());
+        progressBar.setValue(getFirstBallProgress());
+        //progressBar.setValue(getLastRowWithSnowAccum());
         cameraSlider.setValue(camera.position.z / Landscape.TILES_LONG * Landscape.TILE_WIDTH);
     }
 

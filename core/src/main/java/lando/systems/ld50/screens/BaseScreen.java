@@ -104,8 +104,7 @@ public abstract class BaseScreen implements InputProcessor, ControllerListener, 
 
         Window.WindowStyle defaultWindowStyle = skin.get("default", Window.WindowStyle.class);
         Window.WindowStyle glassWindowStyle = new Window.WindowStyle(defaultWindowStyle);
-        glassWindowStyle.background = Assets.Patch.glass.drawable;
-        glassWindowStyle.stageBackground = Assets.Patch.glass_dim.drawable;
+        glassWindowStyle.background = Assets.Patch.metal.drawable;
         glassWindowStyle.titleFont = assets.font;
         glassWindowStyle.titleFontColor = Color.BLACK;
 
