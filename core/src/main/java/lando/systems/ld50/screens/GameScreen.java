@@ -336,6 +336,9 @@ public class GameScreen extends BaseScreen {
             AnimationDecal decal = decals.get(i);
             if (decal.dead) {
                 decals.removeIndex(i);
+                if (decal.isPlow) {
+                    isPlowing = false;
+                }
             } else {
                 //decal.lookAt(billboardCameraPos, camera.up);
                 decal.update(dt);
@@ -907,7 +910,7 @@ public class GameScreen extends BaseScreen {
                     game.audio.playSound(AudioManager.Sounds.earth, .8F);
                     break;
                 case PLOW:
-                    addPlow(landscape);
+                    addPlow(landscape.highlightedTile);
                     game.audio.playSound(AudioManager.Sounds.goodKarma, 1.0F);
                     break;
                 case HELI:
@@ -971,10 +974,11 @@ public class GameScreen extends BaseScreen {
     }
 
     private boolean isPlowing = false;
-    private void addPlow(Landscape landscape) {
+    private void addPlow(LandTile selectedTile) {
         if (isPlowing) { return; }
 
-        // add plow
+        isPlowing = true;
+        decals.add(new Plow(assets, landscape, selectedTile.intZ));
     }
 
     private void killPerson(LandTile selectedTile) {

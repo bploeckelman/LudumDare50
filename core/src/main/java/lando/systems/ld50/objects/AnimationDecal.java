@@ -21,11 +21,11 @@ public class AnimationDecal {
 
     public boolean dead = false;
 
-    private Landscape landscape;
+    protected Landscape landscape;
     private ImageInfo imageInfo;
 
     private Vector3 initPos = new Vector3();
-    private Vector3 position = new Vector3();
+    protected Vector3 position = new Vector3();
 
     private Animation<TextureRegion> regionAnimation;
     private Animation<TextureRegion> waveAnimation;
@@ -43,6 +43,9 @@ public class AnimationDecal {
 
     public boolean autoMove = false;
     public boolean isPerson = false;
+
+    // real shitty, but it's ld
+    public boolean isPlow = false;
 
 //    public AnimationDecal(ImageInfo imageInfo, int x, int z) {
 //        this(Main.game.getScreen().assets, imageInfo, ((GameScreen) Main.game.getScreen()).landscape, x, z);
@@ -146,7 +149,7 @@ public class AnimationDecal {
     Vector3 bloodPos = new Vector3();
     Vector3 t1Vec = new Vector3();
 
-    private void updateMovement(float dt) {
+    protected void updateMovement(float dt) {
 
         if (isInSnow() && !launched) {
             waveTime += dt;
@@ -178,10 +181,14 @@ public class AnimationDecal {
                     return;
                 }
 
-                if (autoMove) {
-                    moveToTile(landscape.getRandomX(), getNextZ());
-                }
+                completeMovement();
             }
+        }
+    }
+
+    protected void completeMovement() {
+        if (autoMove) {
+            moveToTile(landscape.getRandomX(), getNextZ());
         }
     }
 
@@ -193,7 +200,7 @@ public class AnimationDecal {
         return MathUtils.clamp(z, 4, Landscape.TILES_LONG - 8);
     }
 
-    private boolean isInSnow() {
+    protected boolean isInSnow() {
         // protecc
         int index = (int)position.x + (int)position.z * Landscape.TILES_WIDE;
         if (index >= landscape.tiles.length) {
