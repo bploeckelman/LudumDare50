@@ -4,16 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
@@ -29,12 +28,15 @@ public class TitleScreen extends BaseScreen {
 
     private Texture background;
     private Array<Animation<TextureRegion>> letterAnims;
+    private Array<Vector2> letterPositions;
     private SimplePath lettersPath;
     private ShapeRenderer shapes;
 
     private final float BUTTON_WIDTH = 300f;
     private final float BUTTON_HEIGHT = 75f;
     private final float BUTTON_PADDING = 10f;
+
+    private float t = 0f;
 
     public TitleScreen() {
         // NOTE: have to set the input processor here as well as transitionCompleted
@@ -59,6 +61,11 @@ public class TitleScreen extends BaseScreen {
                 1100, y - 340,
                 1280, y - 480
         );
+
+        letterPositions = new Array<>();
+        for (int i = 0; i < letterAnims.size - 1; i++) {
+            letterPositions.add(new Vector2(lettersPath.valueAt(t)));
+        }
 
         game.audio.playMusic(AudioManager.Musics.introMusic);
 //        game.audio.playMusic(AudioManager.Musics.outroMusic);
@@ -153,17 +160,31 @@ public class TitleScreen extends BaseScreen {
     }
 
     @Override
+    public void update(float dt) {
+        super.update(dt);
+        t += 0.2f * dt;
+        t = MathUtils.clamp(t, 0f, 1f);
+        lettersPath.valueAt(letterPositions.get(0), t);
+    }
+
+    @Override
     public void render(SpriteBatch batch) {
         batch.setProjectionMatrix(windowCamera.combined);
         batch.begin();
         {
             batch.draw(background, 0, 0, windowCamera.viewportWidth, windowCamera.viewportHeight);
 
+            TextureRegion keyframe = letterAnims.get(0).getKeyFrames()[0];
+            batch.draw(keyframe,
+                    letterPositions.get(0).x - keyframe.getRegionWidth() / 2f,
+                    letterPositions.get(0).y - 20f);
+
 //            assets.layout.setText(assets.font, "Avalaunch!", Color.LIGHT_GRAY, windowCamera.viewportWidth, Align.center, false);
 //            assets.font.draw(batch, assets.layout, 0f, windowCamera.viewportHeight * (3f / 4f) + assets.layout.height / 2f);
         }
         batch.end();
 
+        // TODO - comment out
         shapes.setProjectionMatrix(windowCamera.combined);
         lettersPath.debugRender(shapes);
         shapes.end();
