@@ -163,7 +163,7 @@ public class GameScreen extends BaseScreen {
     public enum Karma {GOOD, EVIL}
     public Karma currentKarmaPicked = GOOD;
     public enum Skill {NONE, PLOW, RAMP, DIVERTER, BOULDER, LASER, HELI}
-    public Skill activeSkill = Skill.NONE;
+    public Skill activeSkill = Skill.RAMP;
 
     public enum CameraPhase {
         transitionToRails, plan, transitionToAvalanche, avalanche, transitionViewLodge;
@@ -1491,6 +1491,9 @@ public class GameScreen extends BaseScreen {
         skillButton1.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, karmaTabGood.getY() - buttonHeight - margin * 2f);
         skillButton2.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, skillButton1.getY() - buttonHeight - margin);
         skillButton3.setPosition(controlWindow.getWidth() / 2f - buttonWidth / 2f, skillButton2.getY() - buttonHeight - margin);
+        skillButton1.setChecked(true);
+        skillButton1.setFocusBorderEnabled(true);
+        skillButton1.focusGained();
         skillButtonGroup.addActor(skillButton1);
         skillButtonGroup.addActor(skillButton2);
         skillButtonGroup.addActor(skillButton3);
@@ -1674,7 +1677,6 @@ public class GameScreen extends BaseScreen {
             }
         });
 
-        skillButton1.setFocusBorderEnabled(true);
         activeSkill = Skill.RAMP;
         isControlShown = true;
 
