@@ -434,7 +434,7 @@ public class GameScreen extends BaseScreen {
             case avalanche:
                 float target = Math.max(10f, Landscape.TILES_LONG * Landscape.TILE_WIDTH * getAvalancheProgress() + avalancheOffset);
                 camera.position.z = MathUtils.lerp(camera.position.z, target, 2*dt);
-                if (landscape.snowBalls.size == 0 || camera.position.z > avalancheOffset + 0.9 * Landscape.TILES_LONG * Landscape.TILE_WIDTH) {//TODO set avalanche percent to transition
+                if (landscape.snowBalls.size == 0 || camera.position.z > avalancheOffset + 0.8 * Landscape.TILES_LONG * Landscape.TILE_WIDTH) {//TODO set avalanche percent to transition
                     goToNextCameraPhase();
                 }
                 break;
@@ -475,9 +475,9 @@ public class GameScreen extends BaseScreen {
                 if (landscape.snowBalls.size > 0) {
                     camStartPos.set(camera.position);
                     camMidPos.set(1f, 3.4f, camera.position.z + 10);
-                    camEndPos.set(1f, 4f, 105f);
+                    camEndPos.set(-1.5f, 4f, 95f);
                     camStartDir.set(camera.direction);
-                    camEndDir.set(0.50008386f, -0.656027f, -0.5652821f);
+                    camEndDir.set(1f, -1f, -0.65f);
                     camEndDir.nor();
 
                     transitionLength = 1.5f;

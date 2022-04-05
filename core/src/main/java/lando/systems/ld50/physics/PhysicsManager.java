@@ -68,7 +68,7 @@ public class PhysicsManager {
             }
 
             for (AnimationDecal decal : landscape.screen.decals) {
-                if (decal.get().getPosition().dst(ball.position) < ball.radius / 1.25) {
+                if (decal.get().getPosition().dst(ball.position) < ball.radius / 1.25 && !decal.dead) {
                     decal.hit();
                 }
             }
@@ -83,7 +83,7 @@ public class PhysicsManager {
 
                     // decoration got hit, fuck it up somehow
                     // TODO - maybe tweak how much damage it takes each collision
-                    tile.decorationHealth -= ball.radius;
+                    tile.decorationHealth -= ball.radius/1.5;
 
                     ball.radius = 0;
 
