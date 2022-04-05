@@ -1,18 +1,30 @@
 package lando.systems.ld50.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.ScreenUtils;
+import lando.systems.ld50.Config;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.audio.AudioManager;
+
+import static lando.systems.ld50.objects.LandTile.*;
 
 public class EpilogueScreen extends BaseScreen {
 
@@ -20,13 +32,25 @@ public class EpilogueScreen extends BaseScreen {
 
     private static float textScale = 1.0f;
     float accum = 0;
+    float backgroundAccum = 0;
     PerspectiveCamera perspectiveCamera;
+    PerspectiveCamera backgroundCamera;
+    Mesh landMesh;
+    ModelInstance yetiModel;
+    ModelInstance lodgeA;
+    ModelInstance lodgeB;
+    ModelInstance lodgeC;
+    ModelInstance lodgeD;
+    Environment env;
+    ModelBatch modelBatch;
+
     GlyphLayout layout;
 
     Rectangle skipRect;
     Rectangle speedRect;
     boolean hoverSkip;
     boolean hoverSpeed;
+
 
     String text = "\n\n\n\n\n\n\n\n... \n\nthe fuck was that, bro?\n\n\n" +
             "Spring Break was supposed to be about\n"+
@@ -94,10 +118,30 @@ public class EpilogueScreen extends BaseScreen {
 //        skipRect = new Rectangle(windowCamera.viewportWidth - 170, windowCamera.viewportHeight-70, 150, 50);
         speedRect = new Rectangle(windowCamera.viewportWidth - 370, windowCamera.viewportHeight-70, 350, 50);
 
+        buildMesh();
+        backgroundCamera = new PerspectiveCamera(70, Config.window_width, Config.window_height);
+        backgroundCamera.position.set(MathUtils.sin(backgroundAccum/2f) * 40, 20, MathUtils.cos(backgroundAccum/2f) * 40);
+        backgroundCamera.lookAt(0,0,0);
+        backgroundCamera.near = .001f;
+        backgroundCamera.far = 1000;
+        backgroundCamera.update();
+        yetiModel = createUnitModelInstance(Assets.Models.yeti.model, 4f, 0f, 3f);
+
+        lodgeA = createUnitModelInstance(Assets.Models.lodge_a.model, -3.03f, 0, 0);
+        lodgeB = createUnitModelInstance(Assets.Models.lodge_b.model, -2.02f, 0, 0);
+        lodgeC = createUnitModelInstance(Assets.Models.lodge_c.model, -1.01f, 0, 0);
+        lodgeD = createUnitModelInstance(Assets.Models.lodge_d.model, 0, 0, 0);
+
+        env = new Environment();
+        env.set(new ColorAttribute(ColorAttribute.AmbientLight, .6f, .6f, .6f, 1f));
+        env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, .5f, -1, 0));
+        modelBatch = new ModelBatch();
+
     }
 
     Vector3 screenPos = new Vector3();
     public void update(float dt) {
+        backgroundAccum += dt;
         float speedMultiplier = 1.0f;
 
         screenPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -128,6 +172,11 @@ public class EpilogueScreen extends BaseScreen {
         if (Gdx.input.isTouched() && hoverSkip) {
             launchGame();
         }
+
+        backgroundCamera.position.set(MathUtils.sin(backgroundAccum/3f) * 5, 6, MathUtils.cos(backgroundAccum/3f) * 5);
+        backgroundCamera.lookAt(0,0,0);
+        backgroundCamera.up.set(0, 1, 0);
+        backgroundCamera.update();
     }
 
     private void launchGame() {
@@ -141,10 +190,17 @@ public class EpilogueScreen extends BaseScreen {
     @Override
     public void render(SpriteBatch batch) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
+
+        ScreenUtils.clear(.3f, .3f, 1f, 1f, true);
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+
+
+        renderBackground(batch);
 
         batch.setProjectionMatrix(perspectiveCamera.combined);
         batch.begin();
+
 
 //        batch.draw(assets.backgrounds.titleImage, 0,0, Config.window_width, Config.window_height);
 
@@ -180,5 +236,134 @@ public class EpilogueScreen extends BaseScreen {
         batch.end();
 
 
+    }
+
+
+    public void renderBackground(SpriteBatch batch) {
+
+        batch.setShader(null);
+
+        ShaderProgram landscapeShader = game.assets.landscapeShader;
+        landscapeShader.bind();
+        landscapeShader.setUniformf("u_ambient", .2f, .2f, .2f, 1f);
+        landscapeShader.setUniformf("u_lightColor", 1f, 1f, 1f, 1f);
+        landscapeShader.setUniformf("u_lightDir", 0, -1, 0);
+        landscapeShader.setUniformi("u_texture", 0);
+
+
+        Main.game.assets.noiseTex.bind(0);
+        landscapeShader.setUniformMatrix("u_projTrans", backgroundCamera.combined);
+        landMesh.render(landscapeShader, GL20.GL_TRIANGLES, 0, 6);
+
+        modelBatch.begin(backgroundCamera);
+        yetiModel.transform.setTranslation(-1, (MathUtils.sin(backgroundAccum * 5f) + 1) * .5f, -1);
+        modelBatch.render(yetiModel, env);
+        modelBatch.render(lodgeA, env);
+        modelBatch.render(lodgeB, env);
+        modelBatch.render(lodgeC, env);
+        modelBatch.render(lodgeD, env);
+
+        modelBatch.end();
+
+        batch.begin();
+        batch.setProjectionMatrix(windowCamera.combined);
+        batch.setColor(0, 0, 0, .3f);
+        batch.draw(assets.pixelRegion, 0, 0, windowCamera.viewportWidth, windowCamera.viewportHeight);
+        batch.end();
+
+    }
+
+    public void buildMesh() {
+        landMesh = new Mesh(true, 4*12, 6,
+                new VertexAttribute(VertexAttributes.Usage.Position,           NUM_COMPONENTS_POSITION, "a_position"),
+                new VertexAttribute(VertexAttributes.Usage.Normal,        NUM_COMPONENTS_NORMAL, "a_normal"),
+                new VertexAttribute(VertexAttributes.Usage.ColorUnpacked,        NUM_COMPONENTS_COLOR, "a_color"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, NUM_COMPONENTS_TEXTURE,  "a_texCoord0")
+        );
+
+        float [] vertices = new float[4 * 12];
+        int verIndex = 0;
+        vertices[verIndex++] = -100;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = -100;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 1; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 0; // a
+        vertices[verIndex++] = -100; // U
+        vertices[verIndex++] = -100; // V
+
+        vertices[verIndex++] = 100;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = -100;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 1; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 0; // a
+        vertices[verIndex++] = 100; // U
+        vertices[verIndex++] = -100; // V
+
+        vertices[verIndex++] = 100;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 100;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 1; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 0; // a
+        vertices[verIndex++] = 100; // U
+        vertices[verIndex++] = 100; // V
+
+        vertices[verIndex++] = -100;
+        vertices[verIndex++] = 0;
+        vertices[verIndex++] = 100;
+        vertices[verIndex++] = 0; // Normal X
+        vertices[verIndex++] = 1; // Normal Y
+        vertices[verIndex++] = 0; // Normal Z
+        vertices[verIndex++] = 1; // r
+        vertices[verIndex++] = -1; // g
+        vertices[verIndex++] = -1; // b
+        vertices[verIndex++] = 0; // a
+        vertices[verIndex++] = -100; // U
+        vertices[verIndex++] = 100; // V
+
+        short[] indices = new short[6];
+        int index = 0;
+        indices[index++] = 0;
+        indices[index++] = 1;
+        indices[index++] = 2;
+
+        indices[index++] = 2;
+        indices[index++] = 3;
+        indices[index++] = 0;
+
+        landMesh.setVertices(vertices);
+        landMesh.setIndices(indices);
+
+    }
+
+    private final BoundingBox box = new BoundingBox();
+    private ModelInstance createUnitModelInstance(Model model, float posX, float posY, float posZ) {
+        ModelInstance instance = new ModelInstance(model);
+        instance.calculateBoundingBox(box);
+        float extentX = (box.max.x - box.min.x);
+        float extentY = (box.max.y - box.min.y);
+        float extentZ = (box.max.z - box.min.z);
+        float maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+        instance.transform
+                .setToTranslationAndScaling(
+                        posX, posY, posZ,
+                        1f / maxExtent,
+                        1f / maxExtent,
+                        1f / maxExtent);
+        return instance;
     }
 }
