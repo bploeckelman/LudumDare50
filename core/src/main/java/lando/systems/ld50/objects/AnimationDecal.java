@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
+import lando.systems.ld50.physics.Triangle;
 import lando.systems.ld50.screens.BaseScreen;
 import lando.systems.ld50.screens.GameScreen;
 
@@ -107,8 +108,43 @@ public class AnimationDecal {
 
     public void hit() {
         this.launch();
-        
+//        int triNum = 0;
+//        float xpart = position.x - (int)position.x - 0.5f;
+//        float zpart = position.z - (int)position.z - 0.5f;
+//        if (xpart > Math.abs(zpart)) { triNum = 1; }
+//        else if (xpart < -Math.abs(zpart)) { triNum = 3; }
+//        else if (zpart > Math.abs(xpart)) { triNum = 2; }
+//        else { triNum = 0; }
+//        bloodPos.setZero();
+//        Triangle k = landscape.tiles[(int)bloodPos.x + (int)bloodPos.z * Landscape.TILES_WIDE].getTriangles().get(triNum);
+//        bloodPos.add(k.p1);
+//        bloodPos.add(k.p2);
+//        bloodPos.add(k.p3);
+//        bloodPos.scl(1f/3);
+        Decal d = Decal.newDecal(Main.game.assets.particles.blood, true);
+//        t1Vec.set(k.getNormal());
+//        t1Vec.scl(0.125f);
+//        bloodPos.add(t1Vec);
+//
+//        //d.setPosition(bloodPos);
+//
+//        d.setPosition(this.position);
+//        bloodUp.set(bloodPos);
+//        t1Vec.scl(8f);
+//        bloodPos.add(t1Vec);
+//        bloodUp.sub(k.p1);
+//        bloodUp.nor();
+//        d.lookAt(bloodPos,bloodUp);
+        d.setPosition(this.position.x, this.position.y - this.imageInfo.height + 0.1f, this.position.z);
+        d.lookAt(this.position, Vector3.Y);
+        d.setDimensions(0.4f, 0.4f);
+
+        landscape.screen.decalsStatic.add(d);
     }
+
+    Vector3 bloodUp = new Vector3();
+    Vector3 bloodPos = new Vector3();
+    Vector3 t1Vec = new Vector3();
 
     private void updateMovement(float dt) {
 

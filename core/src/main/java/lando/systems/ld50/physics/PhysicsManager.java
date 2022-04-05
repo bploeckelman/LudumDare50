@@ -72,7 +72,7 @@ public class PhysicsManager {
             }
 
             for (AnimationDecal decal : landscape.screen.decals) {
-                if (decal.get().getPosition().dst(ball.position) < ball.radius / 2) {
+                if (decal.get().getPosition().dst(ball.position) < ball.radius / 1.25) {
                     decal.hit();
                 }
             }
@@ -87,7 +87,7 @@ public class PhysicsManager {
 
                     // decoration got hit, fuck it up somehow
                     // TODO - maybe tweak how much damage it takes each collision
-                    tile.decorationHealth -= 0.1f;
+                    tile.decorationHealth -= ball.radius/1.5;
 
                     // make more red based on health
                     ColorAttribute attrib = (ColorAttribute) tile.decoration.materials.get(0).get(ColorAttribute.Diffuse);

@@ -896,7 +896,7 @@ public class GameScreen extends BaseScreen {
         if (isGameOver()) return false;
         if (isSettingShown) return false;
         touchDrag.set(screenX, screenY, 0);
-        if (touchStart.dst(touchDrag) > 5) { return false; }
+        if (touchStart.dst(touchDrag) > 15) { return false; }
         if (landscape.highlightedTile != null && !landscape.highlightedTile.isDecorated()) {
             switch (activeSkill) {
                 case RAMP:

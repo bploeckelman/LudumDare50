@@ -151,6 +151,7 @@ public class Assets implements Disposable {
         public TextureRegion smoke;
         public TextureRegion ring;
         public TextureRegion dollar;
+        public TextureRegion blood;
     }
 
     public enum Transition {
@@ -358,6 +359,7 @@ public class Assets implements Disposable {
         particles.smoke   = atlas.findRegion("particles/smoke");
         particles.sparkle = atlas.findRegion("particles/sparkle");
         particles.dollar  = atlas.findRegion("particles/dollars");
+        particles.blood  = atlas.findRegion("characters/blood-stain");
 
         // initialize models
         Models.boulder_a.model         = mgr.get("models/boulder-a.g3db", Model.class);
