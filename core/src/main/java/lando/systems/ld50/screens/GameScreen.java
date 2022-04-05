@@ -746,7 +746,7 @@ public class GameScreen extends BaseScreen {
             instance = createUnitModelInstance(Assets.Models.randomHouse(), 0f, 0f, 0f);
 
             // find an undecorated landtile
-            int excludedRows = 2;
+            int excludedRows = 5;
             tile = getUndecoratedTile(excludedRows);
 
             // decorate it with the instance
