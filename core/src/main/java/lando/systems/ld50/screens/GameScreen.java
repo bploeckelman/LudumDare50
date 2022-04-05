@@ -381,7 +381,6 @@ public class GameScreen extends BaseScreen {
                     isHeli = false;
                 }
             } else if (decal.saved) {
-                // TODO: add karma
                 decals.removeIndex(i);
             } else {
                     //decal.lookAt(billboardCameraPos, camera.up);
@@ -1095,7 +1094,7 @@ public class GameScreen extends BaseScreen {
     public void savePerson(LandTile selectedTile) {
         for (AnimationDecal animationDecal : decals) {
             if (animationDecal.isPerson && animationDecal.isOn(selectedTile)) {
-                // fuck it
+                addGoodKarmaPoints(250, selectedTile);
                 animationDecal.saved = true;
             }
         }
