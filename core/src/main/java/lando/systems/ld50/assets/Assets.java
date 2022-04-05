@@ -151,7 +151,7 @@ public class Assets implements Disposable {
         }
 
         public static boolean isTree(Model model) {
-            return model == tree_b.model && model == tree_d.model;
+            return model == tree_b.model || model == tree_d.model;
         }
     }
 
