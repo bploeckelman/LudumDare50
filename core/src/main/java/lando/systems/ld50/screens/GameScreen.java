@@ -1521,6 +1521,11 @@ public class GameScreen extends BaseScreen {
         skillButtonGroup.addActor(skill2AmmoImage);
         skillButtonGroup.addActor(skill3AmmoImage);
 
+//        Tooltip tooltip = new Tooltip("default");
+//        VisLabel text = new VisLabel("this is skill1");
+//        tooltip.setContent(text);
+//        skillButton1.addActor(tooltip);
+
         skillButton1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -1528,24 +1533,26 @@ public class GameScreen extends BaseScreen {
                     case GOOD:
                         if (activeSkill == Skill.RAMP) {
                             activeSkill = Skill.NONE;
-                            skillButton1.setFocusBorderEnabled(false);
+                            skillButton1.focusLost();
                         } else {
-                            skillButton1.setFocusBorderEnabled(true);
                             activeSkill = Skill.RAMP;
+                            skillButton1.focusGained();
                         }
                         break;
                     case EVIL:
                         if (activeSkill == Skill.DIVERTER) {
                             activeSkill = Skill.NONE;
-                            skillButton1.setFocusBorderEnabled(false);
+                            skillButton1.focusLost();
                         } else {
-                            skillButton1.setFocusBorderEnabled(true);
                             activeSkill = Skill.DIVERTER;
+                            skillButton1.focusGained();
                         }
                         break;
                 }
-                skillButton2.setChecked(false);
-                skillButton3.setChecked(false);
+//                skillButton2.setChecked(false);
+//                skillButton3.setChecked(false);
+                skillButton2.focusLost();
+                skillButton3.focusLost();
             }
         });
         skillButton2.addListener(new ChangeListener() {
@@ -1555,24 +1562,27 @@ public class GameScreen extends BaseScreen {
                     case GOOD:
                         if (activeSkill == Skill.PLOW) {
                             activeSkill = Skill.NONE;
-                            skillButton2.setFocusBorderEnabled(false);
+                            skillButton2.focusLost();
                         } else {
-                            skillButton2.setFocusBorderEnabled(true);
                             activeSkill = Skill.PLOW;
+                            skillButton2.focusGained();
                         }
                         break;
                     case EVIL:
                         if (activeSkill == Skill.BOULDER) {
                             activeSkill = Skill.NONE;
-                            skillButton2.setFocusBorderEnabled(false);
+                            skillButton2.focusLost();
                         } else {
-                            skillButton2.setFocusBorderEnabled(true);
                             activeSkill = Skill.BOULDER;
+                            skillButton2.focusGained();
                         }
                         break;
                 }
-                skillButton1.setChecked(false);
-                skillButton3.setChecked(false);
+//                skillButton1.setChecked(false);
+//                skillButton3.setChecked(false);
+                skillButton1.focusLost();
+                skillButton3.focusLost();
+
             }
         });
         skillButton3.addListener(new ChangeListener() {
@@ -1582,24 +1592,27 @@ public class GameScreen extends BaseScreen {
                     case GOOD:
                         if (activeSkill == Skill.HELI) {
                             activeSkill = Skill.NONE;
-                            skillButton3.setFocusBorderEnabled(false);
+                            skillButton3.focusLost();
                         } else {
-                            skillButton3.setFocusBorderEnabled(true);
                             activeSkill = Skill.HELI;
+                            skillButton3.focusGained();
                         }
                         break;
                     case EVIL:
                         if (activeSkill == Skill.LASER) {
                             activeSkill = Skill.NONE;
-                            skillButton3.setFocusBorderEnabled(false);
+                            skillButton3.focusLost();
                         } else {
-                            skillButton3.setFocusBorderEnabled(true);
                             activeSkill = Skill.LASER;
+                            skillButton3.focusGained();
                         }
                         break;
                 }
-                skillButton1.setChecked(false);
-                skillButton2.setChecked(false);
+//                skillButton1.setChecked(false);
+//                skillButton2.setChecked(false);
+                skillButton1.focusLost();
+                skillButton2.focusLost();
+
             }
         });
 
