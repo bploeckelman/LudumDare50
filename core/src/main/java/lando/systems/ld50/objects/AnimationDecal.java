@@ -194,7 +194,12 @@ public class AnimationDecal {
     }
 
     private boolean isInSnow() {
-        float snow =  landscape.tiles[(int)position.x + (int)position.z * Landscape.TILES_WIDE].getAverageSnowHeight();
+        // protecc
+        int index = (int)position.x + (int)position.z * Landscape.TILES_WIDE;
+        if (index >= landscape.tiles.length) {
+            return false;
+        }
+        float snow =  landscape.tiles[index].getAverageSnowHeight();
         return snow > 0.08f;
     }
 

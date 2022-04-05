@@ -27,7 +27,7 @@ public class Landscape {
     public Array<Snowball> snowBalls;
     public Array<Debris> debris;
 
-    private PhysicsManager physics;
+    public PhysicsManager physics;
 
     private final ShaderProgram landscapeShader;
     private final ShaderProgram ballShader;

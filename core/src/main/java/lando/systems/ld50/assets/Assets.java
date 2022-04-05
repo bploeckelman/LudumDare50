@@ -136,6 +136,18 @@ public class Assets implements Disposable {
                 case 2: return building_a.model;
             }
         }
+
+        public static boolean isLodge(Model model) {
+            return     model == lodge_a.model
+                    || model == lodge_b.model
+                    || model == lodge_c.model
+                    || model == lodge_d.model
+                    || model == lodge_a_snowed.model
+                    || model == lodge_b_snowed.model
+                    || model == lodge_c_snowed.model
+                    || model == lodge_d_snowed.model
+                    ;
+        }
     }
 
     public enum Patch {

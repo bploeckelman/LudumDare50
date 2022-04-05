@@ -1,8 +1,5 @@
 package lando.systems.ld50.physics;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.MathUtils;
@@ -10,7 +7,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
-import lando.systems.ld50.Config;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
@@ -43,7 +39,7 @@ public class PhysicsManager {
     float scale = 1f;
     float internalTime = 0;
     float timeStep = .005f;
-    float slowdownScale = 0.4f;
+    public float slowdownScale = 0.4f;
     public void update(float dt){
         if (dt == 0) return;
         internalTime += slowdownScale * dt;
@@ -124,12 +120,46 @@ public class PhysicsManager {
                         landscape.screen.removeModelInstance(tile.decoration);
 
                         // This is a lodge Tile
-                        if (tile.z == Landscape.TILES_LONG -1){
+                        if (Assets.Models.isLodge(tile.decoration.model)) {
+//                        if (tile.z == Landscape.TILES_LONG - 5 - 1){
                             landscape.setGameOver();
                         }
 
+                        // change decoration to correct 'snowed-in' decoration if appropriate
+                        ModelInstance instance;
                         if (tile.decoration.model == Assets.Models.building_a.model) {
-                            ModelInstance instance = new ModelInstance(Assets.Models.building_a_snowed.model);
+                            instance = new ModelInstance(Assets.Models.building_a_snowed.model);
+                            instance.calculateBoundingBox(box);
+                            float extentX = (box.max.x - box.min.x);
+                            float extentY = (box.max.y - box.min.y);
+                            float extentZ = (box.max.z - box.min.z);
+                            float maxExtent = Math.max(Math.max(extentX, extentY), extentZ);
+                            instance.transform
+                                    .setToTranslationAndScaling(
+                                            0f, 0f, 0f,
+                                            1f / maxExtent,
+                                            1f / maxExtent,
+                                            1f / maxExtent);
+                            tile.decorate(instance);
+                            tile.isDecorationDestructable = false;
+                            landscape.screen.addHouseModelInstance(instance);
+                        } else if (Assets.Models.isLodge(tile.decoration.model)) {
+                            if (tile.decoration.model == Assets.Models.lodge_a.model) {
+                                instance = new ModelInstance(Assets.Models.lodge_a_snowed.model);
+                            }
+                            else if (tile.decoration.model == Assets.Models.lodge_b.model) {
+                                instance = new ModelInstance(Assets.Models.lodge_b_snowed.model);
+                            }
+                            else if (tile.decoration.model == Assets.Models.lodge_c.model) {
+                                instance = new ModelInstance(Assets.Models.lodge_c_snowed.model);
+                            }
+                            else if (tile.decoration.model == Assets.Models.lodge_d.model) {
+                                instance = new ModelInstance(Assets.Models.lodge_d_snowed.model);
+                            } else {
+                                // shouldn't happen
+                                instance = new ModelInstance(Assets.Models.lodge_a_snowed.model);
+                            }
+
                             instance.calculateBoundingBox(box);
                             float extentX = (box.max.x - box.min.x);
                             float extentY = (box.max.y - box.min.y);
@@ -147,8 +177,8 @@ public class PhysicsManager {
                         } else {
                             tile.decoration = null;
                         }
-                    } else { // building is safe, spawn good karma particles
-
+                    } else {
+                        // building is safe
                     }
 
                     Main.game.audio.playSound(AudioManager.Sounds.houseImpact, 0.6F);

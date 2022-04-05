@@ -266,24 +266,28 @@ public class GameScreen extends BaseScreen {
             badKarmaPointLabel.setText("" + badKarmaPoints);
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            dumpCameraVecsToLog();
-            cameraMovementPaused = !cameraMovementPaused;
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+//            dumpCameraVecsToLog();
+//            cameraMovementPaused = !cameraMovementPaused;
+//        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+            landscape.physics.slowdownScale = 1.2f;
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+            landscape.physics.slowdownScale = 0.4f;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-            Time.pause_for(0.2f);
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+//            shaker.addDamage(0.5f);
+//            landscape.startAvalanche();
+//        }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            shaker.addDamage(0.5f);
-            landscape.startAvalanche();
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
+//            landscape.setGameOver();
+//        }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
-            landscape.setGameOver();
-        }
         // toggle debug states
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
             boolean wasShown = Config.debug_general;
             Config.debug_general = !Config.debug_general;
@@ -303,12 +307,12 @@ public class GameScreen extends BaseScreen {
 //        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) && currentCameraPhase == CameraPhase.avalanche) {
 //            UntransitionCamera();
 //        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P) && landscape.highlightedTile != null) {
-            landscape.highlightedTile.makeRamp();
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q) && landscape.highlightedTile != null) {
-            landscape.highlightedTile.makeDiverter(false);
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.P) && landscape.highlightedTile != null) {
+//            landscape.highlightedTile.makeRamp();
+//        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.Q) && landscape.highlightedTile != null) {
+//            landscape.highlightedTile.makeDiverter(false);
+//        }
 
         if (gameOver) {
             landscape.setSelectedTile(-1, -1);
@@ -690,49 +694,48 @@ public class GameScreen extends BaseScreen {
     private void loadModels() {
         lodgeInstances = new Array<>();
 
+        int row = Landscape.TILES_LONG - 6;
         LandTile tile;
         ModelInstance instance;
 
-        tile = landscape.getTileAt(0, Landscape.TILES_LONG - 1);
+        tile = landscape.getTileAt(0, row);
         instance = createUnitModelInstance(Assets.Models.lodge_a.model, 0f, 0f, 0f);
         tile.decorate(instance, 0f);
         lodgeInstances.add(instance);
 
-        tile = landscape.getTileAt(1, Landscape.TILES_LONG - 1);
+        tile = landscape.getTileAt(1, row);
         instance = createUnitModelInstance(Assets.Models.lodge_b.model, 0f, 0f, 0f);
         tile.decorate(instance, 0f);
         lodgeInstances.add(instance);
 
-        tile = landscape.getTileAt(2, Landscape.TILES_LONG - 1);
+        tile = landscape.getTileAt(2, row);
         instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
         tile.decorate(instance, 0f);
         lodgeInstances.add(instance);
 
-        tile = landscape.getTileAt(3, Landscape.TILES_LONG - 1);
+        tile = landscape.getTileAt(3, row);
         instance = createUnitModelInstance(Assets.Models.lodge_d.model, 0f, 0f, 0f);
         tile.decorate(instance, 0f);
         lodgeInstances.add(instance);
 
-        tile = landscape.getTileAt(4, Landscape.TILES_LONG - 1);
+        tile = landscape.getTileAt(4, row);
         instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
         tile.decorate(instance, 0f);
         lodgeInstances.add(instance);
 
-        tile = landscape.getTileAt(5, Landscape.TILES_LONG - 1);
+        tile = landscape.getTileAt(5, row);
         instance = createUnitModelInstance(Assets.Models.lodge_b.model, 0f, 0f, 0f);
         tile.decorate(instance, 0f);
         lodgeInstances.add(instance);
 
-        tile = landscape.getTileAt(6, Landscape.TILES_LONG - 1);
+        tile = landscape.getTileAt(6, row);
         instance = createUnitModelInstance(Assets.Models.lodge_c.model, 0f, 0f, 0f);
         tile.decorate(instance, 0f);
         lodgeInstances.add(instance);
 
-        tile = landscape.getTileAt(7, Landscape.TILES_LONG - 1);
-        instance = createUnitModelInstance(Assets.Models.lodge_a.model, 0f, 0f, 0f);
+        tile = landscape.getTileAt(7, row);
+        instance = createUnitModelInstance(Assets.Models.lodge_d.model, 0f, 0f, 0f);
         tile.decorate(instance, 0f);
-        // fuck it, it's ludum dare (screws up normals and makes it dark relative to others)
-        instance.transform.scale(-1f, 1f, 1f);
         lodgeInstances.add(instance);
 
         // TODO - be more clever about how these are randomly placed so they don't cluster
