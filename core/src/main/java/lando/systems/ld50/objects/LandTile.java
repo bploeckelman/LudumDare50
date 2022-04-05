@@ -195,7 +195,7 @@ public class LandTile {
         LLHeight = 1f;
         LRHeight = 1f;
         update(0);
-        Main.game.audio.playSound(AudioManager.Sounds.earth, 0.5F);
+//        Main.game.audio.playSound(AudioManager.Sounds.earth, 0.5F);
 
         rebuildMesh();
 

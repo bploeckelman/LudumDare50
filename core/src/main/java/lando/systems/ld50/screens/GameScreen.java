@@ -498,7 +498,7 @@ public class GameScreen extends BaseScreen {
                 camEndDir.set(0f, -(MathUtils.sinDeg(avalancheViewAngleDeg) / MathUtils.cosDeg(avalancheViewAngleDeg)), -1f);
                 camEndDir.nor();
 
-                transitionLength = 2.5f;
+                transitionLength = 2.5f; // PETE
                 transitionPostDelay = 0f;
                 timeInTransition = 0;
                 break;
@@ -588,7 +588,7 @@ public class GameScreen extends BaseScreen {
         if (landscape.snowBalls.size > 0) return;
         Timeline.createSequence()
                 .push(
-                        Tween.to(dayTime, 1, 5f)
+                        Tween.to(dayTime, 1, 2.125f) // PETE
                         .target(24f + buildHour)
                                 .ease(Sine.IN))
                 .push(Tween.call((type, source) -> {
@@ -901,11 +901,14 @@ public class GameScreen extends BaseScreen {
             switch (activeSkill) {
                 case RAMP:
                     landscape.highlightedTile.makeRamp();
+                    game.audio.playSound(AudioManager.Sounds.earth, .8F);
                     break;
                 case PLOW:
                     addPlow(landscape);
+                    game.audio.playSound(AudioManager.Sounds.goodKarma, 1.0F);
                     break;
                 case HELI:
+                    game.audio.playSound(AudioManager.Sounds.helicopter, 1.0F);
                     break;
                 case DIVERTER:
                     landscape.highlightedTile.makeDiverter(true);
@@ -914,6 +917,7 @@ public class GameScreen extends BaseScreen {
                     break;
                 case LASER:
                     killPerson(landscape.highlightedTile);
+                    game.audio.playSound(AudioManager.Sounds.laser);
                     break;
                 case NONE:
                 default:
