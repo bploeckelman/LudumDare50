@@ -70,11 +70,7 @@ public class Landscape {
         for(LandTile tile : tiles) {
             tile.update(dt);
         }
-        if (!screen.gameOver){
-            if (snowBalls.size == 0){
-                screen.beginBuildPhase();
-            }
-        }
+
         for (int i = snowBalls.size-1; i >= 0; i--){
             Snowball ball = snowBalls.get(i);
             ball.update(dt);
@@ -82,6 +78,11 @@ public class Landscape {
             if (ball.position.z > TILES_LONG){
                 snowBalls.removeIndex(i);
                 // TODO: make these launch particles
+            }
+            if (!screen.gameOver){
+                if (snowBalls.size == 0){
+                    screen.beginBuildPhase();
+                }
             }
             if (ball.radius < .1f){
                 snowBalls.removeIndex(i);
