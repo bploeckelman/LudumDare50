@@ -71,7 +71,7 @@ public class Landscape {
             tile.update(dt);
         }
         if (!screen.gameOver){
-            if (snowBalls.size == 0 && screen.currentCameraPhase == GameScreen.CameraPhase.plan){
+            if (snowBalls.size == 0){
                 screen.beginBuildPhase();
             }
         }
