@@ -15,10 +15,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.I18NBundle;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.*;
 import lando.systems.ld50.Config;
 import lando.systems.ld50.utils.screenshake.SimplexNoise;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -68,6 +65,7 @@ public class Assets implements Disposable {
     public TextureRegion yetiIcon;
     public TextureRegion snowball;
 
+    public Array<Animation<TextureRegion>> titleLetters;
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
     public Animation<TextureRegion> babeA;
@@ -370,6 +368,17 @@ public class Assets implements Disposable {
         boulderIcon = atlas.findRegion("icons/boulder");
         yetiIcon = atlas.findRegion("icons/yeti");
         snowball = atlas.findRegion("other/snowball");
+
+        titleLetters = new Array<>(9);
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-1"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-2"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-3"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-4"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-5"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-6"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-7"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-8"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-9"), Animation.PlayMode.LOOP));
 
         // initialize particle images
         particles = new Particles();

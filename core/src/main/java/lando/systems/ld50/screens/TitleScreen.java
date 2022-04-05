@@ -5,21 +5,32 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
+import lando.systems.ld50.utils.SimplePath;
 
 public class TitleScreen extends BaseScreen {
     private VisTable rootTable;
     private VisTextButton startGameButton;
     private VisTextButton creditButton;
     private VisTextButton settingsButton;
+
+    private Texture background;
+    private Array<Animation<TextureRegion>> letterAnims;
+    private SimplePath lettersPath;
+    private ShapeRenderer shapes;
 
     private final float BUTTON_WIDTH = 300f;
     private final float BUTTON_HEIGHT = 75f;
@@ -31,8 +42,33 @@ public class TitleScreen extends BaseScreen {
         InputMultiplexer mux = new InputMultiplexer(uiStage, this);
         Gdx.input.setInputProcessor(mux);
 
+        shapes = new ShapeRenderer();
+        background = new Texture("images/title-screen_00.png");
+
+        float y = 720f;
+        letterAnims = assets.titleLetters;
+        lettersPath = new SimplePath(false,
+                -100, y - 80,
+                0, y - 180,
+                130, y - 300,
+                250, y - 480,
+                500, y - 580,
+                730, y - 470,
+                820, y - 330,
+                950, y - 270,
+                1100, y - 340,
+                1280, y - 480
+        );
+
         game.audio.playMusic(AudioManager.Musics.introMusic);
 //        game.audio.playMusic(AudioManager.Musics.outroMusic);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        background.dispose();
+        shapes.dispose();
     }
 
     @Override
@@ -121,24 +157,23 @@ public class TitleScreen extends BaseScreen {
         batch.setProjectionMatrix(windowCamera.combined);
         batch.begin();
         {
-            batch.draw(assets.pixel, 0, 0, windowCamera.viewportWidth, windowCamera.viewportHeight);
+            batch.draw(background, 0, 0, windowCamera.viewportWidth, windowCamera.viewportHeight);
 
-            assets.layout.setText(assets.font, "Avalaunch!", Color.LIGHT_GRAY, windowCamera.viewportWidth, Align.center, false);
-            assets.font.draw(batch, assets.layout, 0f, windowCamera.viewportHeight * (3f / 4f) + assets.layout.height / 2f);
+//            assets.layout.setText(assets.font, "Avalaunch!", Color.LIGHT_GRAY, windowCamera.viewportWidth, Align.center, false);
+//            assets.font.draw(batch, assets.layout, 0f, windowCamera.viewportHeight * (3f / 4f) + assets.layout.height / 2f);
         }
         batch.end();
+
+        shapes.setProjectionMatrix(windowCamera.combined);
+        lettersPath.debugRender(shapes);
+        shapes.end();
+
         uiStage.draw();
     }
 
     // ------------------------------------------------------------------------
     // Input handling
     // ------------------------------------------------------------------------
-
-    @Override
-    public boolean touchUp (int screenX, int screenY, int pointer, int button) {
-
-        return true;
-    }
 
     @Override
     public boolean keyUp (int keycode) {
