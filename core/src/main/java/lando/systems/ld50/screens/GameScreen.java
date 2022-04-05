@@ -59,6 +59,8 @@ import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
 
+import static lando.systems.ld50.screens.GameScreen.Karma.GOOD;
+
 public class GameScreen extends BaseScreen {
 
     private static final String TAG = GameScreen.class.getSimpleName();
@@ -130,6 +132,22 @@ public class GameScreen extends BaseScreen {
     public int goodKarmaPoints = 0;
     public int badKarmaPoints = 0;
 
+    public int goodSkill1Ammo;
+    public int goodSkill2Ammo;
+    public int goodSkill3Ammo;
+
+    public int badSkill1Ammo;
+    public int badSkill2Ammo;
+    public int badSkill3Ammo;
+
+    private VisImage skill1AmmoImage;
+    private VisImage skill2AmmoImage;
+    private VisImage skill3AmmoImage;
+    private VisImageButton skillButton1;
+    private VisImageButton skillButton2;
+    private VisImageButton skillButton3;
+
+
     public VisLabel roundLabel;
     public VisLabel goodKarmaLabel;
     public VisLabel badKarmaLabel;
@@ -143,7 +161,7 @@ public class GameScreen extends BaseScreen {
     public float gameOverDelay = 0;
 
     public enum Karma {GOOD, EVIL}
-    public Karma currentKarmaPicked = Karma.GOOD;
+    public Karma currentKarmaPicked = GOOD;
     public enum Skill {NONE, PLOW, RAMP, DIVERTER, BOULDER, LASER, HELI}
     public Skill activeSkill = Skill.NONE;
 
@@ -328,6 +346,8 @@ public class GameScreen extends BaseScreen {
         shaker.update(dt);
 
         landscape.update(dt);
+
+        updateAmmoCount();
 
 
         billboardCameraPos.set(camera.position).y = 0f;
@@ -608,6 +628,18 @@ public class GameScreen extends BaseScreen {
 
     public void beginBuildPhase(){
         roundNumber++;
+        goodSkill1Ammo+=4;
+        goodSkill1Ammo = (goodSkill1Ammo > 5) ? 9 : goodSkill1Ammo;
+        goodSkill2Ammo+=3;
+        goodSkill2Ammo = (goodSkill1Ammo > 6) ? 9 : goodSkill2Ammo;
+        goodSkill3Ammo+=2;
+        goodSkill3Ammo = (goodSkill1Ammo > 7) ? 9 : goodSkill3Ammo;
+        badSkill1Ammo+=4;
+        badSkill1Ammo = (badSkill1Ammo > 5) ? 9 : badSkill1Ammo;
+        badSkill2Ammo+=3;
+        badSkill2Ammo = (badSkill2Ammo > 6) ? 9 : badSkill2Ammo;
+        badSkill3Ammo+=2;
+        badSkill3Ammo = (badSkill3Ammo > 7) ? 9 : badSkill3Ammo;
         showNextDayWindow();
     }
 
@@ -919,24 +951,43 @@ public class GameScreen extends BaseScreen {
         if (landscape.highlightedTile != null && !landscape.highlightedTile.isDecorated()) {
             switch (activeSkill) {
                 case RAMP:
-                    landscape.highlightedTile.makeRamp();
-                    game.audio.playSound(AudioManager.Sounds.earth, .8F);
+                    if (goodSkill1Ammo > 0) {
+                        landscape.highlightedTile.makeRamp();
+                        game.audio.playSound(AudioManager.Sounds.earth, .8F);
+                        goodSkill1Ammo--;
+                    }
                     break;
                 case PLOW:
-                    addPlow(landscape.highlightedTile);
-                    game.audio.playSound(AudioManager.Sounds.goodKarma, 1.0F);
+                    if (goodSkill2Ammo > 0) {
+                        addPlow(landscape.highlightedTile);
+                        game.audio.playSound(AudioManager.Sounds.goodKarma, 1.0F);
+                        goodSkill2Ammo--;
+                    }
                     break;
                 case HELI:
-                    game.audio.playSound(AudioManager.Sounds.helicopter, 1.0F);
+                    if (goodSkill3Ammo > 0) {
+                        game.audio.playSound(AudioManager.Sounds.helicopter, 1.0F);
+                        goodSkill3Ammo--;
+                    }
                     break;
                 case DIVERTER:
-                    landscape.highlightedTile.makeDiverter(true);
+                    if (badSkill1Ammo > 0) {
+                        landscape.highlightedTile.makeDiverter(true);
+                        game.audio.playSound(AudioManager.Sounds.earth, .8F);
+                        badSkill1Ammo--;
+                    }
                     break;
                 case BOULDER:
+                    if (badSkill2Ammo > 0) {
+                        badSkill2Ammo--;
+                    }
                     break;
                 case LASER:
-                    killPerson(landscape.highlightedTile);
-                    game.audio.playSound(AudioManager.Sounds.laser);
+                    if (badSkill3Ammo > 0) {
+                        killPerson(landscape.highlightedTile);
+                        game.audio.playSound(AudioManager.Sounds.laser);
+                        badSkill3Ammo--;
+                    }
                     break;
                 case NONE:
                 default:
@@ -1182,6 +1233,80 @@ public class GameScreen extends BaseScreen {
         nextDayButton.setDisabled(true);
     }
 
+    private TextureRegionDrawable getAmmoImage(int ammoCount) {
+        TextureRegionDrawable targetImage = new TextureRegionDrawable();
+        TextureRegionDrawable ammo1 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_1));
+        TextureRegionDrawable ammo2 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_2));
+        TextureRegionDrawable ammo3 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_3));
+        TextureRegionDrawable ammo4 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_4));
+        TextureRegionDrawable ammo5 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_5));
+        TextureRegionDrawable ammo6 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_6));
+        TextureRegionDrawable ammo7 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_7));
+        TextureRegionDrawable ammo8 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_8));
+        TextureRegionDrawable ammo9 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_9));
+        TextureRegionDrawable ammo0 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_0));
+
+        switch(ammoCount) {
+            case 0:
+                targetImage = ammo0;
+                break;
+            case 1:
+                targetImage = ammo1;
+                break;
+            case 2:
+                targetImage = ammo2;
+                break;
+            case 3:
+                targetImage = ammo3;
+                break;
+            case 4:
+                targetImage = ammo4;
+                break;
+            case 5:
+                targetImage = ammo5;
+                break;
+            case 6:
+                targetImage = ammo6;
+                break;
+            case 7:
+                targetImage = ammo7;
+                break;
+            case 8:
+                targetImage = ammo8;
+                break;
+            case 9:
+                targetImage = ammo9;
+        }
+        return targetImage;
+    }
+
+    private void updateAmmoCount() {
+        if (currentKarmaPicked == GOOD) {
+            skill1AmmoImage.setDrawable(getAmmoImage(goodSkill1Ammo));
+            skill2AmmoImage.setDrawable(getAmmoImage(goodSkill2Ammo));
+            skill3AmmoImage.setDrawable(getAmmoImage(goodSkill3Ammo));
+        } else {
+            skill1AmmoImage.setDrawable(getAmmoImage(badSkill1Ammo));
+            skill2AmmoImage.setDrawable(getAmmoImage(badSkill2Ammo));
+            skill3AmmoImage.setDrawable(getAmmoImage(badSkill3Ammo));
+        }
+        skill1AmmoImage.setPosition(skillButton1.getX() + 100f, skillButton1.getY());
+        skill2AmmoImage.setPosition(skillButton2.getX() + 100f, skillButton2.getY());
+        skill3AmmoImage.setPosition(skillButton3.getX() + 100f, skillButton3.getY());
+        skill1AmmoImage.setSize(30f, 30f);
+        skill2AmmoImage.setSize(30f, 30f);
+        skill3AmmoImage.setSize(30f, 30f);
+        if (goodSkill1Ammo == 0) {
+            //skillButton1.setDisabled(true);
+        }
+        if (goodSkill2Ammo == 0) {
+            //skillButton2.setDisabled(true);
+        }
+        if (goodSkill3Ammo == 0) {
+            //skillButton3.setDisabled(true);
+        }
+    }
+
     private void initializeControlUI() {
         float buttonSize = 35f;
 
@@ -1267,9 +1392,9 @@ public class GameScreen extends BaseScreen {
         heliButtonStyle.down = new TextureRegionDrawable(assets.heliIcon);
         heliButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
 
-        VisImageButton skillButton1 = new VisImageButton(rampButtonStyle);
-        VisImageButton skillButton2 = new VisImageButton(plowButtonStyle);
-        VisImageButton skillButton3 = new VisImageButton(heliButtonStyle);
+        skillButton1 = new VisImageButton(rampButtonStyle);
+        skillButton2 = new VisImageButton(plowButtonStyle);
+        skillButton3 = new VisImageButton(heliButtonStyle);
 
         float margin = 10f;
         karmaTabGood.setSize(controlWindow.getWidth() / 2 - 10f, 30f);
@@ -1292,6 +1417,29 @@ public class GameScreen extends BaseScreen {
         skillButtonGroup.addActor(skillButton1);
         skillButtonGroup.addActor(skillButton2);
         skillButtonGroup.addActor(skillButton3);
+        goodSkill1Ammo = 9;
+        goodSkill2Ammo = 9;
+        goodSkill3Ammo = 9;
+        badSkill1Ammo = 9;
+        badSkill2Ammo = 9;
+        badSkill3Ammo = 9;
+        skill1AmmoImage = new VisImage();
+        skill2AmmoImage = new VisImage();
+        skill3AmmoImage = new VisImage();
+        skill1AmmoImage.setDrawable(getAmmoImage(goodSkill1Ammo));
+        skill2AmmoImage.setDrawable(getAmmoImage(goodSkill2Ammo));
+        skill3AmmoImage.setDrawable(getAmmoImage(goodSkill3Ammo));
+        skill1AmmoImage.setPosition(skillButton1.getX() + buttonHeight - 20f, skillButton1.getY());
+        skill2AmmoImage.setPosition(skillButton2.getX() + buttonHeight - 20f, skillButton2.getY());
+        skill3AmmoImage.setPosition(skillButton3.getX() + buttonHeight - 20f, skillButton3.getY());
+        skill1AmmoImage.setSize(30f, 30f);
+        skill2AmmoImage.setSize(30f, 30f);
+        skill3AmmoImage.setSize(30f, 30f);
+
+        skillButtonGroup.addActor(skill1AmmoImage);
+        skillButtonGroup.addActor(skill2AmmoImage);
+        skillButtonGroup.addActor(skill3AmmoImage);
+
         skillButton1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -1386,7 +1534,7 @@ public class GameScreen extends BaseScreen {
                     karmaTabEvil.setChecked(false);
                     karmaTabGood.setDisabled(true);
                     //karmaTabGood.setChecked(true);
-                    currentKarmaPicked = Karma.GOOD;
+                    currentKarmaPicked = GOOD;
                     activeSkill = Skill.NONE;
                     skillButton1.setChecked(false);
                     skillButton2.setChecked(false);
@@ -1431,8 +1579,8 @@ public class GameScreen extends BaseScreen {
 
         uiStage.addActor(controlGroup);
 
-        Action minimizeTransitionAction = Actions.moveBy(controlWindow.getWidth() - minimizeButton.getWidth() + 25f, 0f, 0.5f);
-        Action maximizeTransitionAction = Actions.moveBy(-controlWindow.getWidth() + minimizeButton.getWidth() - 25f, 0f, 0.5f);
+        Action minimizeTransitionAction = Actions.moveBy(controlWindow.getWidth() - minimizeButton.getWidth() + 25f, 0f, 0.1f);
+        Action maximizeTransitionAction = Actions.moveBy(-controlWindow.getWidth() + minimizeButton.getWidth() - 25f, 0f, 0.2f);
 
         minimizeButton.addListener(new ChangeListener() {
             @Override
@@ -1448,6 +1596,9 @@ public class GameScreen extends BaseScreen {
                 }
             }
         });
+
+        skillButton1.setFocusBorderEnabled(true);
+        activeSkill = Skill.RAMP;
         isControlShown = true;
 
     }

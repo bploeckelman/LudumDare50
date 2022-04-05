@@ -32,7 +32,18 @@ public class InputPrompts {
           key_light_a(18, 3)
         , key_light_b(23, 4)
         // numbers
-        // ...
+        // ...Thanks Brian! Lots of numbers I see here :p
+        , key_light_number_1(17, 1)
+        , key_light_number_2(18, 1)
+        , key_light_number_3(19, 1)
+        , key_light_number_4(20, 1)
+        , key_light_number_5(21, 1)
+        , key_light_number_6(22, 1)
+        , key_light_number_7(23, 1)
+        , key_light_number_8(24, 1)
+        , key_light_number_9(25, 1)
+        , key_light_number_0(26, 1)
+
         // spacebar
         , key_light_spacebar_1(31, 6)
         , key_light_spacebar_2(32, 6)
