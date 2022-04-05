@@ -112,7 +112,7 @@ public class EndScreen extends BaseScreen {
         backgroundCamera = new PerspectiveCamera(70, Config.window_width, Config.window_height);
         backgroundCamera.position.set(MathUtils.sin(backgroundAccum/2f) * 40, 20, MathUtils.cos(backgroundAccum/2f) * 40);
         backgroundCamera.lookAt(0,0,0);
-        backgroundCamera.near = .001f;
+        backgroundCamera.near = .1f;
         backgroundCamera.far = 1000;
         backgroundCamera.update();
         yetiModel = createUnitModelInstance(Assets.Models.yeti.model, 4f, 0f, 3f);
