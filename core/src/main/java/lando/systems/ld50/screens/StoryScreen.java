@@ -102,8 +102,8 @@ public class StoryScreen extends BaseScreen {
         perspectiveCamera.position.set(640, 0, 500);
         perspectiveCamera.lookAt(640, 00, 0);
         perspectiveCamera.update();
-        skipRect = new Rectangle(windowCamera.viewportWidth - 170, windowCamera.viewportHeight-70, 150, 50);
-        speedRect = new Rectangle(windowCamera.viewportWidth - 370, windowCamera.viewportHeight-140, 350, 50);
+        skipRect = new Rectangle(windowCamera.viewportWidth - 170, 70, 150, 50);
+        speedRect = new Rectangle(windowCamera.viewportWidth - 370, windowCamera.viewportHeight-70, 350, 50);
 
     }
 
@@ -160,7 +160,7 @@ public class StoryScreen extends BaseScreen {
 //        batch.draw(assets.backgrounds.titleImage, 0,0, Config.window_width, Config.window_height);
 
         game.assets.font.getData().setScale(textScale);
-        game.assets.font.setColor(.3f, .3f, .3f, 1.0f);
+        game.assets.font.setColor(.15f, .15f, .15f, 0.7f);
         game.assets.font.draw(batch, text, 5, accum-3, worldCamera.viewportWidth, Align.center, true);
         game.assets.font.setColor(Color.WHITE);
         game.assets.font.draw(batch, text, 0, accum, worldCamera.viewportWidth, Align.center, true);
@@ -177,7 +177,7 @@ public class StoryScreen extends BaseScreen {
         } else {
             Assets.Patch.glass_dim.ninePatch.draw(batch, skipRect.x, skipRect.y, skipRect.width, skipRect.height);
         }
-        assets.layout.setText(font, "Skip", Color.GRAY, skipRect.width, Align.center, false);
+        assets.layout.setText(font, "Skip", Color.DARK_GRAY, skipRect.width, Align.center, false);
         font.draw(batch, assets.layout, skipRect.x, skipRect.y + (skipRect.height + assets.layout.height)/2f);
 
         if (hoverSpeed){
