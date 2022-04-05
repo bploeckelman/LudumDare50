@@ -1354,6 +1354,9 @@ public class GameScreen extends BaseScreen {
                 break;
             case 9:
                 targetImage = ammo9;
+                break;
+            default:
+                targetImage = ammo9;
         }
         return targetImage;
     }
