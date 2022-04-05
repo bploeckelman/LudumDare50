@@ -123,6 +123,11 @@ public class LandTile {
         decorate(decoration, 0f);
     }
 
+    public void decorateDontFlatten(ModelInstance decoration) {
+        this.decoration = decoration;
+        this.decoration.transform.setTranslation(x + 0.5f, getAverageHeight(), z + 0.5f);
+    }
+
     public void decorate(ModelInstance decoration, float newTileHeight) {
         this.decoration = decoration;
         this.decoration.transform.setTranslation(x + 0.5f, 0f, z + 0.5f);

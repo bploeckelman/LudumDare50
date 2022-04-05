@@ -148,6 +148,10 @@ public class Assets implements Disposable {
                     || model == lodge_d_snowed.model
                     ;
         }
+
+        public static boolean isTree(Model model) {
+            return model == tree_b.model && model == tree_d.model;
+        }
     }
 
     public enum Patch {

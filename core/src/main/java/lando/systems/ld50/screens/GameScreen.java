@@ -757,8 +757,21 @@ public class GameScreen extends BaseScreen {
             houseInstances.add(instance);
         }
 
-        // TODO - /r/trees
         treeInstances = new Array<>();
+        int numTrees = 10;
+        for (int i = 0; i < numTrees; i++) {
+            Model model = (i % 2 == 0) ? Assets.Models.tree_b.model : Assets.Models.tree_d.model;
+            instance = createUnitModelInstance(model, 0f, 0f, 0f);
+            instance.transform.scale(0.5f, 0.5f, 0.5f);
+
+            // find an undecorated landtile
+            int excludedRows = 5;
+            tile = getUndecoratedTile(excludedRows);
+
+            // decorate it with the instance
+            tile.decorateDontFlatten(instance);
+            treeInstances.add(instance);
+        }
 
         // TODO - place down by lodge (or maybe make it rise up from the ground or come running down with the final wave that destroys the lodge)
         // yeti statue
