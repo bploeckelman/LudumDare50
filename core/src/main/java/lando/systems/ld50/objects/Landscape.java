@@ -79,16 +79,16 @@ public class Landscape {
                 snowBalls.removeIndex(i);
                 // TODO: make these launch particles
             }
+
+            if (ball.radius < .1f){
+                snowBalls.removeIndex(i);
+            }
+
             if (!screen.gameOver){
                 if (snowBalls.size == 0){
                     screen.beginBuildPhase();
                 }
             }
-            if (ball.radius < .1f){
-                snowBalls.removeIndex(i);
-            }
-
-
 
         }
         for (int i = debris.size-1; i >= 0; i--){
