@@ -83,7 +83,7 @@ public class Landscape {
             }
 
             if (!screen.gameOver){
-                if (snowBalls.size == 0){
+                if (snowBalls.size == 0 && screen.currentCameraPhase == GameScreen.CameraPhase.plan){
                     screen.beginBuildPhase();
                 }
             }
