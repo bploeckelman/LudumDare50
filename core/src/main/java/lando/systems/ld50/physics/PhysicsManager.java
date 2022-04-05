@@ -112,9 +112,10 @@ public class PhysicsManager {
                                     PhysicsDecal.Phys.NoPhysics);
                         }
 
-                        // TODO this isn't what we want for trees and shit
-                        for (int i = 0; i < 4; i++){
-                            landscape.debris.add(new Debris(tile.x, .5f, tile.z, .1f));
+                        if (!Assets.Models.isTree(tile.decoration.model)) {
+                            for (int i = 0; i < 4; i++) {
+                                landscape.debris.add(new Debris(tile.x, .5f, tile.z, .1f));
+                            }
                         }
 
                         landscape.screen.removeModelInstance(tile.decoration);

@@ -336,6 +336,9 @@ public class GameScreen extends BaseScreen {
             AnimationDecal decal = decals.get(i);
             if (decal.dead) {
                 decals.removeIndex(i);
+                if (decal.isPlow) {
+                    isPlowing = false;
+                }
             } else {
                 //decal.lookAt(billboardCameraPos, camera.up);
                 decal.update(dt);
@@ -754,8 +757,21 @@ public class GameScreen extends BaseScreen {
             houseInstances.add(instance);
         }
 
-        // TODO - /r/trees
         treeInstances = new Array<>();
+        int numTrees = 10;
+        for (int i = 0; i < numTrees; i++) {
+            Model model = (i % 2 == 0) ? Assets.Models.tree_b.model : Assets.Models.tree_d.model;
+            instance = createUnitModelInstance(model, 0f, 0f, 0f);
+            instance.transform.scale(0.5f, 0.5f, 0.5f);
+
+            // find an undecorated landtile
+            int excludedRows = 5;
+            tile = getUndecoratedTile(excludedRows);
+
+            // decorate it with the instance
+            tile.decorateDontFlatten(instance);
+            treeInstances.add(instance);
+        }
 
         // TODO - place down by lodge (or maybe make it rise up from the ground or come running down with the final wave that destroys the lodge)
         // yeti statue
@@ -907,7 +923,7 @@ public class GameScreen extends BaseScreen {
                     game.audio.playSound(AudioManager.Sounds.earth, .8F);
                     break;
                 case PLOW:
-                    addPlow(landscape);
+                    addPlow(landscape.highlightedTile);
                     game.audio.playSound(AudioManager.Sounds.goodKarma, 1.0F);
                     break;
                 case HELI:
@@ -971,10 +987,11 @@ public class GameScreen extends BaseScreen {
     }
 
     private boolean isPlowing = false;
-    private void addPlow(Landscape landscape) {
+    private void addPlow(LandTile selectedTile) {
         if (isPlowing) { return; }
 
-        // add plow
+        isPlowing = true;
+        decals.add(new Plow(assets, landscape, selectedTile.intZ));
     }
 
     private void killPerson(LandTile selectedTile) {
