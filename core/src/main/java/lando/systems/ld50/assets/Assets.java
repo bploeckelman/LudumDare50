@@ -67,6 +67,9 @@ public class Assets implements Disposable {
     public TextureRegion leftTurnIcon;
     public TextureRegion rightTurnIcon;
 
+    public TextureRegion heloSign;
+    public TextureRegion heloHook;
+
     public Array<Animation<TextureRegion>> titleLetters;
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
@@ -372,6 +375,9 @@ public class Assets implements Disposable {
         boulderIcon = atlas.findRegion("icons/boulder");
         yetiIcon = atlas.findRegion("icons/yeti");
         snowball = atlas.findRegion("other/snowball");
+
+        heloSign = atlas.findRegion("chopper-sign");
+        heloHook = atlas.findRegion("chopper-hook");
 
         titleLetters = new Array<>(9);
         titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-1"), Animation.PlayMode.LOOP));

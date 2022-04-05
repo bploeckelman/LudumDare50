@@ -71,7 +71,7 @@ public class PhysicsManager {
             for (AnimationDecal decal : landscape.screen.decals) {
                 if (decal.get().getPosition().dst(ball.position) < ball.radius / 1.25 && !decal.launched) {
                     decal.hit();
-                    Time.pause_for(0.048f/landscape.physics.scale);
+                    Time.pause_for(0.05f/landscape.physics.scale);
                 }
             }
 
@@ -93,7 +93,7 @@ public class PhysicsManager {
                     ColorAttribute attrib = (ColorAttribute) tile.decoration.materials.get(0).get(ColorAttribute.Diffuse);
                     attrib.color.set(1f, tile.decorationHealth, tile.decorationHealth, 1f);
 
-                    Time.pause_for(0.048f/landscape.physics.scale);
+                    Time.pause_for(0.018f/landscape.physics.scale);
                     // decoration got killed, do stuff
                     if (tile.decorationHealth <= 0f) {
                         // spawn a particle effect

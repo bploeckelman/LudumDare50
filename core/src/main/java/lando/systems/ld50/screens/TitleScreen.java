@@ -1,5 +1,9 @@
 package lando.systems.ld50.screens;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -19,6 +23,7 @@ import com.kotcrab.vis.ui.widget.VisTextButton;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.utils.SimplePath;
+import lando.systems.ld50.utils.accessors.Vector2Accessor;
 
 public class TitleScreen extends BaseScreen {
     private VisTable rootTable;
@@ -31,6 +36,9 @@ public class TitleScreen extends BaseScreen {
     private Array<Vector2> letterPositions;
     private SimplePath lettersPath;
     private ShapeRenderer shapes;
+
+    private Vector2 heloPos;
+    private TextureRegion heloTex;
 
     private final float BUTTON_WIDTH = 300f;
     private final float BUTTON_HEIGHT = 75f;
@@ -54,7 +62,7 @@ public class TitleScreen extends BaseScreen {
         lettersPath = new SimplePath(false,
                 -100, y - 80,
                 0, y - 180,
-                130, y - 340,
+                130, y - 330,
                 250, y - 600,
                 500, y - 590,
                 730, y - 490,
@@ -69,10 +77,29 @@ public class TitleScreen extends BaseScreen {
             letterPositions.add(new Vector2(lettersPath.valueAt(t)));
         }
 
-        letterStopPoints = new float[] { .9f, .8f, .7f, .6f, .5f, .4f, .3f, .15f, 0};
+        letterStopPoints = new float[] { .9f, .78f, .7f, .63f, .55f, .48f, .305f, .145f, 0};
 
         game.audio.playMusic(AudioManager.Musics.introMusic);
 //        game.audio.playMusic(AudioManager.Musics.outroMusic);
+        heloPos = new Vector2(300, 900);
+        heloTex = game.assets.heloHook;
+
+        Timeline.createSequence()
+                .push(Tween.to(heloPos, Vector2Accessor.XY, 3f)
+                        .target(300, -500))
+                .pushPause(.1f)
+                .push(Tween.call(new TweenCallback() {
+                    @Override
+                    public void onEvent(int type, BaseTween<?> source) {
+                        heloTex = assets.heloSign;
+                    }
+                }))
+                .push(Tween.to(heloPos, Vector2Accessor.XY, 2f)
+                        .target(300, 300))
+                .push(Tween.to(heloPos,Vector2Accessor.XY, .5f)
+                        .target(300,280)
+                        .repeatYoyo(60, 0))
+                .start(game.tween);
     }
 
     @Override
@@ -188,6 +215,8 @@ public class TitleScreen extends BaseScreen {
                         letterPositions.get(i).y - 20f);
             }
 
+            batch.draw(heloTex, heloPos.x, heloPos.y, 200, 430);
+
 
 //            assets.layout.setText(assets.font, "Avalaunch!", Color.LIGHT_GRAY, windowCamera.viewportWidth, Align.center, false);
 //            assets.font.draw(batch, assets.layout, 0f, windowCamera.viewportHeight * (3f / 4f) + assets.layout.height / 2f);
@@ -195,9 +224,9 @@ public class TitleScreen extends BaseScreen {
         batch.end();
 
         // TODO - comment out
-        shapes.setProjectionMatrix(windowCamera.combined);
-        lettersPath.debugRender(shapes);
-        shapes.end();
+//        shapes.setProjectionMatrix(windowCamera.combined);
+//        lettersPath.debugRender(shapes);
+//        shapes.end();
 
         uiStage.draw();
     }
