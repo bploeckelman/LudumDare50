@@ -12,6 +12,7 @@ import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
 import lando.systems.ld50.objects.*;
 import lando.systems.ld50.particles.PhysicsDecal;
+import lando.systems.ld50.utils.Time;
 
 public class PhysicsManager {
 
@@ -68,8 +69,9 @@ public class PhysicsManager {
             }
 
             for (AnimationDecal decal : landscape.screen.decals) {
-                if (decal.get().getPosition().dst(ball.position) < ball.radius / 1.25 && !decal.dead) {
+                if (decal.get().getPosition().dst(ball.position) < ball.radius / 1.25 && !decal.launched) {
                     decal.hit();
+                    Time.pause_for(0.05f);
                 }
             }
 
@@ -91,11 +93,12 @@ public class PhysicsManager {
                     ColorAttribute attrib = (ColorAttribute) tile.decoration.materials.get(0).get(ColorAttribute.Diffuse);
                     attrib.color.set(1f, tile.decorationHealth, tile.decorationHealth, 1f);
 
-
+                    Time.pause_for(0.05f);
                     // decoration got killed, do stuff
                     if (tile.decorationHealth <= 0f) {
                         // spawn a particle effect
                         float radius = 0.1f;
+                        Time.pause_for(0.15f);
                         position.set(tile.x + 0.5f, 0f, tile.z + 0.5f);
                         int numParticles = 40;
                         for (int i = 0; i < numParticles; i++) {

@@ -223,7 +223,7 @@ public class AnimationDecal {
         return decal;
     }
 
-    private boolean launched = false;
+    public boolean launched = false;
     private float launchTime = 0;
 
     public void launch() {

@@ -232,6 +232,7 @@ public class GameScreen extends BaseScreen {
 //        game.audio.playSound(AudioManager.Sounds.chaching);
     }
 
+
     public void addHouseModelInstance(ModelInstance instance) {
         houseInstances.add(instance);
     }
@@ -255,6 +256,24 @@ public class GameScreen extends BaseScreen {
     public void transitionCompleted() {
         super.transitionCompleted();
         Gdx.input.setInputProcessor(inputMuxPlanPhase);
+    }
+
+    @Override
+    public void updateEvenIfPaused(float dt) {
+
+        for (PhysicsDecal decal : PhysicsDecal.instances) {
+            decal.decal.lookAt(camera.position, camera.up);
+            particlesDecalBatch.add(decal.decal);
+        }
+
+        for (Decal decal : decalsStatic) {
+            decalBatch.add(decal);
+        }
+
+        for (int i = decals.size - 1; i >= 0; i--) {
+            AnimationDecal decal = decals.get(i);
+            decalBatch.add(decal.get());
+        }
     }
 
     @Override
@@ -288,12 +307,12 @@ public class GameScreen extends BaseScreen {
 //            dumpCameraVecsToLog();
 //            cameraMovementPaused = !cameraMovementPaused;
 //        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
-            landscape.physics.slowdownScale = 1.2f;
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-            landscape.physics.slowdownScale = 0.4f;
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+//            landscape.physics.slowdownScale = 1.2f;
+//        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+//            landscape.physics.slowdownScale = 0.4f;
+//        }
 
 //        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 //            shaker.addDamage(0.5f);
@@ -363,18 +382,18 @@ public class GameScreen extends BaseScreen {
                 //decal.lookAt(billboardCameraPos, camera.up);
                 decal.update(dt);
 
-                decalBatch.add(decal.get());
+//                decalBatch.add(decal.get());
             }
         }
 
-        for (Decal decal : decalsStatic) {
-            decalBatch.add(decal);
-        }
+//        for (Decal decal : decalsStatic) {
+//            decalBatch.add(decal);
+//        }
         PhysicsDecal.updateAllDecalParticles(dt);
-        for (PhysicsDecal decal : PhysicsDecal.instances) {
-            decal.decal.lookAt(camera.position, camera.up);
-            particlesDecalBatch.add(decal.decal);
-        }
+//        for (PhysicsDecal decal : PhysicsDecal.instances) {
+//            decal.decal.lookAt(camera.position, camera.up);
+//            particlesDecalBatch.add(decal.decal);
+//        }
 
         if (pickPixmap != null){
             pickPixmap.dispose();
