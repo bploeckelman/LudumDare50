@@ -83,11 +83,13 @@ public class PhysicsManager {
                 testBallTile(ball, tile);
 
                 if (testBuilding(ball, tile)) {
-                    ball.radius = 0;
+
 
                     // decoration got hit, fuck it up somehow
                     // TODO - maybe tweak how much damage it takes each collision
-                    tile.decorationHealth -= ball.radius/1.5;
+                    tile.decorationHealth -= ball.radius;
+
+                    ball.radius = 0;
 
                     // make more red based on health
                     ColorAttribute attrib = (ColorAttribute) tile.decoration.materials.get(0).get(ColorAttribute.Diffuse);
