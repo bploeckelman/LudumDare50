@@ -592,7 +592,7 @@ public class GameScreen extends BaseScreen {
         if (landscape.snowBalls.size > 0) return;
         Timeline.createSequence()
                 .push(
-                        Tween.to(dayTime, 1, 2.125f) // PETE
+                        Tween.to(dayTime, 1, 2.725f) // PETE
                         .target(24f + buildHour)
                                 .ease(Sine.IN))
                 .push(Tween.call((type, source) -> {
