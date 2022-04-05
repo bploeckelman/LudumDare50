@@ -220,8 +220,8 @@ public class GameScreen extends BaseScreen {
         pickMapFBO =  new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth() / PICKMAP_SCALE, Gdx.graphics.getHeight() / PICKMAP_SCALE, true);
         PickMapFBOTex = pickMapFBO.getColorBufferTexture();
 
-        inputMuxPlanPhase = new InputMultiplexer(uiStage, this, railController, cameraController);
-        inputMuxAvalanchePhase = new InputMultiplexer(uiStage, this, cameraController);
+        inputMuxPlanPhase = new InputMultiplexer(uiStage, this, railController);
+        inputMuxAvalanchePhase = new InputMultiplexer(uiStage, this);
         Gdx.input.setInputProcessor(inputMuxPlanPhase);
 
         game.audio.playMusic(AudioManager.Musics.mainTheme);

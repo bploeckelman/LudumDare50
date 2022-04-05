@@ -70,6 +70,11 @@ public class Landscape {
         for(LandTile tile : tiles) {
             tile.update(dt);
         }
+        if (!screen.gameOver){
+            if (snowBalls.size == 0 && screen.currentCameraPhase == GameScreen.CameraPhase.plan){
+                screen.beginBuildPhase();
+            }
+        }
         for (int i = snowBalls.size-1; i >= 0; i--){
             Snowball ball = snowBalls.get(i);
             ball.update(dt);
@@ -82,11 +87,7 @@ public class Landscape {
                 snowBalls.removeIndex(i);
             }
 
-            if (!screen.gameOver){
-                if (snowBalls.size == 0 && screen.currentCameraPhase == GameScreen.CameraPhase.plan){
-                    screen.beginBuildPhase();
-                }
-            }
+
 
         }
         for (int i = debris.size-1; i >= 0; i--){
