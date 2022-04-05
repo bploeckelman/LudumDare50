@@ -20,6 +20,7 @@ public class AnimationDecal {
     private float time = 0;
 
     public boolean dead = false;
+    public boolean saved = false;
 
     protected Landscape landscape;
     private ImageInfo imageInfo;
@@ -30,7 +31,7 @@ public class AnimationDecal {
     private Animation<TextureRegion> regionAnimation;
     private Animation<TextureRegion> waveAnimation;
 
-    private float moveTime, moveTimeTotal;
+    protected float moveTime, moveTimeTotal;
     private Vector3 movePosition = new Vector3();
 
     private float waveTime = 0;
@@ -46,12 +47,13 @@ public class AnimationDecal {
 
     // real shitty, but it's ld
     public boolean isPlow = false;
+    public boolean isHeli = false;
 
 //    public AnimationDecal(ImageInfo imageInfo, int x, int z) {
 //        this(Main.game.getScreen().assets, imageInfo, ((GameScreen) Main.game.getScreen()).landscape, x, z);
 //    }
 
-    public AnimationDecal(Assets assets, ImageInfo imageInfo, Landscape landscape, int x, int z) {
+    public AnimationDecal(Assets assets, ImageInfo imageInfo, Landscape landscape, int x, int y, int z) {
         regionAnimation = new Animation<>(0.1f, assets.atlas.findRegions(imageInfo.region), Animation.PlayMode.LOOP);
         waveAnimation = (imageInfo.waveRegion != null)
                 ? new Animation<>(0.1f, assets.atlas.findRegions(imageInfo.waveRegion), Animation.PlayMode.LOOP_PINGPONG)
@@ -63,8 +65,8 @@ public class AnimationDecal {
         TextureRegion r = regionAnimation.getKeyFrame(0);
 
         // 0 is center of image
-        if (!setTilePosition(initPos, x, z)) {
-            setTilePosition(initPos, 0, 0);
+        if (!setTilePosition(initPos, x, y, z)) {
+            setTilePosition(initPos, 0, -1,  0);
         }
         position.set(initPos);
 
@@ -83,16 +85,23 @@ public class AnimationDecal {
         }
     }
 
-    private boolean setTilePosition(Vector3 pos, int x, int z) {
+    private boolean setTilePosition(Vector3 pos, int x, int y, int z) {
         float ix = x + MathUtils.random();
         float iz = z + MathUtils.random();
-        float iy = landscape.getHeightAt(ix, iz) +  imageInfo.height / 2;
+
+        float iy = (y > -1) ? y : landscape.getHeightAt(ix, iz) +  imageInfo.height / 2;
         pos.set(ix, iy, iz);
         return iy >= 0;
     }
 
+    public void flyAway(int x, int z) {
+        movePosition.set(x, 20, z);
+        moveTimeTotal = 2;
+        moveTime = 0;
+    }
+
     public void moveToTile(int x, int z) {
-        if (setTilePosition(movePosition, x, z)) {
+        if (setTilePosition(movePosition, x, -1, z)) {
             right = (movePosition.x > position.x);
             moveTimeTotal = Math.abs(movePosition.dst(initPos)) / 4;
             moveTime = 0;
@@ -161,7 +170,8 @@ public class AnimationDecal {
             float lerp = MathUtils.clamp(moveTime / moveTimeTotal, 0, 1);
             float x = MathUtils.lerp(initPos.x, movePosition.x, lerp);
             float z = MathUtils.lerp(initPos.z, movePosition.z, lerp);
-            float y = landscape.getHeightAt(x, z) +  imageInfo.height / 2;
+            float y = (isHeli) ? MathUtils.lerp(initPos.y, movePosition.y, lerp)
+                    : landscape.getHeightAt(x, z) +  imageInfo.height / 2;
 
             if (launched) {
                 y = position.y + (dt * 2);

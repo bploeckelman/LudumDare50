@@ -7,7 +7,8 @@ public enum ImageInfo {
     BabeB ("characters/babe-b-walk", "characters/babe-b-wave", 0.1f, Sounds.screamFemale, 0.5f, 0.5f, true),
     Dude ("characters/dude-a", null, 0.1f, Sounds.screamMale, 0.5f, 0.5f, true),
     Deer ("characters/deer-a", null, 0.1f, Sounds.none, 0.5f, 0.5f, true),
-    Plow ("characters/plow-a", null, 0.1f, Sounds.none,2f, 1f, false);
+    Plow ("characters/plow-a", null, 0.1f, Sounds.none,2f, 1f, false),
+    Heli ("characters/chopper", null, 0.1f, Sounds.none, 2f, 1f, false);
 
     public String region;
     public String waveRegion;

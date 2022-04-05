@@ -6,7 +6,7 @@ import lando.systems.ld50.assets.ImageInfo;
 public class Plow extends AnimationDecal {
 
     public Plow(Assets assets, Landscape landscape, int z) {
-        super(assets, ImageInfo.Plow, landscape, 0, z);
+        super(assets, ImageInfo.Plow, landscape, 0, -1, z);
 
         moveToTile(Landscape.TILES_WIDE - 1, z);
         isPlow = true;

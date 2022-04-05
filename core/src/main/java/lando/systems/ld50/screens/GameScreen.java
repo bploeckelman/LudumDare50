@@ -377,10 +377,15 @@ public class GameScreen extends BaseScreen {
                 decals.removeIndex(i);
                 if (decal.isPlow) {
                     isPlowing = false;
+                } else if (decal.isHeli) {
+                    isHeli = false;
                 }
+            } else if (decal.saved) {
+                // TODO: add karma
+                decals.removeIndex(i);
             } else {
-                //decal.lookAt(billboardCameraPos, camera.up);
-                decal.update(dt);
+                    //decal.lookAt(billboardCameraPos, camera.up);
+                    decal.update(dt);
 
 //                decalBatch.add(decal.get());
             }
@@ -886,7 +891,7 @@ public class GameScreen extends BaseScreen {
                 break;
         }
 
-        AnimationDecal person = new AnimationDecal(assets, personInfo, landscape, x, z);
+        AnimationDecal person = new AnimationDecal(assets, personInfo, landscape, x, -1, z);
         person.autoMove = true;
         person.isPerson = true;
         person.moveToTile(landscape.getRandomX(), z);
@@ -985,9 +990,10 @@ public class GameScreen extends BaseScreen {
                     break;
                 case HELI:
                     if (goodSkill3Ammo > 0) {
-                        game.audio.playSound(AudioManager.Sounds.helicopter, 1.0F);
+                        addHeli(landscape.highlightedTile);
                         goodSkill3Ammo--;
                     }
+
                     break;
                 case DIVERTER:
                     if (badSkill1Ammo > 0) {
@@ -1060,8 +1066,19 @@ public class GameScreen extends BaseScreen {
     private void addPlow(LandTile selectedTile) {
         if (isPlowing) { return; }
 
+        game.audio.playSound(AudioManager.Sounds.goodKarma, 1.0F);
         isPlowing = true;
         decals.add(new Plow(assets, landscape, selectedTile.intZ));
+    }
+
+    private boolean isHeli = false;
+    private void addHeli(LandTile selectedTile) {
+        if (isHeli) { return; }
+        isHeli = true;
+
+        game.audio.playSound(AudioManager.Sounds.helicopter, 1.0F);
+        decals.add(new Heli(assets, landscape, selectedTile));
+
     }
 
     private void killPerson(LandTile selectedTile) {
@@ -1069,6 +1086,15 @@ public class GameScreen extends BaseScreen {
             if (animationDecal.isPerson && animationDecal.isOn(selectedTile)) {
                 // TODO: LAZER MOTHER FUCKER
                 animationDecal.hit();
+            }
+        }
+    }
+
+    public void savePerson(LandTile selectedTile) {
+        for (AnimationDecal animationDecal : decals) {
+            if (animationDecal.isPerson && animationDecal.isOn(selectedTile)) {
+                // fuck it
+                animationDecal.saved = true;
             }
         }
     }
