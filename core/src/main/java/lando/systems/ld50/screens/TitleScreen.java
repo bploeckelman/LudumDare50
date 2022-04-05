@@ -54,12 +54,12 @@ public class TitleScreen extends BaseScreen {
         lettersPath = new SimplePath(false,
                 -100, y - 80,
                 0, y - 180,
-                130, y - 300,
-                250, y - 480,
-                500, y - 580,
-                730, y - 470,
-                820, y - 330,
-                950, y - 270,
+                130, y - 340,
+                250, y - 600,
+                500, y - 590,
+                730, y - 490,
+                820, y - 360,
+                950, y - 290,
                 1100, y - 340,
                 1280, y - 480
         );
@@ -166,7 +166,7 @@ public class TitleScreen extends BaseScreen {
     @Override
     public void update(float dt) {
         super.update(dt);
-        t += 0.2f * dt;
+        t += 0.4f * dt;
         t = MathUtils.clamp(t, 0f, 1f);
         for (int i = 0; i < letterPositions.size; i++) {
             lettersPath.valueAt(letterPositions.get(i), MathUtils.clamp(t - letterStopPoints[i], 0, 1f));
