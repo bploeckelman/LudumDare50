@@ -38,7 +38,8 @@ public class AudioManager implements Disposable {
         screamFemale,
         screamMale,
         thud,
-        houseImpact
+        houseImpact,
+        plow
     }
 
     public enum Musics {
@@ -92,6 +93,7 @@ public class AudioManager implements Disposable {
         putSound(Sounds.houseImpact, assets.houseImpact1);
         putSound(Sounds.houseImpact, assets.houseImpact2);
         putSound(Sounds.houseImpact, assets.houseImpact3);
+        putSound(Sounds.plow, assets.plowSound);
 //        putSound(Sounds.houseImpact, assets.houseImpact4);
 //        putSound(Sounds.houseImpact, assets.houseImpact5);
         putSound(Sounds.houseImpact, assets.explode1Sound);

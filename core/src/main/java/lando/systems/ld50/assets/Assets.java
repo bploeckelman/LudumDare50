@@ -113,6 +113,7 @@ public class Assets implements Disposable {
     public Sound houseImpact3;
     public Sound houseImpact4;
     public Sound houseImpact5;
+    public Sound plowSound;
 
     public enum Models {
         coords, boulder_a,
@@ -251,6 +252,7 @@ public class Assets implements Disposable {
             mgr.load("audio/sounds/houseImpact3.ogg", Sound.class);
             mgr.load("audio/sounds/houseImpact4.ogg", Sound.class);
             mgr.load("audio/sounds/houseImpact5.ogg", Sound.class);
+            mgr.load("audio/sounds/plow.ogg", Sound.class);
 //            mgr.load("audio/sounds/.ogg", Sound.class);
 
 
@@ -347,6 +349,7 @@ public class Assets implements Disposable {
         houseImpact3 = mgr.get("audio/sounds/houseImpact3.ogg", Sound.class);
         houseImpact4 = mgr.get("audio/sounds/houseImpact4.ogg", Sound.class);
         houseImpact5 = mgr.get("audio/sounds/houseImpact5.ogg", Sound.class);
+        plowSound = mgr.get("audio/sounds/plow.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);
 //          = mgr.get("audio/sounds/.ogg", Sound.class);

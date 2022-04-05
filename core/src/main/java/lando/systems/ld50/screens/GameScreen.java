@@ -960,7 +960,7 @@ public class GameScreen extends BaseScreen {
                 case PLOW:
                     if (goodSkill2Ammo > 0) {
                         addPlow(landscape.highlightedTile);
-                        game.audio.playSound(AudioManager.Sounds.goodKarma, 1.0F);
+                        game.audio.playSound(AudioManager.Sounds.plow, 1.0F);
                         goodSkill2Ammo--;
                     }
                     break;
