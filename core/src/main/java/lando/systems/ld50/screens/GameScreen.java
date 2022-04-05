@@ -557,6 +557,9 @@ public class GameScreen extends BaseScreen {
             case avalanche:
                 break;
             case plan:
+                if (!gameOver) {
+                    beginBuildPhase();
+                }
                 break;
 
         }
