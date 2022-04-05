@@ -380,15 +380,15 @@ public class Assets implements Disposable {
         heloHook = atlas.findRegion("chopper-hook");
 
         titleLetters = new Array<>(9);
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-1"), Animation.PlayMode.LOOP));
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-2"), Animation.PlayMode.LOOP));
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-3"), Animation.PlayMode.LOOP));
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-4"), Animation.PlayMode.LOOP));
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-5"), Animation.PlayMode.LOOP));
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-6"), Animation.PlayMode.LOOP));
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-7"), Animation.PlayMode.LOOP));
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-8"), Animation.PlayMode.LOOP));
-        titleLetters.add(new Animation<>(0.1f, atlas.findRegions("title/tl-9"), Animation.PlayMode.LOOP));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-1"), Animation.PlayMode.LOOP_PINGPONG));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-2"), Animation.PlayMode.LOOP_PINGPONG));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-3"), Animation.PlayMode.LOOP_PINGPONG));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-4"), Animation.PlayMode.LOOP_PINGPONG));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-5"), Animation.PlayMode.LOOP_PINGPONG));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-6"), Animation.PlayMode.LOOP_PINGPONG));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-7"), Animation.PlayMode.LOOP_PINGPONG));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-8"), Animation.PlayMode.LOOP_PINGPONG));
+        titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-9"), Animation.PlayMode.LOOP_PINGPONG));
 
         // initialize particle images
         particles = new Particles();

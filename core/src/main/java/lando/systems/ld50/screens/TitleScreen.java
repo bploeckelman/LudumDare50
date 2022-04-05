@@ -47,6 +47,8 @@ public class TitleScreen extends BaseScreen {
     private float[] letterStopPoints;
 
     private float t = 0f;
+    private float animTime = 0f;
+    private float animDelay = 2.5f;
 
     public TitleScreen() {
         // NOTE: have to set the input processor here as well as transitionCompleted
@@ -193,6 +195,12 @@ public class TitleScreen extends BaseScreen {
     @Override
     public void update(float dt) {
         super.update(dt);
+
+        animDelay -= dt;
+        if (animDelay <= 0f) {
+            animTime += dt;
+        }
+
         t += 0.4f * dt;
         t = MathUtils.clamp(t, 0f, 1f);
         for (int i = 0; i < letterPositions.size; i++) {
@@ -209,7 +217,7 @@ public class TitleScreen extends BaseScreen {
 
             for (int i = 0; i < letterPositions.size; i++){
                 if (letterPositions.get(i).x == 0) continue;
-                TextureRegion keyframe = letterAnims.get(i).getKeyFrames()[0];
+                TextureRegion keyframe = letterAnims.get(i).getKeyFrame(animTime);
                 batch.draw(keyframe,
                         letterPositions.get(i).x - keyframe.getRegionWidth() / 2f,
                         letterPositions.get(i).y - 20f);
