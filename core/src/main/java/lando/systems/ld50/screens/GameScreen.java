@@ -655,9 +655,9 @@ public class GameScreen extends BaseScreen {
         goodSkill1Ammo+=4;
         goodSkill1Ammo = (goodSkill1Ammo > 9) ? 9 : goodSkill1Ammo;
         goodSkill2Ammo+=2;
-        goodSkill2Ammo = (goodSkill1Ammo > 9) ? 9 : goodSkill2Ammo;
+        goodSkill2Ammo = (goodSkill2Ammo > 9) ? 9 : goodSkill2Ammo;
         goodSkill3Ammo+=2;
-        goodSkill3Ammo = (goodSkill1Ammo > 9) ? 9 : goodSkill3Ammo;
+        goodSkill3Ammo = (goodSkill3Ammo > 9) ? 9 : goodSkill3Ammo;
         badSkill1Ammo+=4;
         badSkill1Ammo = (badSkill1Ammo > 9) ? 9 : badSkill1Ammo;
         badSkill2Ammo+=4;
