@@ -223,6 +223,8 @@ public class LandTile {
         URSnowHeight = 0;
         LLSnowHeight = 0;
         LRSnowHeight = 0;
+        update(0);
+        rebuildMesh();
     }
 
     public float getHeightAt(float x, float z){
