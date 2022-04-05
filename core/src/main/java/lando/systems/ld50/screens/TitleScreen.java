@@ -36,6 +36,8 @@ public class TitleScreen extends BaseScreen {
     private final float BUTTON_HEIGHT = 75f;
     private final float BUTTON_PADDING = 10f;
 
+    private float[] letterStopPoints;
+
     private float t = 0f;
 
     public TitleScreen() {
@@ -63,9 +65,11 @@ public class TitleScreen extends BaseScreen {
         );
 
         letterPositions = new Array<>();
-        for (int i = 0; i < letterAnims.size - 1; i++) {
+        for (int i = 0; i < letterAnims.size; i++) {
             letterPositions.add(new Vector2(lettersPath.valueAt(t)));
         }
+
+        letterStopPoints = new float[] { .9f, .8f, .7f, .6f, .5f, .4f, .3f, .15f, 0};
 
         game.audio.playMusic(AudioManager.Musics.introMusic);
 //        game.audio.playMusic(AudioManager.Musics.outroMusic);
@@ -103,7 +107,7 @@ public class TitleScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
             if (!exitingScreen) {
-                audio.playSound(AudioManager.Sounds.badKarma, 1.0F);
+                audio.playSound(AudioManager.Sounds.goodKarma);
                 game.setScreen(new StoryScreen());
                 // TODO Change this back to story screen before publishing
 //                game.setScreen(new GameScreen());
@@ -164,7 +168,9 @@ public class TitleScreen extends BaseScreen {
         super.update(dt);
         t += 0.2f * dt;
         t = MathUtils.clamp(t, 0f, 1f);
-        lettersPath.valueAt(letterPositions.get(0), t);
+        for (int i = 0; i < letterPositions.size; i++) {
+            lettersPath.valueAt(letterPositions.get(i), MathUtils.clamp(t - letterStopPoints[i], 0, 1f));
+        }
     }
 
     @Override
@@ -174,10 +180,14 @@ public class TitleScreen extends BaseScreen {
         {
             batch.draw(background, 0, 0, windowCamera.viewportWidth, windowCamera.viewportHeight);
 
-            TextureRegion keyframe = letterAnims.get(0).getKeyFrames()[0];
-            batch.draw(keyframe,
-                    letterPositions.get(0).x - keyframe.getRegionWidth() / 2f,
-                    letterPositions.get(0).y - 20f);
+            for (int i = 0; i < letterPositions.size; i++){
+                if (letterPositions.get(i).x == 0) continue;
+                TextureRegion keyframe = letterAnims.get(i).getKeyFrames()[0];
+                batch.draw(keyframe,
+                        letterPositions.get(i).x - keyframe.getRegionWidth() / 2f,
+                        letterPositions.get(i).y - 20f);
+            }
+
 
 //            assets.layout.setText(assets.font, "Avalaunch!", Color.LIGHT_GRAY, windowCamera.viewportWidth, Align.center, false);
 //            assets.font.draw(batch, assets.layout, 0f, windowCamera.viewportHeight * (3f / 4f) + assets.layout.height / 2f);
