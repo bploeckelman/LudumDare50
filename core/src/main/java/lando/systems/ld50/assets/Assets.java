@@ -64,6 +64,8 @@ public class Assets implements Disposable {
     public TextureRegion laserIcon;
     public TextureRegion yetiIcon;
     public TextureRegion snowball;
+    public TextureRegion leftTurnIcon;
+    public TextureRegion rightTurnIcon;
 
     public Array<Animation<TextureRegion>> titleLetters;
     public Animation<TextureRegion> cat;
@@ -362,6 +364,8 @@ public class Assets implements Disposable {
         skiLodge = atlas.findRegion("icons/ski-lodge");
         rampIcon = atlas.findRegion("icons/ramp");
         diverterIcon = atlas.findRegion("icons/diverter");
+        leftTurnIcon = atlas.findRegion("icons/leftturn");
+        rightTurnIcon = atlas.findRegion("icons/rightturn");
         heliIcon = atlas.findRegion("icons/heli");
         laserIcon = atlas.findRegion("icons/laser");
         plowIcon = atlas.findRegion("icons/plow");

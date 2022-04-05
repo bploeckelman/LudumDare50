@@ -648,17 +648,17 @@ public class GameScreen extends BaseScreen {
     public void beginBuildPhase(){
         roundNumber++;
         goodSkill1Ammo+=4;
-        goodSkill1Ammo = (goodSkill1Ammo > 5) ? 9 : goodSkill1Ammo;
-        goodSkill2Ammo+=3;
-        goodSkill2Ammo = (goodSkill1Ammo > 6) ? 9 : goodSkill2Ammo;
+        goodSkill1Ammo = (goodSkill1Ammo > 9) ? 9 : goodSkill1Ammo;
+        goodSkill2Ammo+=2;
+        goodSkill2Ammo = (goodSkill1Ammo > 9) ? 9 : goodSkill2Ammo;
         goodSkill3Ammo+=2;
-        goodSkill3Ammo = (goodSkill1Ammo > 7) ? 9 : goodSkill3Ammo;
+        goodSkill3Ammo = (goodSkill1Ammo > 9) ? 9 : goodSkill3Ammo;
         badSkill1Ammo+=4;
-        badSkill1Ammo = (badSkill1Ammo > 5) ? 9 : badSkill1Ammo;
-        badSkill2Ammo+=3;
-        badSkill2Ammo = (badSkill2Ammo > 6) ? 9 : badSkill2Ammo;
+        badSkill1Ammo = (badSkill1Ammo > 9) ? 9 : badSkill1Ammo;
+        badSkill2Ammo+=4;
+        badSkill2Ammo = (badSkill2Ammo > 9) ? 9 : badSkill2Ammo;
         badSkill3Ammo+=2;
-        badSkill3Ammo = (badSkill3Ammo > 7) ? 9 : badSkill3Ammo;
+        badSkill3Ammo = (badSkill3Ammo > 9) ? 9 : badSkill3Ammo;
         showNextDayWindow();
     }
 
@@ -996,8 +996,10 @@ public class GameScreen extends BaseScreen {
                         badSkill1Ammo--;
                     }
                     break;
-                case BOULDER:
+                case BOULDER: //diverter cause we got no time
                     if (badSkill2Ammo > 0) {
+                        landscape.highlightedTile.makeDiverter(false);
+                        game.audio.playSound(AudioManager.Sounds.earth, .8F);
                         badSkill2Ammo--;
                     }
                     break;
@@ -1408,17 +1410,17 @@ public class GameScreen extends BaseScreen {
         rampButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
 
         VisImageButton.VisImageButtonStyle diverterButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
-        diverterButtonStyle.up = new TextureRegionDrawable(assets.diverterIcon);
-        diverterButtonStyle.checked = new TextureRegionDrawable(assets.diverterIcon);
-        diverterButtonStyle.over = new TextureRegionDrawable(assets.diverterIcon);
-        diverterButtonStyle.down = new TextureRegionDrawable(assets.diverterIcon);
+        diverterButtonStyle.up = new TextureRegionDrawable(assets.leftTurnIcon);
+        diverterButtonStyle.checked = new TextureRegionDrawable(assets.leftTurnIcon);
+        diverterButtonStyle.over = new TextureRegionDrawable(assets.leftTurnIcon);
+        diverterButtonStyle.down = new TextureRegionDrawable(assets.leftTurnIcon);
         diverterButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
 
         VisImageButton.VisImageButtonStyle boulderButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
-        boulderButtonStyle.up = new TextureRegionDrawable(assets.boulderIcon);
-        boulderButtonStyle.checked = new TextureRegionDrawable(assets.boulderIcon);
-        boulderButtonStyle.over = new TextureRegionDrawable(assets.boulderIcon);
-        boulderButtonStyle.down = new TextureRegionDrawable(assets.boulderIcon);
+        boulderButtonStyle.up = new TextureRegionDrawable(assets.rightTurnIcon);
+        boulderButtonStyle.checked = new TextureRegionDrawable(assets.rightTurnIcon);
+        boulderButtonStyle.over = new TextureRegionDrawable(assets.rightTurnIcon);
+        boulderButtonStyle.down = new TextureRegionDrawable(assets.rightTurnIcon);
         boulderButtonStyle.focusBorder = Assets.Patch.glass_yellow.drawable;
 
         VisImageButton.VisImageButtonStyle laserButtonStyle = new VisImageButton.VisImageButtonStyle(toggleImageButtonStyle);
@@ -1468,11 +1470,11 @@ public class GameScreen extends BaseScreen {
         skillButtonGroup.addActor(skillButton2);
         skillButtonGroup.addActor(skillButton3);
         goodSkill1Ammo = 9;
-        goodSkill2Ammo = 9;
-        goodSkill3Ammo = 9;
-        badSkill1Ammo = 9;
-        badSkill2Ammo = 9;
-        badSkill3Ammo = 9;
+        goodSkill2Ammo = 2;
+        goodSkill3Ammo = 1;
+        badSkill1Ammo = 5;
+        badSkill2Ammo = 5;
+        badSkill3Ammo = 1;
         skill1AmmoImage = new VisImage();
         skill2AmmoImage = new VisImage();
         skill3AmmoImage = new VisImage();
