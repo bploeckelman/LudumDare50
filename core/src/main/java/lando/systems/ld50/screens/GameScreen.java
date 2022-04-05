@@ -712,9 +712,9 @@ public class GameScreen extends BaseScreen {
         camera.project(coords);
 
         badKarmaPoints += points;
-        particles.addPointsParticles(points, coords.x, coords.y, 0.9f, 0.1f, 0.1f);
+        particles.addPointsParticles(points, coords.x, coords.y, 255f / 255f, 182f / 255f, 193f / 255f);
         particles.addParticleBurstCollect(16,
-                new float[]{1f, 0.1f, 0.1f},
+                new float[]{255f / 255f, 182f / 255f, 193f / 255f},
                 new float[]{coords.x, coords.y},
                 new float[]{Config.window_width - MathUtils.random(40f, 100f), Config.window_height - MathUtils.random(20f, 50f)});
     }
@@ -724,9 +724,9 @@ public class GameScreen extends BaseScreen {
         camera.project(coords);
 
         goodKarmaPoints += points;
-        particles.addPointsParticles(points, coords.x, coords.y, 0.1f, 0.8f, 0.1f);
+        particles.addPointsParticles(points, coords.x, coords.y, 0f, 1f, 1f);
         particles.addParticleBurstCollect(6,
-                new float[]{0.2f, 0.9f, 0.1f},
+                new float[]{0f, 1f, 1f},
                 new float[]{coords.x, coords.y},
                 new float[]{Config.window_width - MathUtils.random(40f, 100f), Config.window_height - MathUtils.random(20f, 50f)});
     }
@@ -1246,8 +1246,8 @@ public class GameScreen extends BaseScreen {
 
         VisProgressBar.ProgressBarStyle verticalProgressBarStyle = skin.get("default-horizontal", VisProgressBar.ProgressBarStyle.class);
         VisProgressBar.ProgressBarStyle karmaProgressBarStyle = new VisProgressBar.ProgressBarStyle(verticalProgressBarStyle);
-        karmaProgressBarStyle.knobBefore = new TextureRegionDrawable(getColoredTextureRegion(Color.BLUE));
-        karmaProgressBarStyle.knobAfter = new TextureRegionDrawable(getColoredTextureRegion(Color.RED));
+        karmaProgressBarStyle.knobBefore = new TextureRegionDrawable(getColoredTextureRegion(Color.CYAN));
+        karmaProgressBarStyle.knobAfter = new TextureRegionDrawable(getColoredTextureRegion(Color.PINK));
 
         karmaProgressBar = new VisProgressBar(0f, 100f, .1f, false, karmaProgressBarStyle);
         karmaProgressBar.setSize(upperRightWindow.getWidth() - 50f, 20f);

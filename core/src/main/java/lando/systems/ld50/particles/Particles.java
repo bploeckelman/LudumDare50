@@ -248,7 +248,8 @@ public class Particles implements Disposable {
                     .endAlpha(0f)
                     .startColor(r*k, g*k, b*k, 1.5f)
                     .startSize(size * 0.55f, size)
-                    .velocity(0, 40)
+                    .velocity(MathUtils.random(-30f, 30f), 30)
+                    .acceleration(0f, MathUtils.random(-4f, -2f))
                     .startPos(x - ((pointsStr.length()-1) * size) * 0.3f + (i * size) * 0.6f, y)
                     .timeToLive(2.5f)
                     .init());
@@ -258,13 +259,16 @@ public class Particles implements Disposable {
     public void addParticleBurstCollect(int quantity, float[] color, float[] position, float[] target) {
         for (int i = 0; i < quantity; i++) {
             activeParticles.get(Layer.middle).add(Particle.initializer(particlePool.obtain())
-                    .keyframe(assets.particles.sparkle)
+                    .keyframe(assets.particles.sparks)
                     .startColor(color[0], color[1], color[1], MathUtils.random(0.5f,0.7f))
                     .targetPos(target[0], target[1])
                     .startPos(position[0] + MathUtils.random(35, 70) * MathUtils.sinDeg(i*360f/quantity), position[1] + MathUtils.random(35, 70) * MathUtils.cosDeg(i*360f/quantity))
                     .timeToLive(MathUtils.random(0.8f, 1.4f))
                     .startSize(25, 25)
                     .endSize(10, 10)
+                    .startRotation(MathUtils.random(-4f * 365f, 4f * 365f))
+                    .endRotation(MathUtils.random(-4f * 365f, 4f * 365f))
+                    .startAlpha(0.5f)
                     .endAlpha(0.25f)
                     .init());
         }

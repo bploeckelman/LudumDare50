@@ -172,6 +172,7 @@ public class Assets implements Disposable {
         public TextureRegion ring;
         public TextureRegion dollar;
         public TextureRegion blood;
+        public TextureRegion sparks;
     }
 
     public enum Transition {
@@ -270,7 +271,7 @@ public class Assets implements Disposable {
             mgr.load("models/snowball-b.g3db", Model.class);
             mgr.load("models/tree-b.g3db", Model.class);
             mgr.load("models/tree-d.g3db", Model.class);
-            mgr.load("models/yeti_00.g3db", Model.class);
+            mgr.load("models/yeti_01.g3db", Model.class);
             mgr.load("models/lodge-a.g3db", Model.class);
             mgr.load("models/lodge-b.g3db", Model.class);
             mgr.load("models/lodge-c.g3db", Model.class);
@@ -397,7 +398,8 @@ public class Assets implements Disposable {
         particles.smoke   = atlas.findRegion("particles/smoke");
         particles.sparkle = atlas.findRegion("particles/sparkle");
         particles.dollar  = atlas.findRegion("particles/dollars");
-        particles.blood  = atlas.findRegion("characters/blood-stain");
+        particles.blood   = atlas.findRegion("characters/blood-stain");
+        particles.sparks  = atlas.findRegion("particles/sparks");
 
         // initialize models
         Models.boulder_a.model         = mgr.get("models/boulder-a.g3db", Model.class);
@@ -407,7 +409,7 @@ public class Assets implements Disposable {
         Models.snowball_b.model        = mgr.get("models/snowball-b.g3db", Model.class);
         Models.tree_b.model            = mgr.get("models/tree-b.g3db", Model.class);
         Models.tree_d.model            = mgr.get("models/tree-d.g3db", Model.class);
-        Models.yeti.model              = mgr.get("models/yeti_00.g3db", Model.class);
+        Models.yeti.model              = mgr.get("models/yeti_01.g3db", Model.class);
         Models.lodge_a.model           = mgr.get("models/lodge-a.g3db", Model.class);
         Models.lodge_b.model           = mgr.get("models/lodge-b.g3db", Model.class);
         Models.lodge_c.model           = mgr.get("models/lodge-c.g3db", Model.class);
