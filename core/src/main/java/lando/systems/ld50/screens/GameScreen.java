@@ -194,6 +194,7 @@ public class GameScreen extends BaseScreen {
         dayTime = new MutableFloat(buildHour);
 
         landscape = new Landscape(this);
+        landscape.physics.slowdownScale = 1.2f;
 
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, ambientColor));
