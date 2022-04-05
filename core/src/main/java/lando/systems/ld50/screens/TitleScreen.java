@@ -96,7 +96,7 @@ public class TitleScreen extends BaseScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
             if (!exitingScreen) {
-                audio.playSound(AudioManager.Sounds.goodKarma);
+                audio.playSound(AudioManager.Sounds.badKarma, 1.0F);
                 game.setScreen(new StoryScreen());
                 // TODO Change this back to story screen before publishing
 //                game.setScreen(new GameScreen());
