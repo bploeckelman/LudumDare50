@@ -297,10 +297,10 @@ public class PhysicsManager {
 
             if (isBallLowEnoughToHit){
                 // spawn bad karma particles
-                landscape.screen.addBadKarmaPoints(93, tile);
+                landscape.screen.addBadKarmaPoints(50 + MathUtils.random(0, 50), tile);
             } else {
                 // Spawn good particles
-                landscape.screen.addGoodKarmaPoints(137, tile);
+                landscape.screen.addGoodKarmaPoints(100 + MathUtils.random(0, 100), tile);
             }
             ball.interactedDecorations.add(tile);
         }
