@@ -91,7 +91,7 @@ public class TitleScreen extends BaseScreen {
         startGameButton = new VisTextButton("Start Game", titleScreenButtonStyle);
         Gdx.app.log("startbuttonwidth&height", "width: " + startGameButton.getWidth() + " & height: " + startGameButton.getHeight());
         startGameButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        startGameButton.setPosition(windowCamera.viewportWidth / 2f - startGameButton.getWidth() / 2f, windowCamera.viewportHeight / 3f);
+        startGameButton.setPosition(windowCamera.viewportWidth / 2f - startGameButton.getWidth() / 2f + 325, windowCamera.viewportHeight / 3f);
         startGameButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -107,7 +107,7 @@ public class TitleScreen extends BaseScreen {
 
         settingsButton = new VisTextButton("Settings", titleScreenButtonStyle);
         settingsButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        settingsButton.setPosition(windowCamera.viewportWidth / 2f - settingsButton.getWidth() / 2f, startGameButton.getY() - startGameButton.getHeight() - BUTTON_PADDING);
+        settingsButton.setPosition(windowCamera.viewportWidth / 2f - settingsButton.getWidth() / 2f + 325, startGameButton.getY() - startGameButton.getHeight() - BUTTON_PADDING);
         settingsButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -118,7 +118,7 @@ public class TitleScreen extends BaseScreen {
 
         creditButton = new VisTextButton("Credits", titleScreenButtonStyle);
         creditButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
-        creditButton.setPosition(windowCamera.viewportWidth / 2f - creditButton.getWidth() / 2f, settingsButton.getY() - settingsButton.getHeight() - BUTTON_PADDING);
+        creditButton.setPosition(windowCamera.viewportWidth / 2f - creditButton.getWidth() / 2f + 325, settingsButton.getY() - settingsButton.getHeight() - BUTTON_PADDING);
         creditButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
