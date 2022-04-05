@@ -1077,6 +1077,37 @@ public class GameScreen extends BaseScreen {
         initializeControlUI();
         initializeSettingsControlButton();
         initializeNextDayButtonUI();
+        initializeSpeedController();
+    }
+
+    private void initializeSpeedController() {
+        VisTextButton.VisTextButtonStyle outfitMediumStyle = skin.get("toggle", VisTextButton.VisTextButtonStyle.class);
+        VisTextButton.VisTextButtonStyle settingsButtonStyle = new VisTextButton.VisTextButtonStyle(outfitMediumStyle);
+        settingsButtonStyle.up = Assets.Patch.glass.drawable;
+        settingsButtonStyle.down = Assets.Patch.glass_dim.drawable;
+        settingsButtonStyle.over = Assets.Patch.glass_dim.drawable;
+        settingsButtonStyle.checked = Assets.Patch.glass_green.drawable;
+
+        VisTextButton speedButton = new VisTextButton("Fast", settingsButtonStyle);
+        speedButton.setSize(windowCamera.viewportWidth / 8f, windowCamera.viewportHeight / 8f);
+        speedButton.setPosition(0f, windowCamera.viewportHeight * 6 / 8f);
+        speedButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.log("text", "" + speedButton.getText());
+                if (speedButton.getText().toString().equals("Fast")) {
+                    speedButton.setText("Slow");
+                    landscape.physics.slowdownScale = 0.4f;
+                } else if (speedButton.getText().toString().equals("Slow")) {
+                    speedButton.setText("Fast");
+                    landscape.physics.slowdownScale = 1.2f;
+                } else {
+                    speedButton.setText("Fast");
+                    landscape.physics.slowdownScale = 1.2f;
+                }
+            }
+        });
+        uiStage.addActor(speedButton);
     }
 
     private void setupUpperUIWindow(VisWindow upperWindow, float x, float y, float w, float h) {
