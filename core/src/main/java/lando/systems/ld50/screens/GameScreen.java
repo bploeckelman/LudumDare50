@@ -151,6 +151,16 @@ public class GameScreen extends BaseScreen {
     public VisLabel badKarmaLabel;
     public VisLabel goodKarmaPointLabel;
     public VisLabel badKarmaPointLabel;
+    TextureRegionDrawable ammo1 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_1));
+    TextureRegionDrawable ammo2 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_2));
+    TextureRegionDrawable ammo3 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_3));
+    TextureRegionDrawable ammo4 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_4));
+    TextureRegionDrawable ammo5 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_5));
+    TextureRegionDrawable ammo6 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_6));
+    TextureRegionDrawable ammo7 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_7));
+    TextureRegionDrawable ammo8 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_8));
+    TextureRegionDrawable ammo9 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_9));
+    TextureRegionDrawable ammo0 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_0));
 
     private float ambienceSoundTime;
     private Vector3 position = new Vector3();
@@ -1322,17 +1332,7 @@ public class GameScreen extends BaseScreen {
     }
 
     private TextureRegionDrawable getAmmoImage(int ammoCount) {
-        TextureRegionDrawable targetImage = new TextureRegionDrawable();
-        TextureRegionDrawable ammo1 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_1));
-        TextureRegionDrawable ammo2 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_2));
-        TextureRegionDrawable ammo3 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_3));
-        TextureRegionDrawable ammo4 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_4));
-        TextureRegionDrawable ammo5 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_5));
-        TextureRegionDrawable ammo6 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_6));
-        TextureRegionDrawable ammo7 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_7));
-        TextureRegionDrawable ammo8 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_8));
-        TextureRegionDrawable ammo9 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_9));
-        TextureRegionDrawable ammo0 = new TextureRegionDrawable(assets.inputPrompts.get(InputPrompts.Type.key_light_number_0));
+        TextureRegionDrawable targetImage;
 
         switch(ammoCount) {
             case 0:
