@@ -2,7 +2,6 @@ package lando.systems.ld50.screens;
 
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Sine;
 import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Application;
@@ -34,7 +33,6 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -54,7 +52,6 @@ import lando.systems.ld50.objects.*;
 import lando.systems.ld50.particles.NoDepthCameraGroupStrategy;
 import lando.systems.ld50.particles.Particles;
 import lando.systems.ld50.particles.PhysicsDecal;
-import lando.systems.ld50.utils.Time;
 import lando.systems.ld50.utils.Utils;
 import lando.systems.ld50.utils.screenshake.ScreenShakeCameraController;
 import text.formic.Stringf;
@@ -86,6 +83,7 @@ public class GameScreen extends BaseScreen {
     private final ModelBatch modelBatch;
     private final DecalBatch decalBatch;
     private final DecalBatch particlesDecalBatch;
+    private final Vector3 decalLookAtCameraPos = new Vector3();
 
     private ModelInstance coords;
     public ModelInstance yetiModel;
@@ -203,8 +201,8 @@ public class GameScreen extends BaseScreen {
         decalBatch = new DecalBatch(500, new CameraGroupStrategy(camera));
         if (Gdx.app.getType() == Application.ApplicationType.WebGL) {
             particlesDecalBatch = new DecalBatch(5000, new NoDepthCameraGroupStrategy(camera, (o1, o2) -> {
-                // sorting hurts the framerate significantly (especially on web)
-                // and for particle effects we mostly don't care
+                // full sorting hurts the framerate significantly (especially on web)
+                // and for particle effects we mostly don't care about anything except z pos
 
                 return (int)Math.signum(o1.getPosition().z - o2.getPosition().z);
             }));
@@ -262,8 +260,9 @@ public class GameScreen extends BaseScreen {
     @Override
     public void updateEvenIfPaused(float dt) {
 
+        decalLookAtCameraPos.set(camera.position.x, 2f, camera.position.z);
         for (PhysicsDecal decal : PhysicsDecal.instances) {
-            decal.decal.lookAt(camera.position, camera.up);
+            decal.decal.lookAt(decalLookAtCameraPos, camera.up);
             particlesDecalBatch.add(decal.decal);
         }
 
@@ -273,7 +272,7 @@ public class GameScreen extends BaseScreen {
 
         for (int i = decals.size - 1; i >= 0; i--) {
             AnimationDecal decal = decals.get(i);
-            decalBatch.add(decal.get());
+            particlesDecalBatch.add(decal.get());
         }
     }
 
@@ -384,7 +383,7 @@ public class GameScreen extends BaseScreen {
             } else if (decal.saved) {
                 decals.removeIndex(i);
             } else {
-                    //decal.lookAt(billboardCameraPos, camera.up);
+                    decal.get().lookAt(billboardCameraPos, camera.up);
                     decal.update(dt);
 
 //                decalBatch.add(decal.get());
