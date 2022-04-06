@@ -1,9 +1,7 @@
 package lando.systems.ld50.screens;
 
-import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenCallback;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -18,7 +16,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
-import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.audio.AudioManager;
@@ -26,7 +23,6 @@ import lando.systems.ld50.utils.SimplePath;
 import lando.systems.ld50.utils.accessors.Vector2Accessor;
 
 public class TitleScreen extends BaseScreen {
-    private VisTable rootTable;
     private VisTextButton startGameButton;
     private VisTextButton creditButton;
     private VisTextButton settingsButton;
@@ -38,7 +34,9 @@ public class TitleScreen extends BaseScreen {
     private ShapeRenderer shapes;
 
     private Vector2 heloPos;
-    private TextureRegion heloTex;
+    private Animation<TextureRegion> chopperNoSign;
+    private Animation<TextureRegion> chopperWithSign;
+    private Animation<TextureRegion> currentChopperAnim;
 
     private final float BUTTON_WIDTH = 300f;
     private final float BUTTON_HEIGHT = 75f;
@@ -49,6 +47,7 @@ public class TitleScreen extends BaseScreen {
     private float t = 0f;
     private float animTime = 0f;
     private float animDelay = 2.5f;
+    private float animTimeChopper = 0f;
 
     public TitleScreen() {
         // NOTE: have to set the input processor here as well as transitionCompleted
@@ -74,6 +73,12 @@ public class TitleScreen extends BaseScreen {
                 1280, y - 480
         );
 
+        Array<TextureRegion> frames = new Array<>();
+        frames.add(assets.heloHook);
+        chopperNoSign = new Animation<>(0.1f, frames, Animation.PlayMode.LOOP);
+        chopperWithSign = assets.chopperSign;
+        currentChopperAnim = chopperNoSign;
+
         letterPositions = new Array<>();
         for (int i = 0; i < letterAnims.size; i++) {
             letterPositions.add(new Vector2(lettersPath.valueAt(t)));
@@ -84,18 +89,12 @@ public class TitleScreen extends BaseScreen {
         game.audio.playMusic(AudioManager.Musics.introMusic);
 //        game.audio.playMusic(AudioManager.Musics.outroMusic);
         heloPos = new Vector2(300, 900);
-        heloTex = game.assets.heloHook;
 
         Timeline.createSequence()
                 .push(Tween.to(heloPos, Vector2Accessor.XY, 3f)
                         .target(300, -500))
                 .pushPause(.1f)
-                .push(Tween.call(new TweenCallback() {
-                    @Override
-                    public void onEvent(int type, BaseTween<?> source) {
-                        heloTex = assets.heloSign;
-                    }
-                }))
+                .push(Tween.call((type, source) -> currentChopperAnim = chopperWithSign))
                 .push(Tween.to(heloPos, Vector2Accessor.XY, 2f)
                         .target(300, 300))
                 .push(Tween.to(heloPos,Vector2Accessor.XY, .5f)
@@ -201,6 +200,8 @@ public class TitleScreen extends BaseScreen {
             animTime += dt;
         }
 
+        animTimeChopper += dt;
+
         t += 0.4f * dt;
         t = MathUtils.clamp(t, 0f, 1f);
         for (int i = 0; i < letterPositions.size; i++) {
@@ -223,15 +224,13 @@ public class TitleScreen extends BaseScreen {
                         letterPositions.get(i).y - 20f);
             }
 
-            batch.draw(heloTex, heloPos.x, heloPos.y, 200, 430);
+            TextureRegion keyframe = currentChopperAnim.getKeyFrame(animTimeChopper);
+            batch.draw(keyframe, heloPos.x, heloPos.y, 200, 430);
 
-
-//            assets.layout.setText(assets.font, "Avalaunch!", Color.LIGHT_GRAY, windowCamera.viewportWidth, Align.center, false);
-//            assets.font.draw(batch, assets.layout, 0f, windowCamera.viewportHeight * (3f / 4f) + assets.layout.height / 2f);
         }
         batch.end();
 
-        // TODO - comment out
+        // debugging
 //        shapes.setProjectionMatrix(windowCamera.combined);
 //        lettersPath.debugRender(shapes);
 //        shapes.end();

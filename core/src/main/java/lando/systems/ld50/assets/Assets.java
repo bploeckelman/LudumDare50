@@ -71,6 +71,7 @@ public class Assets implements Disposable {
     public TextureRegion heloHook;
 
     public Array<Animation<TextureRegion>> titleLetters;
+    public Animation<TextureRegion> chopperSign;
     public Animation<TextureRegion> cat;
     public Animation<TextureRegion> dog;
     public Animation<TextureRegion> babeA;
@@ -390,6 +391,8 @@ public class Assets implements Disposable {
         titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-7"), Animation.PlayMode.LOOP_PINGPONG));
         titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-8"), Animation.PlayMode.LOOP_PINGPONG));
         titleLetters.add(new Animation<>(0.11f, atlas.findRegions("title/tl-9"), Animation.PlayMode.LOOP_PINGPONG));
+
+        chopperSign = new Animation<>(0.1f, atlas.findRegions("characters/chopper-sign"), Animation.PlayMode.LOOP);
 
         // initialize particle images
         particles = new Particles();
