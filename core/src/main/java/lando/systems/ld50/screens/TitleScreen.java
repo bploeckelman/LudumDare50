@@ -134,13 +134,11 @@ public class TitleScreen extends BaseScreen {
         startGameButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-            if (!exitingScreen) {
-                audio.playSound(AudioManager.Sounds.goodKarma);
-                game.setScreen(new StoryScreen());
-                // TODO Change this back to story screen before publishing
-//                game.setScreen(new GameScreen());
-                exitingScreen = true;
-            }
+                if (!exitingScreen) {
+                    audio.playSound(AudioManager.Sounds.badKarma);
+                    game.setScreen(new StoryScreen());
+                    exitingScreen = true;
+                }
             }
         });
 
