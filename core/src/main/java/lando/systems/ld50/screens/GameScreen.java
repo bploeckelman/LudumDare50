@@ -276,11 +276,16 @@ public class GameScreen extends BaseScreen {
         }
     }
 
+    boolean rotatedYetiOnce = false;
     @Override
     public void update(float dt) {
         super.update(dt);
         accum += dt;
         yetiModel.transform.setTranslation(yetiPosition);
+        if (!rotatedYetiOnce) {
+            rotatedYetiOnce = true;
+            yetiModel.transform.rotate(Vector3.Y, -60f);
+        }
 
         if (gameOver && landscape.snowBalls.size == 0){
             gameOverDelay += dt;

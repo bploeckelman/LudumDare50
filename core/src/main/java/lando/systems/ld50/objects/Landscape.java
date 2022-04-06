@@ -337,7 +337,7 @@ public class Landscape {
         screen.creatureInstances.add(screen.yetiModel);
         screen.yetiPosition.set(4.5f, 0, 85f);
         Timeline.createParallel()
-                .push(Tween.to(screen.yetiPosition, Vector3Accessor.XZ, 2f)
+                .push(Tween.to(screen.yetiPosition, Vector3Accessor.XZ, 1f)
                         .target(4.5f, 93f))
                 .push(Tween.to(screen.yetiPosition, Vector3Accessor.Y, .4f)
                         .target(.5f)
