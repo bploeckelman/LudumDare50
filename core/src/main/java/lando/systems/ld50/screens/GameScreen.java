@@ -167,6 +167,8 @@ public class GameScreen extends BaseScreen {
 
     public boolean gameOver;
     public float gameOverDelay = 0;
+    public boolean isHeliInProgress = false;
+    public boolean isPlowInProgress = false;
 
     public enum Karma {GOOD, EVIL}
     public Karma currentKarmaPicked = GOOD;
@@ -1002,14 +1004,16 @@ public class GameScreen extends BaseScreen {
                     }
                     break;
                 case PLOW:
-                    if (goodSkill2Ammo > 0) {
+                    if (goodSkill2Ammo > 0 && !isPlowInProgress) {
+                        isPlowInProgress = true;
                         addPlow(landscape.highlightedTile);
                         game.audio.playSound(AudioManager.Sounds.plow, 1.0F);
                         goodSkill2Ammo--;
                     }
                     break;
                 case HELI:
-                    if (goodSkill3Ammo > 0) {
+                    if (goodSkill3Ammo > 0 && !isHeliInProgress) {
+                        isHeliInProgress = true;
                         addHeli(landscape.highlightedTile);
                         goodSkill3Ammo--;
                     }

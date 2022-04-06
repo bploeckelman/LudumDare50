@@ -20,6 +20,7 @@ public class Plow extends AnimationDecal {
     @Override
     protected void completeMovement() {
         dead = true;
+        landscape.screen.isPlowInProgress = false;
     }
 
 

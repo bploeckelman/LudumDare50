@@ -33,6 +33,7 @@ public class Heli extends AnimationDecal {
 
         flyAway = true;
         flyAway(30, tile.intZ);
+        landscape.screen.isHeliInProgress = false;
     }
 
     @Override
