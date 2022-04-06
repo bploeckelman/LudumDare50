@@ -290,7 +290,7 @@ public class Landscape {
         int numRows = 2;
         for (int j = 0; j < numRows; j++) {
             for (int i = 0; i < TILES_WIDE * 3; i++) {
-                snowBalls.add(new Snowball(i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f), 1.5f, .5f, .3f + MathUtils.random(-0.06f, 0.12f), this));
+                snowBalls.add(new Snowball(i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f), 1.5f, .5f, .5f + MathUtils.random(-0.06f, 0.12f), this));
             }
         }
     }
@@ -346,7 +346,10 @@ public class Landscape {
         int numRows = 6;
         for (int j = 0; j < numRows; j++) {
             for (int i = 0; i < TILES_WIDE * 3; i++) {
-                Snowball s = new Snowball(i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f), 1.f, 85.5f - j, .3f + MathUtils.random(-0.06f, 0.12f), this);
+                Snowball s = new Snowball(
+                        i / 3f + 1 / 6f + MathUtils.random(-0.2f, 0.2f),
+                        1.f, 85.5f - j + MathUtils.random(-0.5f, 0.5f),
+                        0.5f + MathUtils.random(-0.06f, 0.12f), this);
                 s.velocity.z = 20f;
                 snowBalls.add(s);
             }
