@@ -1,5 +1,6 @@
 package lando.systems.ld50.objects;
 
+import aurelienribon.tweenengine.Tween;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
+import lando.systems.ld50.utils.accessors.Vector3Accessor;
 
 public class AnimationDecal {
 
@@ -152,10 +154,20 @@ public class AnimationDecal {
     Vector3 bloodUp = new Vector3();
     Vector3 bloodPos = new Vector3();
     Vector3 t1Vec = new Vector3();
+    boolean wasInSnow = false;
 
     protected void updateMovement(float dt) {
 
         if (isInSnow() && !launched) {
+            if (!wasInSnow) {
+                wasInSnow = true;
+                // move to center of tile
+                float targetX = (float) Math.floor(position.x) + 0.4f;
+                float targetZ = (float) Math.floor(position.z) + 0.4f;
+                Tween.to(position, Vector3Accessor.XZ, 0.1f)
+                        .target(targetX, targetZ)
+                        .start(Main.game.tween);
+            }
             waveTime += dt;
             return;
         }
