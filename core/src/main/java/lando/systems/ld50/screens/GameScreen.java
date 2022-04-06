@@ -389,6 +389,9 @@ public class GameScreen extends BaseScreen {
                 decals.removeIndex(i);
             } else {
                     decal.get().lookAt(billboardCameraPos, camera.up);
+                    if (decal.launchTime > 0) {
+                        decal.get().setRotationZ(decal.launchTime * 540);
+                    }
                     decal.update(dt);
 
 //                decalBatch.add(decal.get());

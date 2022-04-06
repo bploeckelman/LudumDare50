@@ -1,7 +1,5 @@
 package lando.systems.ld50.objects;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -11,9 +9,6 @@ import com.badlogic.gdx.utils.Array;
 import lando.systems.ld50.Main;
 import lando.systems.ld50.assets.Assets;
 import lando.systems.ld50.assets.ImageInfo;
-import lando.systems.ld50.physics.Triangle;
-import lando.systems.ld50.screens.BaseScreen;
-import lando.systems.ld50.screens.GameScreen;
 
 public class AnimationDecal {
 
@@ -226,6 +221,7 @@ public class AnimationDecal {
         decal.setScaleX(right ? directionX : -directionX);
         decal.setPosition(position);
 
+        // NOTE: Decal.lookAt breaks this, so we do it externally after the lookAt gets called in GameScreen.update()/launchTime
         if (launchTime > 0) {
             decal.setRotationZ(launchTime * 540);
         }
@@ -234,7 +230,7 @@ public class AnimationDecal {
     }
 
     public boolean launched = false;
-    private float launchTime = 0;
+    public float launchTime = 0;
 
     public void launch() {
         launched = true;
