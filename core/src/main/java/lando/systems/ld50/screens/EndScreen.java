@@ -1,5 +1,9 @@
 package lando.systems.ld50.screens;
 
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.equations.Expo;
+import aurelienribon.tweenengine.primitives.MutableFloat;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -64,6 +68,7 @@ public class EndScreen extends BaseScreen {
     ModelInstance lodgeD;
     Environment env;
     ModelBatch modelBatch;
+    MutableFloat yetiPosY;
 
     Rectangle backButton;
     boolean hoverBack;
@@ -115,17 +120,26 @@ public class EndScreen extends BaseScreen {
         backgroundCamera.near = .1f;
         backgroundCamera.far = 1000;
         backgroundCamera.update();
-        yetiModel = createUnitModelInstance(Assets.Models.yeti.model, 4f, 0f, 3f);
+        yetiModel = createUnitModelInstance(Assets.Models.yeti.model, 2f, 0f, 3.5f);
 
-        lodgeA = createUnitModelInstance(Assets.Models.lodge_a.model, -3.03f, 0, 0);
-        lodgeB = createUnitModelInstance(Assets.Models.lodge_b.model, -2.02f, 0, 0);
-        lodgeC = createUnitModelInstance(Assets.Models.lodge_c.model, -1.01f, 0, 0);
-        lodgeD = createUnitModelInstance(Assets.Models.lodge_d.model, 0, 0, 0);
+        float offset = 1.5f;
+        lodgeA = createUnitModelInstance(Assets.Models.lodge_a.model, offset + -3.03f, 0, 0);
+        lodgeB = createUnitModelInstance(Assets.Models.lodge_b.model, offset + -2.02f, 0, 0);
+        lodgeC = createUnitModelInstance(Assets.Models.lodge_c.model, offset + -1.01f, 0, 0);
+        lodgeD = createUnitModelInstance(Assets.Models.lodge_d.model, offset + 0, 0, 0);
 
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, .6f, .6f, .6f, 1f));
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, .5f, -1, 0));
         modelBatch = new ModelBatch();
+
+        yetiPosY = new MutableFloat(0f);
+        Timeline.createSequence()
+                .push(Tween.set(yetiPosY, -1).target(0f))
+                .pushPause(0.2f)
+                .push(Tween.to(yetiPosY, -1, 0.15f).target(0.6f).ease(Expo.OUT))
+                .repeatYoyo(-1, 0f)
+                .start(game.tween);
     }
 
     @Override
@@ -149,7 +163,7 @@ public class EndScreen extends BaseScreen {
             game.setScreen(new TitleScreen());
         }
 
-        backgroundCamera.position.set(MathUtils.sin(backgroundAccum/3f) * 5, 6, MathUtils.cos(backgroundAccum/3f) * 5);
+        backgroundCamera.position.set(MathUtils.sin(backgroundAccum/3f) * 2, 2, MathUtils.cos(backgroundAccum/3f) * 2);
         backgroundCamera.lookAt(0,0,0);
         backgroundCamera.up.set(0, 1, 0);
         backgroundCamera.update();
@@ -220,7 +234,7 @@ public class EndScreen extends BaseScreen {
         landMesh.render(landscapeShader, GL20.GL_TRIANGLES, 0, 6);
 
         modelBatch.begin(backgroundCamera);
-        yetiModel.transform.setTranslation(-1, (MathUtils.sin(backgroundAccum * 5f) + 1) * .5f, -1);
+        yetiModel.transform.setTranslation(0, yetiPosY.floatValue(), -1);
         modelBatch.render(yetiModel, env);
         modelBatch.render(lodgeA, env);
         modelBatch.render(lodgeB, env);
