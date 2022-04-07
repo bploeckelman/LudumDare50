@@ -33,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -1402,6 +1403,17 @@ public class GameScreen extends BaseScreen {
         }
     }
 
+//    private TextTooltip textToolTipPickerForSkill1() {
+//        switch (currentKarmaPicked) {
+//            case GOOD:
+//                return new TextTooltip("This is a ramp, bro. Use this to redirect snowballs upward, bro.", skin);
+//            case EVIL:
+//                return new TextTooltip("This is a left diverter, bro. Use this to redirect snowballs left, bro.", skin);
+//            default:
+//                return new TextTooltip("Idk bro.", skin);
+//        }
+//    }
+
     private void initializeControlUI() {
         float buttonSize = 35f;
 
@@ -1538,10 +1550,18 @@ public class GameScreen extends BaseScreen {
         skillButtonGroup.addActor(skill2AmmoImage);
         skillButtonGroup.addActor(skill3AmmoImage);
 
-//        Tooltip tooltip = new Tooltip("default");
-//        VisLabel text = new VisLabel("this is skill1");
-//        tooltip.setContent(text);
-//        skillButton1.addActor(tooltip);
+        String goodSkill1Explanation = "Good: Build a ramp to redirect snowballs upward to the sky, bro.\n Evil: Build a diverter to redirect snowballs left to a house or babes, bro.";
+        String goodSkill2Explanation = "Good: Deploy a shib doge to plow the snow in the row, bro.\n Evil: Build a diverter to redirect snowballs right to houses or babes, bro.";
+        String goodSkill3Explanation = "Good: Deploy a shib-copter to save the babes, bro.\n Evil: Shoot a laser at houses or babes, bro.";
+        TextTooltip skill1ToolTip = new TextTooltip(goodSkill1Explanation, skin);
+        skill1ToolTip.setInstant(true);
+        TextTooltip skill2ToolTip = new TextTooltip(goodSkill2Explanation, skin);
+        skill2ToolTip.setInstant(true);
+        TextTooltip skill3ToolTip = new TextTooltip(goodSkill3Explanation, skin);
+        skill3ToolTip.setInstant(true);
+
+        skillButton1.addListener(skill1ToolTip);
+
 
         skillButton1.addListener(new ChangeListener() {
             @Override
