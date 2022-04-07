@@ -223,7 +223,7 @@ public class TitleScreen extends BaseScreen {
             }
 
             TextureRegion keyframe = currentChopperAnim.getKeyFrame(animTimeChopper);
-            batch.draw(keyframe, heloPos.x, heloPos.y, 200, 430);
+            batch.draw(keyframe, heloPos.x, heloPos.y, 150, 400);
 
         }
         batch.end();
