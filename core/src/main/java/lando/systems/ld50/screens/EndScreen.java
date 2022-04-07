@@ -123,10 +123,10 @@ public class EndScreen extends BaseScreen {
         yetiModel = createUnitModelInstance(Assets.Models.yeti.model, 2f, 0f, 3.5f);
 
         float offset = 1.5f;
-        lodgeA = createUnitModelInstance(Assets.Models.lodge_a.model, offset + -3.03f, 0, 0);
-        lodgeB = createUnitModelInstance(Assets.Models.lodge_b.model, offset + -2.02f, 0, 0);
-        lodgeC = createUnitModelInstance(Assets.Models.lodge_c.model, offset + -1.01f, 0, 0);
-        lodgeD = createUnitModelInstance(Assets.Models.lodge_d.model, offset + 0, 0, 0);
+        lodgeA = createUnitModelInstance(Assets.Models.lodge_a_snowed.model, offset + -3.03f, 0, 0);
+        lodgeB = createUnitModelInstance(Assets.Models.lodge_b_snowed.model, offset + -2.02f, 0, 0);
+        lodgeC = createUnitModelInstance(Assets.Models.lodge_c_snowed.model, offset + -1.01f, 0, 0);
+        lodgeD = createUnitModelInstance(Assets.Models.lodge_d_snowed.model, offset + 0, 0, 0);
 
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, .6f, .6f, .6f, 1f));
