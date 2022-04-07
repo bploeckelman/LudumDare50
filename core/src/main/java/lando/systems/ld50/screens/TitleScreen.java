@@ -96,9 +96,9 @@ public class TitleScreen extends BaseScreen {
                 .pushPause(.1f)
                 .push(Tween.call((type, source) -> currentChopperAnim = chopperWithSign))
                 .push(Tween.to(heloPos, Vector2Accessor.XY, 2f)
-                        .target(300, 300))
+                        .target(300, 420))
                 .push(Tween.to(heloPos,Vector2Accessor.XY, .5f)
-                        .target(300,280)
+                        .target(300,400)
                         .repeatYoyo(60, 0))
                 .start(game.tween);
     }
@@ -223,7 +223,7 @@ public class TitleScreen extends BaseScreen {
             }
 
             TextureRegion keyframe = currentChopperAnim.getKeyFrame(animTimeChopper);
-            batch.draw(keyframe, heloPos.x, heloPos.y, 150, 400);
+            batch.draw(keyframe, heloPos.x, heloPos.y, keyframe.getRegionWidth() * .75f, keyframe.getRegionHeight() * .75f);
 
         }
         batch.end();
