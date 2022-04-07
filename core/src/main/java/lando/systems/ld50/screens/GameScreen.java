@@ -33,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -1150,6 +1151,15 @@ public class GameScreen extends BaseScreen {
         initializeSettingsControlButton();
         initializeNextDayButtonUI();
         initializeSpeedController();
+        initializeTutorialDialog();
+    }
+
+    private void initializeTutorialDialog() {
+        VisDialog tutorial = new VisDialog("", "default");
+        tutorial.text("Bro... I heard an avalanche is approaching.\nDuring the Build Phase, pick your skills from Good or Evil tab.\nYou can drag across the map and build or deploy stuff.\nWe gotta do everything to save the ski lodge to party with these babes.", skin.get("outfit-medium-20px", VisLabel.LabelStyle.class));
+        tutorial.getContentTable().padBottom(20f);
+        tutorial.button("Got it, Bro.", skin.get("default", VisTextButton.VisTextButtonStyle.class));
+        tutorial.show(uiStage);
     }
 
     private void initializeSpeedController() {
