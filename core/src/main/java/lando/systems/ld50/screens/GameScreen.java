@@ -1552,7 +1552,7 @@ public class GameScreen extends BaseScreen {
 
         String goodSkill1Explanation = "Good: Build a ramp to redirect snowballs upward to the sky, bro.\n Evil: Build a diverter to redirect snowballs left to a house or babes, bro.";
         String goodSkill2Explanation = "Good: Deploy a shib doge to plow the snow in the row, bro.\n Evil: Build a diverter to redirect snowballs right to houses or babes, bro.";
-        String goodSkill3Explanation = "Good: Deploy a shib-copter to save the babes, bro.\n Evil: Shoot a laser at houses or babes, bro.";
+        String goodSkill3Explanation = "Good: Deploy a shib-copter to save the babes, bro.\n Evil: Shoot a laser at babes, bro, but why?";
         TextTooltip skill1ToolTip = new TextTooltip(goodSkill1Explanation, skin);
         skill1ToolTip.setInstant(true);
         TextTooltip skill2ToolTip = new TextTooltip(goodSkill2Explanation, skin);
@@ -1561,7 +1561,8 @@ public class GameScreen extends BaseScreen {
         skill3ToolTip.setInstant(true);
 
         skillButton1.addListener(skill1ToolTip);
-
+        skillButton2.addListener(skill2ToolTip);
+        skillButton3.addListener(skill3ToolTip);
 
         skillButton1.addListener(new ChangeListener() {
             @Override
